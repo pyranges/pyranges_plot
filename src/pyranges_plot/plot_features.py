@@ -30,11 +30,6 @@ plot_features_dict = {
         "Minimum length of an intron or intergenic region in order for it to be shrinked while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
         " ",
     ),
-    "shrinked_alpha": (
-        0.7,
-        "Opacity of the shrinked region background color.",
-        " ",
-    ),
     "shrinked_bkg": (
         "lightyellow",
         "Color of the shrinked region background.",
@@ -72,7 +67,6 @@ theme_dark = {
     "grid_color": "darkgrey",
     "arrow_color": "lightgrey",
     "shrinked_bkg": "lightblue",
-    "shrinked_alpha": 0.4,
 }
 
 # Store themes

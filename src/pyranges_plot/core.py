@@ -368,7 +368,6 @@ def print_options(return_keys=False):
                     "grid_color",
                     "exon_border",
                     "shrinked_bkg",
-                    "shrinked_alpha",
                 ]
             )
         ].copy()

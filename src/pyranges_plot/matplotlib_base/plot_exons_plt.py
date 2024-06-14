@@ -55,7 +55,6 @@ def plot_exons_plt(
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
     shrinked_bkg = feat_dict["shrinked_bkg"]
-    shrinked_alpha = feat_dict["shrinked_alpha"]
 
     # Create figure and axes
     # pixel in inches
@@ -84,7 +83,6 @@ def plot_exons_plt(
         tag_bkg,
         fig_bkg,
         shrinked_bkg,
-        shrinked_alpha,
         v_spacer,
         exon_height,
     )

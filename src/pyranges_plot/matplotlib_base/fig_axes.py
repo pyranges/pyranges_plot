@@ -39,7 +39,7 @@ def ax_limits(ax, x_min, x_max, x_rang, grid_color):
 
 
 def ax_shrink_rects(
-    ax, fig, ts_data, chrom, y_min, y_max, shrinked_bkg, shrinked_alpha, tag_background
+    ax, fig, ts_data, chrom, y_min, y_max, shrinked_bkg, tag_background
 ):
     """Add shrinked regions rectangles to the plot."""
 
@@ -61,7 +61,6 @@ def ax_shrink_rects(
             y_max + 3,
             edgecolor="grey",
             facecolor=shrinked_bkg,
-            alpha=shrinked_alpha,
             fill=True,
             linewidth=0,
         )
@@ -96,7 +95,6 @@ def create_fig(
     tag_background,
     fig_bkg,
     shrinked_bkg,
-    shrinked_alpha,
     v_spacer,
     exon_height,
 ):
@@ -202,7 +200,6 @@ def create_fig(
                 y_min,
                 y_max,
                 shrinked_bkg,
-                shrinked_alpha,
                 tag_background,
             )
 
