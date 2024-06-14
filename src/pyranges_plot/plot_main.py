@@ -253,6 +253,7 @@ def plot(
 
     feat_dict = {
         "colormap": getvalue("colormap"),
+        "intron_color": getvalue("intron_color"),
         "tag_bkg": getvalue("tag_bkg"),
         "fig_bkg": getvalue("fig_bkg"),
         "plot_bkg": getvalue("plot_bkg"),

@@ -7,7 +7,7 @@ from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .core import initialize_dash_app, coord2percent
 from .fig_axes import create_fig
 from .data2plot import plot_introns, apply_gene_bridge
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
 
 
 def plot_exons_ply(
@@ -36,6 +36,7 @@ def plot_exons_ply(
 
     # Get default plot features
     # tag_background = feat_dict['tag_background']
+    intron_color = feat_dict["intron_color"]
     fig_bkg = feat_dict["fig_bkg"]
     plot_bkg = feat_dict["plot_bkg"]
     plot_border = feat_dict["plot_border"]
@@ -81,6 +82,7 @@ def plot_exons_ply(
             genesmd_df,
             ts_data,
             tooltip,
+            intron_color,
             legend,
             transcript_str,
             text,
@@ -161,6 +163,7 @@ def gby_plot_exons(
     genesmd_df,
     ts_data,
     showinfo,
+    intron_color,
     legend,
     transcript_str,
     text,
@@ -228,21 +231,26 @@ def gby_plot_exons(
     )
 
     # Plot INTRON lines
+    # sort exons
     sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
+    # consider shrinked
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:
         ts_chrom = pd.DataFrame()
 
+    # deal with arrow and intron color
     if isinstance(arrow_size, int):
         arrow_size = coord2percent(fig, chrom_ix + 1, 0, arrow_size)
+    if intron_color is None:
+        intron_color = df[COLOR_INFO].iloc[0]
 
     dir_flag = plot_introns(
         sorted_exons,
         ts_chrom,
         fig,
         gene_ix,
-        exon_border,
+        intron_color,
         chrom_ix,
         strand,
         genename,

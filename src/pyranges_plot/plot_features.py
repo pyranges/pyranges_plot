@@ -22,6 +22,11 @@ plot_features_dict = {
     "exon_height": (0.6, "Height of the exon rectangle in the plot.", " "),
     "fig_bkg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),
+    "intron_color": (
+        None,
+        "Color of the intron lines. When None, the color of the first interval will be used.",
+        " ",
+    ),
     "plot_bkg": ("white", "Background color of the plots.", " "),
     "plot_border": ("black", "Color of the line delimiting the plots.", " "),
     "plotly_port": (8050, "Port to run plotly app.", " "),

@@ -8,7 +8,7 @@ from .data2plot import (
     apply_gene_bridge,
     plot_introns,
 )
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
 
 arrow_style = "round"
 
@@ -40,6 +40,7 @@ def plot_exons_plt(
     """Create Matplotlib plot."""
 
     # Get default plot features
+    intron_color = feat_dict["intron_color"]
     tag_bkg = feat_dict["tag_bkg"]
     fig_bkg = feat_dict["fig_bkg"]
     plot_bkg = feat_dict["plot_bkg"]
@@ -93,12 +94,11 @@ def plot_exons_plt(
             subdf,
             axes,
             fig,
-            chrmd_df,
             chrmd_df_grouped,
             genesmd_df,
             ts_data,
-            id_col,
             tooltip,
+            intron_color,
             tag_bkg,
             plot_border,
             transcript_str,
@@ -140,12 +140,11 @@ def gby_plot_exons(
     df,
     axes,
     fig,
-    chrmd_df,
     chrmd_df_grouped,
     genesmd_df,
     ts_data,
-    id_col,
     showinfo,
+    intron_color,
     tag_bkg,
     plot_border,
     transcript_str,
@@ -191,15 +190,20 @@ def gby_plot_exons(
         geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})\nID: {genename}"  # default without strand
 
     # Plot INTRON lines
+    # sort exons
     sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
     sorted_exons["intron_dir_flag"] = [0] * len(sorted_exons)
+    # consider shrinked
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:
         ts_chrom = pd.DataFrame()
 
+    # deal with arrow and intron color
     if isinstance(arrow_size, int):
         arrow_size = coord2percent(ax, 0, arrow_size)
+    if intron_color is None:
+        intron_color = df[COLOR_INFO].iloc[0]
 
     dir_flag = plot_introns(
         sorted_exons,
@@ -209,7 +213,7 @@ def gby_plot_exons(
         geneinfo,
         tag_bkg,
         gene_ix,
-        exon_border,
+        intron_color,
         strand,
         exon_height,
         arrow_color,

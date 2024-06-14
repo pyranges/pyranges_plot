@@ -359,6 +359,7 @@ def print_options(return_keys=False):
             feat_df.index.isin(
                 [
                     "colormap",
+                    "intron_color",
                     "tag_bkg",
                     "fig_bkg",
                     "plot_bkg",
