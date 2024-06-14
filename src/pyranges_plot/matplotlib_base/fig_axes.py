@@ -38,10 +38,8 @@ def ax_limits(ax, x_min, x_max, x_rang, grid_color):
     )  # only integer ticks for bases
 
 
-def ax_shrink_rects(
-    ax, fig, ts_data, chrom, y_min, y_max, shrinked_bkg, tag_background
-):
-    """Add shrinked regions rectangles to the plot."""
+def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_background):
+    """Add shrunk regions rectangles to the plot."""
 
     rects_df = ts_data[chrom].copy()
     rects_df["cumdelta_end"] = rects_df[CUM_DELTA_COL]
@@ -60,7 +58,7 @@ def ax_shrink_rects(
             b - a,
             y_max + 3,
             edgecolor="grey",
-            facecolor=shrinked_bkg,
+            facecolor=shrunk_bkg,
             fill=True,
             linewidth=0,
         )
@@ -94,7 +92,7 @@ def create_fig(
     ori_tick_pos_d,
     tag_background,
     fig_bkg,
-    shrinked_bkg,
+    shrunk_bkg,
     v_spacer,
     exon_height,
 ):
@@ -199,7 +197,7 @@ def create_fig(
                 chrom,
                 y_min,
                 y_max,
-                shrinked_bkg,
+                shrunk_bkg,
                 tag_background,
             )
 

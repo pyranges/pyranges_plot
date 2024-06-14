@@ -280,7 +280,7 @@ def plot(
         "arrow_color": getvalue("arrow_color"),
         "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
-        "shrinked_bkg": getvalue("shrinked_bkg"),
+        "shrunk_bkg": getvalue("shrunk_bkg"),
     }
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
@@ -356,7 +356,7 @@ def plot(
     )
 
     # Deal with introns off
-    # adapt coordinates to shrinked
+    # adapt coordinates to shrunk
     ts_data = {}
     subdf[ORISTART_COL] = subdf[START_COL]
     subdf[ORIEND_COL] = subdf[END_COL]

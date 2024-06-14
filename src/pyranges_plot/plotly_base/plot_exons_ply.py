@@ -51,7 +51,7 @@ def plot_exons_ply(
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
-    shrinked_bkg = feat_dict["shrinked_bkg"]
+    shrunk_bkg = feat_dict["shrunk_bkg"]
 
     # Create figure and chromosome plots
     fig = create_fig(
@@ -67,7 +67,7 @@ def plot_exons_ply(
         y_labels,
         tick_pos_d,
         ori_tick_pos_d,
-        shrinked_bkg,
+        shrunk_bkg,
         v_spacer,
         exon_height,
         plot_border,
@@ -233,7 +233,7 @@ def gby_plot_exons(
     # Plot INTRON lines
     # sort exons
     sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
-    # consider shrinked
+    # consider shrunk
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:

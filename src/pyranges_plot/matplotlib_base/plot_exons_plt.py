@@ -55,7 +55,7 @@ def plot_exons_plt(
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
-    shrinked_bkg = feat_dict["shrinked_bkg"]
+    shrunk_bkg = feat_dict["shrunk_bkg"]
 
     # Create figure and axes
     # pixel in inches
@@ -83,7 +83,7 @@ def plot_exons_plt(
         ori_tick_pos_d,
         tag_bkg,
         fig_bkg,
-        shrinked_bkg,
+        shrunk_bkg,
         v_spacer,
         exon_height,
     )
@@ -193,7 +193,7 @@ def gby_plot_exons(
     # sort exons
     sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
     sorted_exons["intron_dir_flag"] = [0] * len(sorted_exons)
-    # consider shrinked
+    # consider shrunk
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:

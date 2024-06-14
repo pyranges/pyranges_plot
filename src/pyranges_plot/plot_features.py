@@ -32,12 +32,12 @@ plot_features_dict = {
     "plotly_port": (8050, "Port to run plotly app.", " "),
     "shrink_threshold": (
         0.01,
-        "Minimum length of an intron or intergenic region in order for it to be shrinked while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
+        "Minimum length of an intron or intergenic region in order for it to be shrunk while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
         " ",
     ),
-    "shrinked_bkg": (
+    "shrunk_bkg": (
         "lightyellow",
-        "Color of the shrinked region background.",
+        "Color of the shrunk region background.",
         " ",
     ),
     "tag_bkg": (
@@ -71,7 +71,7 @@ theme_dark = {
     "plot_bkg": "grey",
     "grid_color": "darkgrey",
     "arrow_color": "lightgrey",
-    "shrinked_bkg": "lightblue",
+    "shrunk_bkg": "lightblue",
 }
 
 # Store themes
