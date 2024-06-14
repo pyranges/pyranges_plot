@@ -270,7 +270,7 @@ def plot(
         "plotly_port": getvalue("plotly_port"),
         "arrow_line_width": float(getvalue("arrow_line_width")),
         "arrow_color": getvalue("arrow_color"),
-        "arrow_size": float(getvalue("arrow_size")),
+        "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
         "shrinked_bkg": getvalue("shrinked_bkg"),
         "shrinked_alpha": float(getvalue("shrinked_alpha")),
