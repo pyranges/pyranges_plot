@@ -512,7 +512,7 @@ def plot_introns(
                     x=[x0, x1],
                     y=[y0, y1],
                     mode="lines",
-                    line=dict(color=color, width=0.7, dash="dash"),
+                    line=dict(color=color, width=0.7, dash="dot"),
                     hoverinfo="skip",
                     showlegend=False,
                 )
