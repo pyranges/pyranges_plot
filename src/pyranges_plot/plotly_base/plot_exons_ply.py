@@ -52,6 +52,7 @@ def plot_exons_ply(
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
     shrunk_bkg = feat_dict["shrunk_bkg"]
+    x_ticks = feat_dict["x_ticks"]
 
     # Create figure and chromosome plots
     fig = create_fig(
@@ -65,6 +66,7 @@ def plot_exons_ply(
         grid_color,
         packed,
         y_labels,
+        x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
         shrunk_bkg,

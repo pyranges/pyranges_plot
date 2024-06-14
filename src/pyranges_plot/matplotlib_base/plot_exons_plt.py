@@ -56,6 +56,7 @@ def plot_exons_plt(
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
     shrunk_bkg = feat_dict["shrunk_bkg"]
+    x_ticks = feat_dict["x_ticks"]
 
     # Create figure and axes
     # pixel in inches
@@ -79,6 +80,7 @@ def plot_exons_plt(
         packed,
         legend,
         y_labels,
+        x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
         tag_bkg,

@@ -54,6 +54,11 @@ plot_features_dict = {
     "title_color": ("black", "Color of the plots' titles.", " "),
     "title_size": (18, "Size of the plots' titles.", " "),
     "v_spacer": (0.5, "Vertical distance between the intervals and plot border.", " "),
+    "x_ticks": (
+        None,
+        "Int, list or dict defining the x_ticks to be displayed. When int, number of ticks to be placed on each plot. When list, it corresponds to de values used as ticks. When dict, the keys must match the Chromosome values of the data, while the values can be either int or list of int; when int it corresponds to the number of ticks to be placed; when list of int it corresponds to de values used as ticks. Note that when the tick falls within a shrunk region it will not be diplayed.",
+        " ",
+    ),
 }
 
 # Normal (light theme)

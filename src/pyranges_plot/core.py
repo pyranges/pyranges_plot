@@ -359,7 +359,6 @@ def print_options(return_keys=False):
             feat_df.index.isin(
                 [
                     "colormap",
-                    "intron_color",
                     "tag_bkg",
                     "fig_bkg",
                     "plot_bkg",
@@ -369,6 +368,7 @@ def print_options(return_keys=False):
                     "grid_color",
                     "exon_border",
                     "shrunk_bkg",
+                    "x_ticks",
                 ]
             )
         ].copy()
@@ -382,6 +382,7 @@ def print_options(return_keys=False):
                     "arrow_line_width",
                     "arrow_color",
                     "arrow_size",
+                    "intron_color",
                 ]
             )
         ].copy()

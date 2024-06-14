@@ -281,6 +281,7 @@ def plot(
         "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
         "shrunk_bkg": getvalue("shrunk_bkg"),
+        "x_ticks": getvalue("x_ticks"),
     }
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
