@@ -49,9 +49,7 @@ def plot_exons_ply(
     plotly_port = feat_dict["plotly_port"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
-    arrow_size_min = feat_dict["arrow_size_min"]
     arrow_size = feat_dict["arrow_size"]
-    arrow_intron_threshold = feat_dict["arrow_intron_threshold"]
     shrinked_bkg = feat_dict["shrinked_bkg"]
     shrinked_alpha = feat_dict["shrinked_alpha"]
 
@@ -95,9 +93,7 @@ def plot_exons_ply(
             plot_bkg,
             arrow_line_width,
             arrow_color,
-            arrow_size_min,
             arrow_size,
-            arrow_intron_threshold,
         )
     )  # .reset_index(level=PR_INDEX_COL)
 
@@ -177,9 +173,7 @@ def gby_plot_exons(
     plot_background,
     arrow_line_width,
     arrow_color,
-    arrow_size_min,
     arrow_size,
-    arrow_intron_threshold,
 ):
     """Plot elements corresponding to the df rows of one gene."""
 
@@ -242,10 +236,6 @@ def gby_plot_exons(
     else:
         ts_chrom = pd.DataFrame()
 
-    if isinstance(arrow_intron_threshold, int):
-        arrow_intron_threshold = coord2percent(
-            fig, chrom_ix + 1, 0, arrow_intron_threshold
-        )
     if isinstance(arrow_size, int):
         arrow_size = coord2percent(fig, chrom_ix + 1, 0, arrow_size)
 
@@ -258,7 +248,6 @@ def gby_plot_exons(
         chrom_ix,
         strand,
         genename,
-        arrow_intron_threshold,
         exon_height,
         arrow_color,
         arrow_line_width,
@@ -275,7 +264,7 @@ def gby_plot_exons(
         strand,
         genename,
         gene_ix,
-        exon_border,  # this works as "exon_color" used for utr (not interval)
+        exon_border,  # this works as "color" used for utr (not interval)
         exon_border,
         chrom_ix,
         geneinfo,
@@ -283,7 +272,7 @@ def gby_plot_exons(
         exon_height,
         transcript_utr_width,
         legend,
-        arrow_size_min,
+        arrow_size,
         arrow_color,
         arrow_line_width,
         dir_flag,

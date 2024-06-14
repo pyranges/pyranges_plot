@@ -3,11 +3,6 @@ import copy
 
 plot_features_dict = {
     "arrow_color": ("grey", "Color of the arrow indicating strand.", " "),
-    "arrow_intron_threshold": (
-        0.04,
-        "Minimum size of the intron to plot a direction arrow in it. Provided as a float corresponding to the fraction of the plot or as int corresponding to the number of positions.",
-        " ",
-    ),
     "arrow_line_width": (
         1,
         "Line width of the arrow lines",
@@ -16,11 +11,6 @@ plot_features_dict = {
     "arrow_size": (
         0.006,
         "Float corresponding to the fraction of the plot or int corresponding to the number of positions occupied by a direction arrow.",
-        " ",
-    ),
-    "arrow_size_min": (
-        0.002,
-        "Minimum size of the arrow to plot direction in exons if necessary. Provided as a float corresponding to the plot fraction.",
         " ",
     ),
     "colormap": (

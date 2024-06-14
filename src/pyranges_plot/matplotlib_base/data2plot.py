@@ -108,7 +108,7 @@ def apply_gene_bridge(
     showinfo,
     exon_height,
     transcript_utr_width,
-    arrow_size_min,
+    arrow_size,
     arrow_color,
     arrow_style,
     arrow_width,
@@ -129,7 +129,7 @@ def apply_gene_bridge(
                 genename,
                 showinfo,
                 exon_height,
-                arrow_size_min,
+                arrow_size,
                 arrow_color,
                 arrow_style,
                 arrow_width,
@@ -223,7 +223,7 @@ def apply_gene_bridge(
                     genename,
                     showinfo,
                     exon_height,
-                    arrow_size_min,
+                    arrow_size,
                     arrow_color,
                     arrow_style,
                     arrow_width,
@@ -252,7 +252,7 @@ def apply_gene_bridge(
                     genename,
                     showinfo,
                     transcript_utr_width,
-                    arrow_size_min,
+                    arrow_size,
                     arrow_color,
                     arrow_style,
                     arrow_width,
@@ -280,7 +280,7 @@ def apply_gene_bridge(
                     genename,
                     showinfo,
                     exon_height,
-                    arrow_size_min,
+                    arrow_size,
                     arrow_color,
                     arrow_style,
                     arrow_width,
@@ -307,7 +307,7 @@ def plot_row(
     genename,
     showinfo,
     exon_height,
-    arrow_size_min,
+    arrow_size,
     arrow_color,
     arrow_style,
     arrow_width,
@@ -372,16 +372,16 @@ def plot_row(
 
     # Plot DIRECTION ARROW in EXON
     # decide about placing a direction arrow
-    arrow_size = coord2percent(ax, 0.05 * start, 0.05 * stop)
-    incl = percent2coord(ax, arrow_size / 2)  # how long in the plot (OX)
+    # arrow_size = coord2percent(ax, 0.05 * start, 0.05 * stop)
+    incl = percent2coord(ax, arrow_size / 2)  # how long is the arrow in the plot (OX)
 
     # create and plot lines
     if not dir_flag:
         plot_direction(
             ax,
             strand,
-            arrow_size,
-            arrow_size_min,
+            stop - start,
+            arrow_size,  # itself as threshold
             start,
             stop,
             incl,
@@ -401,9 +401,8 @@ def plot_introns(
     geneinfo,
     tag_background,
     gene_ix,
-    exon_color,
+    color,
     strand,
-    intron_threshold,
     exon_height,
     arrow_color,
     arrow_style,
@@ -436,7 +435,7 @@ def plot_introns(
             intron_line = ax.plot(
                 [start, stop],
                 [gene_ix, gene_ix],
-                color=exon_color,
+                color=color,
                 linewidth=1,
                 zorder=1,
             )
@@ -459,7 +458,7 @@ def plot_introns(
                 intron_line = ax.plot(
                     [prev_tsend, row[ADJSTART_COL]],
                     [gene_ix, gene_ix],
-                    color=exon_color,
+                    color=color,
                     linewidth=1,
                     zorder=1,
                 )
@@ -470,7 +469,7 @@ def plot_introns(
                 intron_line = ax.plot(
                     [row[ADJSTART_COL], row[ADJEND_COL]],
                     [gene_ix, gene_ix],
-                    color=exon_color,
+                    color=color,
                     linewidth=0.5,
                     linestyle="--",
                     zorder=1,
@@ -485,7 +484,7 @@ def plot_introns(
                     intron_line = ax.plot(
                         [row[ADJEND_COL], stop],
                         [gene_ix, gene_ix],
-                        color=exon_color,
+                        color=color,
                         linewidth=1,
                         zorder=1,
                     )
@@ -506,7 +505,7 @@ def plot_introns(
                 ax,
                 strand,
                 intron_size,
-                intron_threshold,
+                arrow_size,  # size of arrow as thresholdarrow_size,  # size of arrow as threshold
                 start,
                 stop,
                 incl,
