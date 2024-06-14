@@ -165,6 +165,13 @@ def plot(
     if not isinstance(data, list):
         data = [data]
 
+    # Ensure correct y_labels
+    if y_labels:
+        if len(y_labels) != len(data):
+            raise Exception(
+                f"The number of provided y_labels {y_labels} does not match the number of PyRanges objects ({len(data)})."
+            )
+
     # Deal with export
     if to_file:
         # given str file name
