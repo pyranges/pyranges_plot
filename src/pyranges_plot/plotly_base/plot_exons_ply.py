@@ -278,13 +278,8 @@ def gby_plot_exons(
         strand,
         genename,
         gene_ix,
-        exon_border,  # this works as "color" used for utr (not interval)
-        exon_border,
         chrom_ix,
-        geneinfo,
         showinfo,
-        exon_height,
-        transcript_utr_width,
         legend,
         arrow_size,
         arrow_color,

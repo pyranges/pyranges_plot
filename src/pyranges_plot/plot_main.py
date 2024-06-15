@@ -92,7 +92,8 @@ def plot(
     thickness_col: str, default None
         Column name with max 2 different values to plot the intervals correspondig to one value to
         thicker than the others. The first value by alphabetical order will have the height specified
-        as 'exon_height', and the second will be 0.3*'exon_height'.
+        as 'exon_height', and the second will be 0.3*'exon_height'. Note that this parameter will be
+        overseen if the 'thick_cds' parameter is set to True.
 
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
@@ -111,7 +112,8 @@ def plot(
 
     thick_cds: bool, default False
         Display differentially transcript regions belonging and not belonging to CDS. The CDS/exon information
-        must be stored in the 'Feature' column of the PyRanges object or the dataframe.
+        must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
+        Feature value other than exon and CDS will be discarded for plotting.
 
     text: {bool, '{string}'}, default False
         Whether an annotation should appear beside the gene in the plot. If True, the id/index will be used. To
@@ -335,6 +337,18 @@ def plot(
         subdf["__id_col_2count__"] = subdf[ID_COL[0]]
 
     # Deal with thickness_col
+    # prioritize transcript structure
+    if thick_cds:
+        # keep only the "exon" and "CDS"
+        subdf = subdf[subdf["Feature"].isin(["exon", "CDS"])]
+        if subdf.empty:
+            raise Exception(
+                "The provided data does not contain any interval containing 'exon' or 'CDS' in the Feature column, no data wil be plotted using 'thick_cds'."
+            )
+        # set proper thickness column
+        thickness_col = "Feature"
+
+    # set proper height values
     if thickness_col:
         # Is it present in data?
         if thickness_col not in subdf.columns:
