@@ -459,7 +459,7 @@ def plot(
     subdf[EXON_IX_COL] = subdf.groupby(
         [CHROM_COL, PR_INDEX_COL] + ID_COL, group_keys=False, observed=True
     ).cumcount()
-    genesmd_df.sort_index(inplace=True)
+    genesmd_df.sort_values([CHROM_COL, PR_INDEX_COL] + [START_COL], inplace=True)
 
     # Deal with text_pad
     text_pad = feat_dict["text_pad"]

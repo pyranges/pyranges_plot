@@ -207,8 +207,10 @@ def create_fig(
                 .groupby(PR_INDEX_COL, group_keys=False, observed=True)
                 .groups
             )
-            y_ticks_name_d = dict(sorted(y_ticks_name_d.items(), reverse=True))
-            y_ticks_name = [list(id) for id in y_ticks_name_d.values()]
+
+            y_ticks_name = [
+                list(y_ticks_name_d[chrom]) for chrom in sorted(y_ticks_name_d.keys())
+            ]
             y_ticks_name = [item for sublist in y_ticks_name for item in sublist]
 
         # Add shrink rectangles

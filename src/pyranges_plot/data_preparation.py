@@ -322,9 +322,6 @@ def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
 
         genesmd_df.reset_index(PR_INDEX_COL, inplace=True)
 
-    # Assign color to each gene
-    # genesmd_df = genesmd_assigncolor(genesmd_df, colormap)  # adds a column 'color'
-
     return genesmd_df
 
 
