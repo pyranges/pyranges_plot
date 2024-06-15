@@ -394,14 +394,14 @@ def plot_row(
 
 
 def plot_introns(
-    sorted_exons,
+    introns,
     ts_chrom,
     fig,
     ax,
     geneinfo,
     tag_background,
     gene_ix,
-    color,
+    exon_color,
     strand,
     exon_height,
     arrow_color,
@@ -413,10 +413,11 @@ def plot_introns(
 
     dir_flag = []
 
-    for i in range(len(sorted_exons) - 1):
-        # define intron
-        start = sorted_exons[END_COL].iloc[i]
-        stop = sorted_exons[START_COL].iloc[i + 1]
+    def apply_plot_intron(row):
+        """Plot intron df as lines."""
+
+        start = row[START_COL]
+        stop = row[END_COL]
 
         # NOT introns off
         if ts_chrom.empty:
@@ -435,7 +436,7 @@ def plot_introns(
             intron_line = ax.plot(
                 [start, stop],
                 [gene_ix, gene_ix],
-                color=color,
+                color=exon_color,
                 linewidth=1,
                 zorder=1,
             )
@@ -458,7 +459,7 @@ def plot_introns(
                 intron_line = ax.plot(
                     [prev_tsend, row[ADJSTART_COL]],
                     [gene_ix, gene_ix],
-                    color=color,
+                    color=exon_color,
                     linewidth=1,
                     zorder=1,
                 )
@@ -469,7 +470,7 @@ def plot_introns(
                 intron_line = ax.plot(
                     [row[ADJSTART_COL], row[ADJEND_COL]],
                     [gene_ix, gene_ix],
-                    color=color,
+                    color=exon_color,
                     linewidth=0.5,
                     linestyle="--",
                     zorder=1,
@@ -484,7 +485,7 @@ def plot_introns(
                     intron_line = ax.plot(
                         [row[ADJEND_COL], stop],
                         [gene_ix, gene_ix],
-                        color=color,
+                        color=exon_color,
                         linewidth=1,
                         zorder=1,
                     )
@@ -505,7 +506,7 @@ def plot_introns(
                 ax,
                 strand,
                 intron_size,
-                arrow_size,  # size of arrow as thresholdarrow_size,  # size of arrow as threshold
+                arrow_size,
                 start,
                 stop,
                 incl,
@@ -516,6 +517,8 @@ def plot_introns(
                 arrow_width,
             )
         )
+
+    introns.apply(apply_plot_intron, axis=1)
 
     if 1 in dir_flag:
         return 1

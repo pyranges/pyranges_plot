@@ -83,6 +83,7 @@ def plot_exons_ply(
             chrmd_df_grouped,
             genesmd_df,
             ts_data,
+            id_col,
             tooltip,
             intron_color,
             legend,
@@ -164,6 +165,7 @@ def gby_plot_exons(
     chrmd_df_grouped,
     genesmd_df,
     ts_data,
+    id_col,
     showinfo,
     intron_color,
     legend,
@@ -233,8 +235,12 @@ def gby_plot_exons(
     )
 
     # Plot INTRON lines
-    # sort exons
-    sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
+    # get introns
+    df[START_COL] = df[START_COL].astype(int)
+    df[END_COL] = df[END_COL].astype(int)
+    introns = df.complement(transcript_id=id_col)
+    introns["intron_dir_flag"] = [0] * len(introns)
+
     # consider shrunk
     if ts_data:
         ts_chrom = ts_data[chrom]
@@ -248,7 +254,7 @@ def gby_plot_exons(
         intron_color = df[COLOR_INFO].iloc[0]
 
     dir_flag = plot_introns(
-        sorted_exons,
+        introns,
         ts_chrom,
         fig,
         gene_ix,

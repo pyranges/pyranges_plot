@@ -432,7 +432,7 @@ def plot_row(
 
 
 def plot_introns(
-    sorted_exons,
+    introns,
     ts_chrom,
     fig,
     gene_ix,
@@ -449,10 +449,11 @@ def plot_introns(
 
     dir_flag = []
 
-    for i in range(len(sorted_exons) - 1):
-        # define intron
-        start = sorted_exons[END_COL].iloc[i]
-        stop = sorted_exons[START_COL].iloc[i + 1]
+    def apply_plot_intron(row):
+        """Plot intron df as lines."""
+
+        start = row[START_COL]
+        stop = row[END_COL]
 
         # NOT introns off
         if ts_chrom.empty:
@@ -560,6 +561,8 @@ def plot_introns(
                 arrow_line_width,
             )
         )
+
+    introns.apply(apply_plot_intron, axis=1)
 
     if 1 in dir_flag:
         return 1
