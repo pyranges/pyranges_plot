@@ -367,8 +367,8 @@ def print_options(return_keys=False):
                     "title_color",
                     "grid_color",
                     "exon_border",
-                    "shrinked_bkg",
-                    "shrinked_alpha",
+                    "shrunk_bkg",
+                    "x_ticks",
                 ]
             )
         ].copy()
@@ -382,8 +382,7 @@ def print_options(return_keys=False):
                     "arrow_line_width",
                     "arrow_color",
                     "arrow_size",
-                    "arrow_size_min",
-                    "arrow_intron_threshold",
+                    "intron_color",
                 ]
             )
         ].copy()

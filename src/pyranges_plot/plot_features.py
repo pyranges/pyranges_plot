@@ -3,11 +3,6 @@ import copy
 
 plot_features_dict = {
     "arrow_color": ("grey", "Color of the arrow indicating strand.", " "),
-    "arrow_intron_threshold": (
-        0.04,
-        "Minimum size of the intron to plot a direction arrow in it. Provided as a float corresponding to the fraction of the plot or as int corresponding to the number of positions.",
-        " ",
-    ),
     "arrow_line_width": (
         1,
         "Line width of the arrow lines",
@@ -16,11 +11,6 @@ plot_features_dict = {
     "arrow_size": (
         0.006,
         "Float corresponding to the fraction of the plot or int corresponding to the number of positions occupied by a direction arrow.",
-        " ",
-    ),
-    "arrow_size_min": (
-        0.002,
-        "Minimum size of the arrow to plot direction in exons if necessary. Provided as a float corresponding to the plot fraction.",
         " ",
     ),
     "colormap": (
@@ -32,22 +22,22 @@ plot_features_dict = {
     "exon_height": (0.6, "Height of the exon rectangle in the plot.", " "),
     "fig_bkg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),
+    "intron_color": (
+        None,
+        "Color of the intron lines. When None, the color of the first interval will be used.",
+        " ",
+    ),
     "plot_bkg": ("white", "Background color of the plots.", " "),
     "plot_border": ("black", "Color of the line delimiting the plots.", " "),
     "plotly_port": (8050, "Port to run plotly app.", " "),
     "shrink_threshold": (
         0.01,
-        "Minimum length of an intron or intergenic region in order for it to be shrinked while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
+        "Minimum length of an intron or intergenic region in order for it to be shrunk while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
         " ",
     ),
-    "shrinked_alpha": (
-        0.7,
-        "Opacity of the shrinked region background color.",
-        " ",
-    ),
-    "shrinked_bkg": (
+    "shrunk_bkg": (
         "lightyellow",
-        "Color of the shrinked region background.",
+        "Color of the shrunk region background.",
         " ",
     ),
     "tag_bkg": (
@@ -64,6 +54,11 @@ plot_features_dict = {
     "title_color": ("black", "Color of the plots' titles.", " "),
     "title_size": (18, "Size of the plots' titles.", " "),
     "v_spacer": (0.5, "Vertical distance between the intervals and plot border.", " "),
+    "x_ticks": (
+        None,
+        "Int, list or dict defining the x_ticks to be displayed. When int, number of ticks to be placed on each plot. When list, it corresponds to de values used as ticks. When dict, the keys must match the Chromosome values of the data, while the values can be either int or list of int; when int it corresponds to the number of ticks to be placed; when list of int it corresponds to de values used as ticks. Note that when the tick falls within a shrunk region it will not be diplayed.",
+        " ",
+    ),
 }
 
 # Normal (light theme)
@@ -81,8 +76,7 @@ theme_dark = {
     "plot_bkg": "grey",
     "grid_color": "darkgrey",
     "arrow_color": "lightgrey",
-    "shrinked_bkg": "lightblue",
-    "shrinked_alpha": 0.4,
+    "shrunk_bkg": "lightblue",
 }
 
 # Store themes

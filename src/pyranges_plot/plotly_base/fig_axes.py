@@ -56,10 +56,10 @@ def create_fig(
     grid_color,
     packed,
     y_labels,
+    x_ticks,
     tick_pos_d,
     ori_tick_pos_d,
-    shrinked_bkg,
-    shrinked_alpha,
+    shrunk_bkg,
     v_spacer,
     exon_height,
     plot_border,
@@ -99,11 +99,56 @@ def create_fig(
             col=1,
         )  # add 5% to limit coordinates range
 
+        # Work with x labels
+        chrom_subdf = subdf[subdf[CHROM_COL] == chrom]
+        x_ticks_val = list(calculate_ticks(chrom_subdf))
+        x_ticks_name = list(calculate_ticks(chrom_subdf))
+
+        # consider specified x_ticks
+        if x_ticks:
+            # Unpack if its dict
+            if isinstance(x_ticks, dict):
+                if chrom in x_ticks.keys():
+                    x_ticks_chrom = x_ticks[chrom]
+                    if isinstance(x_ticks_chrom, int):
+                        x_ticks_val = [
+                            i
+                            for i in np.linspace(
+                                int(x_ticks_val[0]), int(x_ticks_val[-1]), x_ticks_chrom
+                            )
+                        ]
+                        x_ticks_name = x_ticks_val
+
+                    if isinstance(x_ticks_chrom, list):
+                        x_ticks_val = x_ticks_chrom
+                        x_ticks_name = x_ticks_val
+
+            elif isinstance(x_ticks, int):
+                x_ticks_val = [
+                    i
+                    for i in np.linspace(
+                        int(x_ticks_val[0]), int(x_ticks_val[-1]), x_ticks
+                    )
+                ]
+                x_ticks_name = x_ticks_val
+
+            elif isinstance(x_ticks, list):
+                x_ticks_val = x_ticks
+                x_ticks_name = x_ticks_val
+
+        # adjust names, must fall within limits
+        fig.update_xaxes(
+            tickvals=[int(i) for i in x_ticks_val],
+            ticktext=[int(i) for i in x_ticks_name],
+            row=i + 1,
+            col=1,
+        )
+
         # consider introns off
         if tick_pos_d:
             # get previous default ticks
-            chrom_subdf = subdf[subdf[CHROM_COL] == chrom]
-            original_ticks = list(calculate_ticks(chrom_subdf))
+            # chrom_subdf = subdf[subdf[CHROM_COL] == chrom]
+            original_ticks = x_ticks_val
 
             # find previous ticks that should be conserved
             to_add_val = []
@@ -140,8 +185,8 @@ def create_fig(
 
             # set new ticks
             fig.update_xaxes(
-                tickvals=x_ticks_val,
-                ticktext=x_ticks_name,
+                tickvals=[int(i) for i in x_ticks_val],
+                ticktext=[int(i) for i in x_ticks_name],
                 row=i + 1,
                 col=1,
             )
@@ -189,12 +234,11 @@ def create_fig(
                         x=[x0, x1, x1, x0, x0],
                         y=[y0, y0, y1, y1, y0],
                         fill="toself",
-                        fillcolor=shrinked_bkg,
+                        fillcolor=shrunk_bkg,
                         mode="lines",
                         line={"color": "lightyellow"},
                         text=f"Shrinked region:\n[{x0+c} - {x1+d}]",
                         hoverinfo="text",
-                        opacity=shrinked_alpha,
                         line_width=0,
                         showlegend=False,
                     ),

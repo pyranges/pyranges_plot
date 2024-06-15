@@ -7,7 +7,7 @@ from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .core import initialize_dash_app, coord2percent
 from .fig_axes import create_fig
 from .data2plot import plot_introns, apply_gene_bridge
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
 
 
 def plot_exons_ply(
@@ -36,6 +36,7 @@ def plot_exons_ply(
 
     # Get default plot features
     # tag_background = feat_dict['tag_background']
+    intron_color = feat_dict["intron_color"]
     fig_bkg = feat_dict["fig_bkg"]
     plot_bkg = feat_dict["plot_bkg"]
     plot_border = feat_dict["plot_border"]
@@ -49,11 +50,9 @@ def plot_exons_ply(
     plotly_port = feat_dict["plotly_port"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
-    arrow_size_min = feat_dict["arrow_size_min"]
     arrow_size = feat_dict["arrow_size"]
-    arrow_intron_threshold = feat_dict["arrow_intron_threshold"]
-    shrinked_bkg = feat_dict["shrinked_bkg"]
-    shrinked_alpha = feat_dict["shrinked_alpha"]
+    shrunk_bkg = feat_dict["shrunk_bkg"]
+    x_ticks = feat_dict["x_ticks"]
 
     # Create figure and chromosome plots
     fig = create_fig(
@@ -67,10 +66,10 @@ def plot_exons_ply(
         grid_color,
         packed,
         y_labels,
+        x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
-        shrinked_bkg,
-        shrinked_alpha,
+        shrunk_bkg,
         v_spacer,
         exon_height,
         plot_border,
@@ -84,7 +83,9 @@ def plot_exons_ply(
             chrmd_df_grouped,
             genesmd_df,
             ts_data,
+            id_col,
             tooltip,
+            intron_color,
             legend,
             transcript_str,
             text,
@@ -95,9 +96,7 @@ def plot_exons_ply(
             plot_bkg,
             arrow_line_width,
             arrow_color,
-            arrow_size_min,
             arrow_size,
-            arrow_intron_threshold,
         )
     )  # .reset_index(level=PR_INDEX_COL)
 
@@ -166,7 +165,9 @@ def gby_plot_exons(
     chrmd_df_grouped,
     genesmd_df,
     ts_data,
+    id_col,
     showinfo,
+    intron_color,
     legend,
     transcript_str,
     text,
@@ -177,9 +178,7 @@ def gby_plot_exons(
     plot_background,
     arrow_line_width,
     arrow_color,
-    arrow_size_min,
     arrow_size,
-    arrow_intron_threshold,
 ):
     """Plot elements corresponding to the df rows of one gene."""
 
@@ -236,29 +235,33 @@ def gby_plot_exons(
     )
 
     # Plot INTRON lines
-    sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
+    # get introns
+    df[START_COL] = df[START_COL].astype(int)
+    df[END_COL] = df[END_COL].astype(int)
+    introns = df.complement(transcript_id=id_col)
+    introns["intron_dir_flag"] = [0] * len(introns)
+
+    # consider shrunk
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:
         ts_chrom = pd.DataFrame()
 
-    if isinstance(arrow_intron_threshold, int):
-        arrow_intron_threshold = coord2percent(
-            fig, chrom_ix + 1, 0, arrow_intron_threshold
-        )
+    # deal with arrow and intron color
     if isinstance(arrow_size, int):
         arrow_size = coord2percent(fig, chrom_ix + 1, 0, arrow_size)
+    if intron_color is None:
+        intron_color = df[COLOR_INFO].iloc[0]
 
     dir_flag = plot_introns(
-        sorted_exons,
+        introns,
         ts_chrom,
         fig,
         gene_ix,
-        exon_border,
+        intron_color,
         chrom_ix,
         strand,
         genename,
-        arrow_intron_threshold,
         exon_height,
         arrow_color,
         arrow_line_width,
@@ -275,15 +278,10 @@ def gby_plot_exons(
         strand,
         genename,
         gene_ix,
-        exon_border,  # this works as "exon_color" used for utr (not interval)
-        exon_border,
         chrom_ix,
-        geneinfo,
         showinfo,
-        exon_height,
-        transcript_utr_width,
         legend,
-        arrow_size_min,
+        arrow_size,
         arrow_color,
         arrow_line_width,
         dir_flag,

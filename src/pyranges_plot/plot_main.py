@@ -40,6 +40,7 @@ from .names import (
     TEXT_PAD_COL,
     COLOR_TAG_COL,
     COLOR_INFO,
+    THICK_COL,
 )
 
 
@@ -51,6 +52,7 @@ def plot(
     max_shown=25,
     packed=True,
     color_col=None,
+    thickness_col=None,
     shrink=False,
     limits=None,
     thick_cds=False,
@@ -87,6 +89,12 @@ def plot(
     color_col: str, default None
         Name of the column used to color the genes.
 
+    thickness_col: str, default None
+        Column name with max 2 different values to plot the intervals correspondig to one value to
+        thicker than the others. The first value by alphabetical order will have the height specified
+        as 'exon_height', and the second will be 0.3*'exon_height'. Note that this parameter will be
+        overseen if the 'thick_cds' parameter is set to True.
+
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
 
@@ -104,7 +112,8 @@ def plot(
 
     thick_cds: bool, default False
         Display differentially transcript regions belonging and not belonging to CDS. The CDS/exon information
-        must be stored in the 'Feature' column of the PyRanges object or the dataframe.
+        must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
+        Feature value other than exon and CDS will be discarded for plotting.
 
     text: {bool, '{string}'}, default False
         Whether an annotation should appear beside the gene in the plot. If True, the id/index will be used. To
@@ -164,6 +173,13 @@ def plot(
     # Treat input data as list
     if not isinstance(data, list):
         data = [data]
+
+    # Ensure correct y_labels
+    if y_labels:
+        if len(y_labels) != len(data):
+            raise Exception(
+                f"The number of provided y_labels {y_labels} does not match the number of PyRanges objects ({len(data)})."
+            )
 
     # Deal with export
     if to_file:
@@ -246,6 +262,7 @@ def plot(
 
     feat_dict = {
         "colormap": getvalue("colormap"),
+        "intron_color": getvalue("intron_color"),
         "tag_bkg": getvalue("tag_bkg"),
         "fig_bkg": getvalue("fig_bkg"),
         "plot_bkg": getvalue("plot_bkg"),
@@ -270,12 +287,10 @@ def plot(
         "plotly_port": getvalue("plotly_port"),
         "arrow_line_width": float(getvalue("arrow_line_width")),
         "arrow_color": getvalue("arrow_color"),
-        "arrow_size_min": float(getvalue("arrow_size_min")),
-        "arrow_size": float(getvalue("arrow_size")),
-        "arrow_intron_threshold": getvalue("arrow_intron_threshold"),
+        "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
-        "shrinked_bkg": getvalue("shrinked_bkg"),
-        "shrinked_alpha": float(getvalue("shrinked_alpha")),
+        "shrunk_bkg": getvalue("shrunk_bkg"),
+        "x_ticks": getvalue("x_ticks"),
     }
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
@@ -321,6 +336,44 @@ def plot(
     else:
         subdf["__id_col_2count__"] = subdf[ID_COL[0]]
 
+    # Deal with thickness_col
+    # prioritize transcript structure
+    if thick_cds:
+        # keep only the "exon" and "CDS"
+        subdf = subdf[subdf["Feature"].isin(["exon", "CDS"])]
+        if subdf.empty:
+            raise Exception(
+                "The provided data does not contain any interval containing 'exon' or 'CDS' in the Feature column, no data wil be plotted using 'thick_cds'."
+            )
+        # set proper thickness column
+        thickness_col = "Feature"
+
+    # set proper height values
+    if thickness_col:
+        # Is it present in data?
+        if thickness_col not in subdf.columns:
+            raise Exception(
+                f"The provided thickness_col {thickness_col} is not present in the given data."
+            )
+
+        # Does it have more than 2 values
+        if len(subdf[thickness_col].drop_duplicates()) > 2:
+            raise Exception("Thickness_col must have a max of 2 different values.")
+
+        # add thickness_col
+        thick_tags_l = sorted(
+            list(subdf[thickness_col].drop_duplicates()), reverse=True
+        )
+        if len(thick_tags_l) == 1:
+            thick_tags_l = 2 * thick_tags_l
+        thick_tags_d = {
+            thick_tags_l[0]: feat_dict["transcript_utr_width"],
+            thick_tags_l[1]: feat_dict["exon_height"],
+        }
+        subdf[THICK_COL] = subdf[thickness_col].map(thick_tags_d)
+    else:
+        subdf[THICK_COL] = [feat_dict["exon_height"]] * len(subdf)
+
     # Store color information in data
     # color_col as list
     if color_col is None:
@@ -351,7 +404,7 @@ def plot(
     )
 
     # Deal with introns off
-    # adapt coordinates to shrinked
+    # adapt coordinates to shrunk
     ts_data = {}
     subdf[ORISTART_COL] = subdf[START_COL]
     subdf[ORIEND_COL] = subdf[END_COL]

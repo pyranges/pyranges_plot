@@ -1,3 +1,4 @@
+import pyranges as pr
 from pyranges.core.names import START_COL, END_COL
 
 from .core import coord2percent, percent2coord, make_annotation
@@ -11,6 +12,7 @@ from ..names import (
     TEXT_PAD_COL,
     COLOR_INFO,
     BORDER_COLOR_COL,
+    THICK_COL,
 )
 
 
@@ -100,200 +102,46 @@ def apply_gene_bridge(
     ax,
     strand,
     gene_ix,
-    exon_color,
-    exon_border,
     tag_background,
     plot_border,
     genename,
     showinfo,
-    exon_height,
-    transcript_utr_width,
-    arrow_size_min,
+    arrow_size,
     arrow_color,
     arrow_style,
     arrow_width,
     dir_flag,
 ):
     """Evaluate data and provide plot_row with right parameters."""
-    # NOT transcript strucutre
-    if not transcript_str:
-        df.apply(
-            plot_row,
-            args=(
-                fig,
-                ax,
-                strand,
-                gene_ix,
-                tag_background,
-                plot_border,
-                genename,
-                showinfo,
-                exon_height,
-                arrow_size_min,
-                arrow_color,
-                arrow_style,
-                arrow_width,
-                dir_flag,
-                text,
-                text_size,
-            ),
-            axis=1,
-        )
 
-    # WITH transcript structure
-    else:
-        ## add warning for no good transcript str here
-        # transcript has only CDS and exon
-        if (
-            df.Feature.str.contains("CDS").any()
-            and df.Feature.str.contains("exon").any()
-        ):
-            # get coordinates for utr and cds
-            tr_start, cds_start = df.groupby(
-                "Feature", group_keys=False, observed=True
-            ).Start.apply(min)[["exon", "CDS"]]
-            tr_end, cds_end = df.groupby(
-                "Feature", group_keys=False, observed=True
-            ).End.apply(max)[["exon", "CDS"]]
+    # If transcript structure subtract exons
+    if transcript_str:
+        cds = df[df["Feature"] == "CDS"]
+        exons = df[df["Feature"] == "exon"].subtract_ranges(cds)
+        df = pr.concat([cds, exons])
 
-            # create utr
-            start_utr = Rectangle(
-                (tr_start, gene_ix - transcript_utr_width / 2),
-                cds_start - tr_start,
-                transcript_utr_width,
-                edgecolor=exon_border,
-                facecolor=exon_color,
-                fill=True,
-            )
-            end_utr = Rectangle(
-                (cds_end, gene_ix - transcript_utr_width / 2),
-                tr_end - cds_end,
-                transcript_utr_width,
-                edgecolor=exon_border,
-                facecolor=exon_color,
-                fill=True,
-            )
-            ax.add_patch(start_utr)
-            ax.add_patch(end_utr)
-            # add ID annotation for utr
-            if text:
-                text_pad = df[TEXT_PAD_COL].iloc[0]
-                # text == True
-                if isinstance(text, bool):
-                    ann = genename
-                # text == '{string}'
-                else:
-                    row_dict = df.iloc[0].to_dict()  # use first row
-                    ann = text.format_map(row_dict)
-                ax.annotate(
-                    ann,
-                    xy=(tr_start - text_pad, gene_ix),
-                    horizontalalignment="right",
-                    verticalalignment="center",
-                    color=plot_border,
-                    fontsize=text_size,
-                )
-
-            # make annotation for utr
-            # get the gene information to print on hover
-            # default
-            if strand:
-                geneinfo_start = f"[{strand}] ({tr_start}, {cds_start})\nID: {genename}"  # default with strand
-                geneinfo_end = f"[{strand}] ({cds_end}, {tr_end})\nID: {genename}"  # default with strand
-            else:
-                geneinfo_start = f"({tr_start}, {cds_start})\nID: {genename}"  # default without strand
-                geneinfo_end = (
-                    f"({cds_end}, {tr_end})\nID: {genename}"  # default without strand
-                )
-
-            make_annotation(start_utr, fig, ax, geneinfo_start, tag_background)
-            make_annotation(end_utr, fig, ax, geneinfo_end, tag_background)
-
-            # keep CDS data and plot it
-            df = df.groupby("Feature", group_keys=False, observed=True).get_group("CDS")
-            df.apply(
-                plot_row,
-                args=(
-                    fig,
-                    ax,
-                    strand,
-                    gene_ix,
-                    tag_background,
-                    plot_border,
-                    genename,
-                    showinfo,
-                    exon_height,
-                    arrow_size_min,
-                    arrow_color,
-                    arrow_style,
-                    arrow_width,
-                    dir_flag,
-                    text,
-                    text_size,
-                ),
-                axis=1,
-            )
-
-        # transcript only has exon
-        elif (
-            not df.Feature.str.contains("CDS").any()
-            and df.Feature.str.contains("exon").any()
-        ):
-            # plot just as utr
-            df.apply(
-                plot_row,
-                args=(
-                    fig,
-                    ax,
-                    strand,
-                    gene_ix,
-                    tag_background,
-                    plot_border,
-                    genename,
-                    showinfo,
-                    transcript_utr_width,
-                    arrow_size_min,
-                    arrow_color,
-                    arrow_style,
-                    arrow_width,
-                    dir_flag,
-                    text,
-                    text_size,
-                ),
-                axis=1,
-            )
-
-        # transcript only has CDS
-        elif (
-            df.Feature.str.contains("CDS").any()
-            and not df.Feature.str.contains("exon").any()
-        ):
-            df.apply(
-                plot_row,
-                args=(
-                    fig,
-                    ax,
-                    strand,
-                    gene_ix,
-                    tag_background,
-                    plot_border,
-                    genename,
-                    showinfo,
-                    exon_height,
-                    arrow_size_min,
-                    arrow_color,
-                    arrow_style,
-                    arrow_width,
-                    dir_flag,
-                    text,
-                    text_size,
-                ),
-                axis=1,
-            )
-
-        # transcript has neither, skip gene
-        else:
-            return
+    # plot rows
+    df.apply(
+        plot_row,
+        args=(
+            fig,
+            ax,
+            strand,
+            gene_ix,
+            tag_background,
+            plot_border,
+            genename,
+            showinfo,
+            arrow_size,
+            arrow_color,
+            arrow_style,
+            arrow_width,
+            dir_flag,
+            text,
+            text_size,
+        ),
+        axis=1,
+    )
 
 
 def plot_row(
@@ -306,8 +154,7 @@ def plot_row(
     plot_border,
     genename,
     showinfo,
-    exon_height,
-    arrow_size_min,
+    arrow_size,
     arrow_color,
     arrow_style,
     arrow_width,
@@ -335,6 +182,7 @@ def plot_row(
     stop = int(row[END_COL])
     exon_color = row[COLOR_INFO]
     exon_border = row[BORDER_COLOR_COL]
+    exon_height = row[THICK_COL]
 
     # Plot EXON as rectangle
     exon_rect = Rectangle(
@@ -372,16 +220,16 @@ def plot_row(
 
     # Plot DIRECTION ARROW in EXON
     # decide about placing a direction arrow
-    arrow_size = coord2percent(ax, 0.05 * start, 0.05 * stop)
-    incl = percent2coord(ax, arrow_size / 2)  # how long in the plot (OX)
+    # arrow_size = coord2percent(ax, 0.05 * start, 0.05 * stop)
+    incl = percent2coord(ax, arrow_size / 2)  # how long is the arrow in the plot (OX)
 
     # create and plot lines
     if not dir_flag:
         plot_direction(
             ax,
             strand,
-            arrow_size,
-            arrow_size_min,
+            stop - start,
+            arrow_size,  # itself as threshold
             start,
             stop,
             incl,
@@ -394,7 +242,7 @@ def plot_row(
 
 
 def plot_introns(
-    sorted_exons,
+    introns,
     ts_chrom,
     fig,
     ax,
@@ -403,7 +251,6 @@ def plot_introns(
     gene_ix,
     exon_color,
     strand,
-    intron_threshold,
     exon_height,
     arrow_color,
     arrow_style,
@@ -414,10 +261,11 @@ def plot_introns(
 
     dir_flag = []
 
-    for i in range(len(sorted_exons) - 1):
-        # define intron
-        start = sorted_exons[END_COL].iloc[i]
-        stop = sorted_exons[START_COL].iloc[i + 1]
+    def apply_plot_intron(row):
+        """Plot intron df as lines."""
+
+        start = row[START_COL]
+        stop = row[END_COL]
 
         # NOT introns off
         if ts_chrom.empty:
@@ -506,7 +354,7 @@ def plot_introns(
                 ax,
                 strand,
                 intron_size,
-                intron_threshold,
+                arrow_size,
                 start,
                 stop,
                 incl,
@@ -517,6 +365,8 @@ def plot_introns(
                 arrow_width,
             )
         )
+
+    introns.apply(apply_plot_intron, axis=1)
 
     if 1 in dir_flag:
         return 1

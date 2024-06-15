@@ -358,7 +358,7 @@ prp.print_options()
 |                        |       |         | Provided as a float correspondig to the plot fraction or     |
 |                        |       |         | percentage.                                                  |
 +------------------------+-------+---------+--------------------------------------------------------------+
-|    shrink_threshold    | 0.05  |         | Minimum lenght of an intron in order for it to be shrinked   |
+|    shrink_threshold    | 0.05  |         | Minimum lenght of an intron in order for it to be shrunk   |
 |                        |       |         | while using the shrink feature. When threshold is       |
 |                        |       |         | float, it represents the percentage of the plot space,       |
 |                        |       |         | while an int threshold represents number of positions or     |
@@ -411,7 +411,7 @@ prp.print_options()
 |                        |                    |         | Provided as a float correspondig to the plot fraction or     |
 |                        |                    |         | percentage.                                                  |
 +------------------------+--------------------+---------+--------------------------------------------------------------+
-|    shrink_threshold    |        0.05        |         | Minimum lenght of an intron in order for it to be shrinked   |
+|    shrink_threshold    |        0.05        |         | Minimum lenght of an intron in order for it to be shrunk   |
 |                        |                    |         | while using the shrink feature. When threshold is       |
 |                        |                    |         | float, it represents the percentage of the plot space,       |
 |                        |                    |         | while an int threshold represents number of positions or     |

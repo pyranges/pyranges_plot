@@ -119,7 +119,7 @@ def introns_resize(df, ts_data, id_col):
     assert to_shrink.sort_values(START_COL).equals(to_shrink), "PyRanges not sorted."
     to_shrink[CUM_DELTA_COL] = to_shrink[DELTA_COL].cumsum()
 
-    # store adjusted coord to plot shrinked intron regions
+    # store adjusted coord to plot shrunk intron regions
     to_shrink[ADJSTART_COL] = to_shrink[
         START_COL
     ] - to_shrink.__cumdelta__.shift().fillna(0)
@@ -145,10 +145,10 @@ def introns_resize(df, ts_data, id_col):
 
 
 def recalc_axis(ts_data, tick_pos_d, ori_tick_pos_d):
-    """Calculate shrinked axis values according to original coordinates."""
+    """Calculate shrunk axis values according to original coordinates."""
 
     for chrom in ts_data.keys():
-        # add to-shrinked reagions limits to axis
+        # add to-shrunk reagions limits to axis
         ori_tick_pos = []
         tick_pos = []
 
@@ -163,7 +163,7 @@ def recalc_axis(ts_data, tick_pos_d, ori_tick_pos_d):
             ]
             cdel = list(ts_data[chrom][CUM_DELTA_COL])
 
-            # update tick positions for shrinked regions and keep original values as names
+            # update tick positions for shrunk regions and keep original values as names
             for i in range(len(pos)):
                 if i == 0:
                     tick_pos.append(pos[i][0])

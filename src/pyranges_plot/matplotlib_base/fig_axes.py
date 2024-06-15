@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter
@@ -38,10 +39,8 @@ def ax_limits(ax, x_min, x_max, x_rang, grid_color):
     )  # only integer ticks for bases
 
 
-def ax_shrink_rects(
-    ax, fig, ts_data, chrom, y_min, y_max, shrinked_bkg, shrinked_alpha, tag_background
-):
-    """Add shrinked regions rectangles to the plot."""
+def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_background):
+    """Add shrunk regions rectangles to the plot."""
 
     rects_df = ts_data[chrom].copy()
     rects_df["cumdelta_end"] = rects_df[CUM_DELTA_COL]
@@ -60,8 +59,7 @@ def ax_shrink_rects(
             b - a,
             y_max + 3,
             edgecolor="grey",
-            facecolor=shrinked_bkg,
-            alpha=shrinked_alpha,
+            facecolor=shrunk_bkg,
             fill=True,
             linewidth=0,
         )
@@ -91,12 +89,12 @@ def create_fig(
     packed,
     legend,
     y_labels,
+    x_ticks,
     tick_pos_d,
     ori_tick_pos_d,
     tag_background,
     fig_bkg,
-    shrinked_bkg,
-    shrinked_alpha,
+    shrunk_bkg,
     v_spacer,
     exon_height,
 ):
@@ -126,12 +124,64 @@ def create_fig(
         x_rang = x_max - x_min
         ax_limits(ax, x_min, x_max, x_rang, grid_color)
 
+        # Work with x labels
+        x_ticks_val = ax.get_xticks()[1:-1]
+        x_ticks_name = ax.get_xticks()[1:-1]
+
+        # consider specified x_ticks
+        if x_ticks:
+            # Unpack if its dict
+            if isinstance(x_ticks, dict):
+                if chrom in x_ticks.keys():
+                    x_ticks_chrom = x_ticks[chrom]
+                    if isinstance(x_ticks_chrom, int):
+                        x_ticks_val = [
+                            i
+                            for i in np.linspace(
+                                int(x_ticks_val[0]), int(x_ticks_val[-1]), x_ticks_chrom
+                            )
+                        ]
+                        x_ticks_name = x_ticks_val
+
+                    if isinstance(x_ticks_chrom, list):
+                        x_ticks_val = x_ticks_chrom
+                        x_ticks_name = x_ticks_val
+
+            elif isinstance(x_ticks, int):
+                x_ticks_val = [
+                    i
+                    for i in np.linspace(
+                        int(x_ticks_val[0]), int(x_ticks_val[-1]), x_ticks
+                    )
+                ]
+                x_ticks_name = x_ticks_val
+
+            elif isinstance(x_ticks, list):
+                x_ticks_val = x_ticks
+                x_ticks_name = x_ticks_val
+
+        # adjust names, must fall within limits
+        ax.set_xticks(
+            [
+                int(i)
+                for i in x_ticks_val
+                if (x_min - 0.05 * x_rang) < i < x_max + 0.05 * x_rang
+            ]
+        )
+        ax.set_xticklabels(
+            [
+                int(i)
+                for i in x_ticks_name
+                if (x_min - 0.05 * x_rang) < i < (x_max + 0.05 * x_rang)
+            ]
+        )
+
         # consider introns off
         if tick_pos_d:
             # get previous default ticks
             original_ticks = [
                 int(tick.get_text().replace("−", "-")) for tick in ax.get_xticklabels()
-            ][1:]
+            ]  # [1:]
 
             # find previous ticks that should be conserved
             to_add_val = []
@@ -169,8 +219,8 @@ def create_fig(
             x_ticks_name = sorted(to_add_val)[: len(x_ticks_val)]
 
             # adjust names
-            ax.set_xticks(x_ticks_val)
-            ax.set_xticklabels(x_ticks_name)
+            ax.set_xticks([int(i) for i in x_ticks_val])
+            ax.set_xticklabels([int(i) for i in x_ticks_name])
 
         # set y axis limits
         y_min = 0.5 - exon_height / 2
@@ -201,8 +251,7 @@ def create_fig(
                 chrom,
                 y_min,
                 y_max,
-                shrinked_bkg,
-                shrinked_alpha,
+                shrunk_bkg,
                 tag_background,
             )
 

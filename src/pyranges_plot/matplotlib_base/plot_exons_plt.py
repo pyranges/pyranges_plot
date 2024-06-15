@@ -8,7 +8,7 @@ from .data2plot import (
     apply_gene_bridge,
     plot_introns,
 )
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
 
 arrow_style = "round"
 
@@ -40,6 +40,7 @@ def plot_exons_plt(
     """Create Matplotlib plot."""
 
     # Get default plot features
+    intron_color = feat_dict["intron_color"]
     tag_bkg = feat_dict["tag_bkg"]
     fig_bkg = feat_dict["fig_bkg"]
     plot_bkg = feat_dict["plot_bkg"]
@@ -53,11 +54,9 @@ def plot_exons_plt(
     text_size = feat_dict["text_size"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
-    arrow_size_min = feat_dict["arrow_size_min"]
     arrow_size = feat_dict["arrow_size"]
-    arrow_intron_threshold = feat_dict["arrow_intron_threshold"]
-    shrinked_bkg = feat_dict["shrinked_bkg"]
-    shrinked_alpha = feat_dict["shrinked_alpha"]
+    shrunk_bkg = feat_dict["shrunk_bkg"]
+    x_ticks = feat_dict["x_ticks"]
 
     # Create figure and axes
     # pixel in inches
@@ -81,12 +80,12 @@ def plot_exons_plt(
         packed,
         legend,
         y_labels,
+        x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
         tag_bkg,
         fig_bkg,
-        shrinked_bkg,
-        shrinked_alpha,
+        shrunk_bkg,
         v_spacer,
         exon_height,
     )
@@ -97,12 +96,12 @@ def plot_exons_plt(
             subdf,
             axes,
             fig,
-            chrmd_df,
             chrmd_df_grouped,
             genesmd_df,
             ts_data,
             id_col,
             tooltip,
+            intron_color,
             tag_bkg,
             plot_border,
             transcript_str,
@@ -111,10 +110,8 @@ def plot_exons_plt(
             exon_height,
             exon_border,
             transcript_utr_width,
-            arrow_intron_threshold,
             arrow_line_width,
             arrow_color,
-            arrow_size_min,
             arrow_size,
         )
     )
@@ -146,12 +143,12 @@ def gby_plot_exons(
     df,
     axes,
     fig,
-    chrmd_df,
     chrmd_df_grouped,
     genesmd_df,
     ts_data,
     id_col,
     showinfo,
+    intron_color,
     tag_bkg,
     plot_border,
     transcript_str,
@@ -160,10 +157,8 @@ def gby_plot_exons(
     exon_height,
     exon_border,
     transcript_utr_width,
-    arrow_intron_threshold,
     arrow_line_width,
     arrow_color,
-    arrow_size_min,
     arrow_size,
 ):
     """Plot elements corresponding to the df rows of one gene."""
@@ -199,29 +194,34 @@ def gby_plot_exons(
         geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})\nID: {genename}"  # default without strand
 
     # Plot INTRON lines
-    sorted_exons = df[[START_COL, END_COL]].sort_values(by=START_COL)
-    sorted_exons["intron_dir_flag"] = [0] * len(sorted_exons)
+    # get introns
+    df[START_COL] = df[START_COL].astype(int)
+    df[END_COL] = df[END_COL].astype(int)
+    introns = df.complement(transcript_id=id_col)
+    introns["intron_dir_flag"] = [0] * len(introns)
+
+    # consider shrunk
     if ts_data:
         ts_chrom = ts_data[chrom]
     else:
         ts_chrom = pd.DataFrame()
 
-    if isinstance(arrow_intron_threshold, int):
-        arrow_intron_threshold = coord2percent(ax, 0, arrow_intron_threshold)
+    # deal with arrow and intron color
     if isinstance(arrow_size, int):
         arrow_size = coord2percent(ax, 0, arrow_size)
+    if intron_color is None:
+        intron_color = df[COLOR_INFO].iloc[0]
 
     dir_flag = plot_introns(
-        sorted_exons,
+        introns,
         ts_chrom,
         fig,
         ax,
         geneinfo,
         tag_bkg,
         gene_ix,
-        exon_border,
+        intron_color,
         strand,
-        arrow_intron_threshold,
         exon_height,
         arrow_color,
         arrow_style,
@@ -239,15 +239,11 @@ def gby_plot_exons(
         ax,
         strand,
         gene_ix,
-        exon_border,  # this works as "exon_color" used for utr (not interval)
-        exon_border,
         tag_bkg,
         plot_border,
         genename,
         showinfo,
-        exon_height,
-        transcript_utr_width,
-        arrow_size_min,
+        arrow_size,
         arrow_color,
         arrow_style,
         arrow_line_width,
