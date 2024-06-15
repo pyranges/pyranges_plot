@@ -12,6 +12,7 @@ from ..names import (
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
+    THICK_COL,
 )
 
 
@@ -137,7 +138,6 @@ def apply_gene_bridge(
                 gene_ix,
                 chrom_ix,
                 showinfo,
-                exon_height,
                 legend,
                 arrow_size,
                 arrow_color,
@@ -246,7 +246,6 @@ def apply_gene_bridge(
                     gene_ix,
                     chrom_ix,
                     showinfo,
-                    exon_height,
                     legend,
                     arrow_size,
                     arrow_color,
@@ -272,7 +271,6 @@ def apply_gene_bridge(
                     gene_ix,
                     chrom_ix,
                     showinfo,
-                    exon_height,
                     legend,
                     arrow_size,
                     arrow_color,
@@ -299,7 +297,6 @@ def apply_gene_bridge(
                     gene_ix,
                     chrom_ix,
                     showinfo,
-                    transcript_utr_width,
                     legend,
                     arrow_size,
                     arrow_color,
@@ -324,7 +321,6 @@ def plot_row(
     gene_ix,
     chrom_ix,
     showinfo,
-    exon_height,
     legend,
     arrow_size,
     arrow_color,
@@ -357,6 +353,8 @@ def plot_row(
     stop = int(row[END_COL])
     exon_color = row[COLOR_INFO]
     exon_border = row[BORDER_COLOR_COL]
+    exon_height = row[THICK_COL]
+
     # convert to coordinates for rectangle
     x0, x1 = start, stop
     y0, y1 = (

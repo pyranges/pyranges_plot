@@ -11,6 +11,7 @@ from ..names import (
     TEXT_PAD_COL,
     COLOR_INFO,
     BORDER_COLOR_COL,
+    THICK_COL,
 )
 
 
@@ -128,7 +129,6 @@ def apply_gene_bridge(
                 plot_border,
                 genename,
                 showinfo,
-                exon_height,
                 arrow_size,
                 arrow_color,
                 arrow_style,
@@ -222,7 +222,6 @@ def apply_gene_bridge(
                     plot_border,
                     genename,
                     showinfo,
-                    exon_height,
                     arrow_size,
                     arrow_color,
                     arrow_style,
@@ -251,7 +250,6 @@ def apply_gene_bridge(
                     plot_border,
                     genename,
                     showinfo,
-                    transcript_utr_width,
                     arrow_size,
                     arrow_color,
                     arrow_style,
@@ -279,7 +277,6 @@ def apply_gene_bridge(
                     plot_border,
                     genename,
                     showinfo,
-                    exon_height,
                     arrow_size,
                     arrow_color,
                     arrow_style,
@@ -306,7 +303,6 @@ def plot_row(
     plot_border,
     genename,
     showinfo,
-    exon_height,
     arrow_size,
     arrow_color,
     arrow_style,
@@ -335,6 +331,7 @@ def plot_row(
     stop = int(row[END_COL])
     exon_color = row[COLOR_INFO]
     exon_border = row[BORDER_COLOR_COL]
+    exon_height = row[THICK_COL]
 
     # Plot EXON as rectangle
     exon_rect = Rectangle(

@@ -40,6 +40,7 @@ from .names import (
     TEXT_PAD_COL,
     COLOR_TAG_COL,
     COLOR_INFO,
+    THICK_COL,
 )
 
 
@@ -51,6 +52,7 @@ def plot(
     max_shown=25,
     packed=True,
     color_col=None,
+    thickness_col=None,
     shrink=False,
     limits=None,
     thick_cds=False,
@@ -86,6 +88,11 @@ def plot(
 
     color_col: str, default None
         Name of the column used to color the genes.
+
+    thickness_col: str, default None
+        Column name with max 2 different values to plot the intervals correspondig to one value to
+        thicker than the others. The first value by alphabetical order will have the height specified
+        as 'exon_height', and the second will be 0.3*'exon_height'.
 
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
@@ -326,6 +333,32 @@ def plot(
         subdf["__id_col_2count__"] = list(zip(*[subdf[c] for c in ID_COL]))
     else:
         subdf["__id_col_2count__"] = subdf[ID_COL[0]]
+
+    # Deal with thickness_col
+    if thickness_col:
+        # Is it present in data?
+        if thickness_col not in subdf.columns:
+            raise Exception(
+                f"The provided thickness_col {thickness_col} is not present in the given data."
+            )
+
+        # Does it have more than 2 values
+        if len(subdf[thickness_col].drop_duplicates()) > 2:
+            raise Exception("Thickness_col must have a max of 2 different values.")
+
+        # add thickness_col
+        thick_tags_l = sorted(
+            list(subdf[thickness_col].drop_duplicates()), reverse=True
+        )
+        if len(thick_tags_l) == 1:
+            thick_tags_l = 2 * thick_tags_l
+        thick_tags_d = {
+            thick_tags_l[0]: feat_dict["transcript_utr_width"],
+            thick_tags_l[1]: feat_dict["exon_height"],
+        }
+        subdf[THICK_COL] = subdf[thickness_col].map(thick_tags_d)
+    else:
+        subdf[THICK_COL] = [feat_dict["exon_height"]] * len(subdf)
 
     # Store color information in data
     # color_col as list
