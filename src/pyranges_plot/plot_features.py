@@ -79,8 +79,38 @@ theme_dark = {
     "shrunk_bkg": "lightblue",
 }
 
+# Mariotti theme
+theme_mariotti = {
+    "colormap": [
+        "#f05f89",
+        "#f0db36",
+        "#7bc45f",
+        "#5e4699",
+        "#f7943a",
+        "#537ebf",
+        "#ee3a36",
+        "#ee3a36",
+    ],
+    "shrunk_bkg": "#e7e0f5",
+    "fig_bkg": "#fff5ee",
+    "title_color": "#590000",
+    "plot_border": "#4c644c",
+}
+
+# Swimming pool theme
+theme_sp = {
+    "fig_bkg": "#696969",
+    "plot_bkg": "#71E2E8",
+    "colormap": ["#0D61AF", "#B82C10", "white"],
+    "shrunk_bkg": "#c6e6c6",
+    "plot_border": "#011334",
+    "title_color": "#011334",
+}
+
 # Store themes
 builtin_themes = {
     "light": plot_features_dict_vals,
     "dark": theme_dark,
+    "Mariotti_lab": theme_mariotti,
+    "swimming_pool": theme_sp,
 }

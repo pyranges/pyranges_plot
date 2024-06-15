@@ -150,7 +150,7 @@ def plot(
         second position there is a tuple specifying the height and width of the figure in px.
 
     theme: str, default "light"
-        General color appearance of the plot. Available modes: "light", "dark".
+        General color appearance of the plot. Available modes: "light", "dark", "Mariotti_lab", "swimming_pool".
 
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
@@ -213,6 +213,8 @@ def plot(
     # Deal with id column
     if id_col is None:
         ID_COL = get_id_col()
+        if not ID_COL:
+            ID_COL = ["__interval_index__"]
     else:
         ID_COL = id_col
     # treat as list
@@ -221,7 +223,11 @@ def plot(
 
     for df_item in data:
         for id_str in ID_COL:
-            if id_str is not None and id_str not in df_item.columns:
+            if (
+                id_str is not None
+                and id_str not in df_item.columns
+                and id_str != "__interval_index__"
+            ):
                 raise Exception(
                     "Please define a correct name of the ID column using either set_id_col() function or plot_generic parameter as plot_generic(..., id_col = 'your_id_col')"
                 )
@@ -315,19 +321,17 @@ def plot(
         df_item = df_item.copy()
 
         # consider not known id_col, plot each interval individually
-        if ID_COL is None:
-            df_item["__id_col__"] = [str(i) for i in range(len(df_item))]
-            df_d[pr_ix], tot_ngenes = make_subset(df_item, "__id_col__", max_shown)
+        if ID_COL == ["__interval_index__"]:
+            df_item["__interval_index__"] = [str(i) for i in range(len(df_item))]
+            df_d[pr_ix], tot_ngenes = make_subset(
+                df_item, "__interval_index__", max_shown
+            )
             tot_ngenes_l.append(tot_ngenes)
 
         # known id_col
         else:
             df_d[pr_ix], tot_ngenes = make_subset(df_item, ID_COL, max_shown)
             tot_ngenes_l.append(tot_ngenes)
-
-    # set not known id_col as assigned name
-    if ID_COL is None:
-        ID_COL = ["__id_col__"]
 
     # concat subset dataframes and create new column with input list index
     if not df_d:
