@@ -15,6 +15,7 @@ arrow_style = "round"
 
 def plot_exons_plt(
     subdf,
+    depth_col,
     tot_ngenes_l,
     feat_dict,
     genesmd_df,
@@ -49,7 +50,6 @@ def plot_exons_plt(
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["exon_border"]
     exon_height = feat_dict["exon_height"]
-    transcript_utr_width = feat_dict["transcript_utr_width"]
     v_spacer = feat_dict["v_spacer"]
     text_size = feat_dict["text_size"]
     arrow_line_width = feat_dict["arrow_line_width"]
@@ -109,10 +109,10 @@ def plot_exons_plt(
             text_size,
             exon_height,
             exon_border,
-            transcript_utr_width,
             arrow_line_width,
             arrow_color,
             arrow_size,
+            depth_col,
         )
     )
 
@@ -156,10 +156,10 @@ def gby_plot_exons(
     text_size,
     exon_height,
     exon_border,
-    transcript_utr_width,
     arrow_line_width,
     arrow_color,
     arrow_size,
+    depth_col,
 ):
     """Plot elements corresponding to the df rows of one gene."""
 
@@ -248,4 +248,5 @@ def gby_plot_exons(
         arrow_style,
         arrow_line_width,
         dir_flag,
+        depth_col,
     )

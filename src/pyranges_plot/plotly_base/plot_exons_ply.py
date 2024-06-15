@@ -12,6 +12,7 @@ from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
 
 def plot_exons_ply(
     subdf,
+    depth_col,
     feat_dict,
     genesmd_df,
     chrmd_df,
@@ -44,7 +45,6 @@ def plot_exons_ply(
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["exon_border"]
     exon_height = feat_dict["exon_height"]
-    transcript_utr_width = feat_dict["transcript_utr_width"]
     v_spacer = feat_dict["v_spacer"]
     text_size = feat_dict["text_size"]
     plotly_port = feat_dict["plotly_port"]
@@ -92,11 +92,11 @@ def plot_exons_ply(
             text_size,
             exon_height,
             exon_border,
-            transcript_utr_width,
             plot_bkg,
             arrow_line_width,
             arrow_color,
             arrow_size,
+            depth_col,
         )
     )  # .reset_index(level=PR_INDEX_COL)
 
@@ -174,11 +174,11 @@ def gby_plot_exons(
     text_size,
     exon_height,
     exon_border,
-    transcript_utr_width,
     plot_background,
     arrow_line_width,
     arrow_color,
     arrow_size,
+    depth_col,
 ):
     """Plot elements corresponding to the df rows of one gene."""
 
@@ -285,4 +285,5 @@ def gby_plot_exons(
         arrow_color,
         arrow_line_width,
         dir_flag,
+        depth_col,
     )

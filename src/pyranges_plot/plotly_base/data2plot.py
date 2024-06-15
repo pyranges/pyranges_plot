@@ -120,6 +120,7 @@ def apply_gene_bridge(
     arrow_color,
     arrow_line_width,
     dir_flag,
+    depth_col,
 ):
     """Evaluate data and provide plot_row with right parameters."""
 
@@ -128,6 +129,10 @@ def apply_gene_bridge(
         cds = df[df["Feature"] == "CDS"]
         exons = df[df["Feature"] == "exon"].subtract_ranges(cds)
         df = pr.concat([cds, exons])
+
+    # Define depth order
+    if depth_col:
+        df.sort_values(depth_col, inplace=True)
 
     df.apply(
         plot_row,

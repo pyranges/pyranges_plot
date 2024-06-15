@@ -53,6 +53,7 @@ def plot(
     packed=True,
     color_col=None,
     thickness_col=None,
+    depth_col=None,
     shrink=False,
     limits=None,
     thick_cds=False,
@@ -90,10 +91,15 @@ def plot(
         Name of the column used to color the genes.
 
     thickness_col: str, default None
-        Column name with max 2 different values to plot the intervals correspondig to one value to
+        Name of the data column with max 2 different values to plot the intervals correspondig to one value to
         thicker than the others. The first value by alphabetical order will have the height specified
         as 'exon_height', and the second will be 0.3*'exon_height'. Note that this parameter will be
         overseen if the 'thick_cds' parameter is set to True.
+
+    depth_col: str, default None
+        Name of the data column to be used for setting the order to plot the intervals. The intervals with
+        the lowest value in this column will be plotted first and the ones with higher values will plotted
+        on top of them.
 
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
@@ -493,6 +499,7 @@ def plot(
 
         plot_exons_plt(
             subdf=subdf,
+            depth_col=depth_col,
             tot_ngenes_l=tot_ngenes_l,
             feat_dict=feat_dict,
             genesmd_df=genesmd_df,
@@ -519,6 +526,7 @@ def plot(
     elif engine == "ply" or engine == "plotly":
         plot_exons_ply(
             subdf=subdf,
+            depth_col=depth_col,
             feat_dict=feat_dict,
             genesmd_df=genesmd_df,
             chrmd_df=chrmd_df,
