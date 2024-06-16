@@ -262,6 +262,7 @@ def create_fig(
             # separate items with horizontal lines
             for j, pr_line_y in enumerate(pr_line_y_l):
                 if pr_line_y != 0:
+                    # draw line
                     ax.plot(
                         [x_min - 0.1 * x_rang, x_max + 0.1 * x_rang],
                         [pr_line_y, pr_line_y],

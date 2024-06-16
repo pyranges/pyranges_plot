@@ -267,12 +267,6 @@ def create_fig(
                             y_ticks_val.append((pr_line_y) / 2)
                         y_ticks_name.append(y_labels[int(present_pr_l[j])])
 
-            else:
-                # pr names in y axis
-                if y_labels:
-                    y_ticks_val = [y_max / 2]
-                    y_ticks_name = [str(y_labels)]
-
         fig.update_yaxes(
             range=[y_min - v_spacer, y_max + v_spacer],
             fixedrange=True,

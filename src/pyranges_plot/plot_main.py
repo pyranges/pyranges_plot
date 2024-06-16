@@ -479,20 +479,20 @@ def plot(
             lambda x: compute_tpad(x, chrmd_df_grouped) if not x.empty else None
         )
 
-    print("genesmd")
-    print(genesmd_df)
+    # print("genesmd")
+    # print(genesmd_df)
     # print("\n\n")
-    print("chrmd")
-    print(chrmd_df)
+    # print("chrmd")
+    # print(chrmd_df)
     # print("\n\n")
-    print("grouped_chrmd")
-    print(chrmd_df_grouped)
+    # print("grouped_chrmd")
+    # print(chrmd_df_grouped)
     # print("\n\n")
     # print("original data")
     # print(data)
     # print("\n\n")
-    print("data used for plotting")
-    print(subdf)
+    # print("data used for plotting")
+    # print(subdf)
 
     if engine in ["plt", "matplotlib"]:
         # Create legend items list
