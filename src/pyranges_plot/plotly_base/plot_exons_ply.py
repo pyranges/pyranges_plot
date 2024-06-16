@@ -60,6 +60,7 @@ def plot_exons_ply(
         chrmd_df,
         chrmd_df_grouped,
         genesmd_df,
+        id_col,
         ts_data,
         title_chr,
         title_dict_ply,
@@ -76,7 +77,9 @@ def plot_exons_ply(
     )
 
     # Plot genes
-    subdf.groupby(id_col + [PR_INDEX_COL], group_keys=False, observed=True).apply(
+    subdf.groupby(
+        id_col + [PR_INDEX_COL, CHROM_COL], group_keys=False, observed=True
+    ).apply(
         lambda subdf: gby_plot_exons(
             subdf,
             fig,
@@ -190,6 +193,9 @@ def gby_plot_exons(
     df["legend_tag"] = [1] + [0] * (
         len(df) - 1
     )  # only one legend entry/linked intervals
+    geneid = list(df[id_col].iloc[0])
+    if len(geneid) == 1:
+        geneid = geneid[0]
 
     # in case same gene in +1 pr
     if not isinstance(genemd, pd.Series):
@@ -210,9 +216,9 @@ def gby_plot_exons(
     # Get the gene information to print on hover
     # default
     if strand:
-        geneinfo = f"[{strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {genename}"  # default with strand
+        geneinfo = f"[{strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {geneid}"  # default with strand
     else:
-        geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {genename}"  # default without strand
+        geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {geneid}"  # default without strand
 
     # add annotation for introns to plot
     x0, x1 = min(df[START_COL]), max(df[END_COL])
@@ -261,7 +267,7 @@ def gby_plot_exons(
         intron_color,
         chrom_ix,
         strand,
-        genename,
+        geneid,
         exon_height,
         arrow_color,
         arrow_line_width,
@@ -276,7 +282,7 @@ def gby_plot_exons(
         df,
         fig,
         strand,
-        genename,
+        geneid,
         gene_ix,
         chrom_ix,
         showinfo,

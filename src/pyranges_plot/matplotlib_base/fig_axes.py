@@ -4,10 +4,10 @@ import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter
 from matplotlib.ticker import MaxNLocator
 from matplotlib.patches import Rectangle
-from pyranges.core.names import CHROM_COL, START_COL, END_COL
+from pyranges.core.names import START_COL, END_COL
 from pyranges_plot.core import cumdelting
 from .core import make_annotation
-from ..names import PR_INDEX_COL, CUM_DELTA_COL
+from ..names import CUM_DELTA_COL, PR_INDEX_COL
 
 
 def ax_display(ax, title, chrom, t_dict, plot_back, plot_border):
@@ -79,6 +79,7 @@ def create_fig(
     chrmd_df,
     chrmd_df_grouped,
     genesmd_df,
+    id_col,
     ts_data,
     legend_item_d,
     title_chr,
@@ -230,19 +231,10 @@ def create_fig(
         y_ticks_val = []
         y_ticks_name = []
         if not packed and not y_labels:
-            y_ticks_val = (
-                genesmd_df[genesmd_df["Chromosome"] == chrom]["ycoord"] + 0.5
-            ).to_list()
-            y_ticks_name_d = (
-                genesmd_df[genesmd_df[CHROM_COL] == chrom]
-                .groupby(PR_INDEX_COL, group_keys=False, observed=True)
-                .groups
-            )
-
-            y_ticks_name = [
-                list(y_ticks_name_d[chrom]) for chrom in sorted(y_ticks_name_d.keys())
-            ]
-            y_ticks_name = [item for sublist in y_ticks_name for item in sublist]
+            y_ticks_val = genesmd_df.loc[chrom]["ycoord"] + 0.5
+            y_ticks_val.reset_index(PR_INDEX_COL, drop=True, inplace=True)
+            y_ticks_name = y_ticks_val.index
+            y_ticks_val = y_ticks_val.to_list()
 
         # Add shrink rectangles
         if ts_data:

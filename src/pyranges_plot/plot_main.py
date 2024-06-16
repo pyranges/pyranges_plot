@@ -223,6 +223,7 @@ def plot(
 
     for df_item in data:
         for id_str in ID_COL:
+            # Ensure correct names
             if (
                 id_str is not None
                 and id_str not in df_item.columns
@@ -231,6 +232,7 @@ def plot(
                 raise Exception(
                     "Please define a correct name of the ID column using either set_id_col() function or plot_generic parameter as plot_generic(..., id_col = 'your_id_col')"
                 )
+            # Avoid Nan in id column
 
     # Deal with transcript structure
     if thick_cds:
@@ -341,10 +343,12 @@ def plot(
     )  ### change to pr but doesn't work yet!!
 
     # group id_cols in one column to count genes in chrmd
-    if len(ID_COL) > 1:
-        subdf["__id_col_2count__"] = list(zip(*[subdf[c] for c in ID_COL]))
-    else:
-        subdf["__id_col_2count__"] = subdf[ID_COL[0]]
+    # if len(ID_COL) > 1:
+    #   subdf["__id_col_2count__"] = list(zip(*[subdf[c] for c in ID_COL+[PR_INDEX_COL]+[CHROM_COL]]))
+    # else:
+    subdf["__id_col_2count__"] = list(
+        zip(*[subdf[c] for c in [CHROM_COL] + [PR_INDEX_COL] + ID_COL])
+    )
 
     # Deal with thickness_col
     # prioritize transcript structure
@@ -475,20 +479,20 @@ def plot(
             lambda x: compute_tpad(x, chrmd_df_grouped) if not x.empty else None
         )
 
-    # print("genesmd")
-    # print(genesmd_df)
+    print("genesmd")
+    print(genesmd_df)
     # print("\n\n")
-    # print("chrmd")
-    # print(chrmd_df)
+    print("chrmd")
+    print(chrmd_df)
     # print("\n\n")
-    # print("grouped_chrmd")
-    # print(chrmd_df_grouped)
+    print("grouped_chrmd")
+    print(chrmd_df_grouped)
     # print("\n\n")
     # print("original data")
     # print(data)
     # print("\n\n")
-    # print("data used for plotting")
-    # print(subdf)
+    print("data used for plotting")
+    print(subdf)
 
     if engine in ["plt", "matplotlib"]:
         # Create legend items list
