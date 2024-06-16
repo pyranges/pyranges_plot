@@ -258,8 +258,8 @@ def plot_row(
             fig,
             strand,
             genename,
-            stop - start,
-            arrow_size,  # itself as threshold
+            incl,
+            stop - start,  # itself as threshold
             start,
             stop,
             incl,

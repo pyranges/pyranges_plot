@@ -225,7 +225,6 @@ def plot_row(
 
     # Plot DIRECTION ARROW in EXON
     # decide about placing a direction arrow
-    # arrow_size = coord2percent(ax, 0.05 * start, 0.05 * stop)
     incl = percent2coord(ax, arrow_size / 2)  # how long is the arrow in the plot (OX)
 
     # create and plot lines
@@ -233,8 +232,8 @@ def plot_row(
         plot_direction(
             ax,
             strand,
-            stop - start,
-            arrow_size,  # itself as threshold
+            incl,
+            stop - start,  # itself as threshold
             start,
             stop,
             incl,
