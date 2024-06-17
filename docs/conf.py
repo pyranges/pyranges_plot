@@ -54,7 +54,7 @@ def monospaced_link(name, rawtext, text, lineno, inliner, options={}, content=[]
     url = text.split(" ")[-1].strip("<>")
     clickable_text = " ".join(text.split(" ")[:-1])
     # Create a reference node, which is the docutils node for hyperlinks
-    #unescaped_text = utils.unescape(text)
+    # unescaped_text = utils.unescape(text)
 
     node = nodes.reference(rawtext, clickable_text, refuri=url, **options)
 
