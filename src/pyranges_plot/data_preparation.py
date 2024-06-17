@@ -339,17 +339,17 @@ def chrmd_limits(chrmd_df, limits):
     # pyranges object
     elif type(limits) is pr.PyRanges:
         # create dict to map limits
-        limits_df = limits.df
-        limits_chrmd_df = limits_df.groupby(
+        limits_chrmd_df = limits.groupby(
             CHROM_COL, group_keys=False, observed=True
         ).agg({START_COL: "min", END_COL: "max"})
-        limits_chrmd_dict = limits_chrmd_df.to_dict(orient="index")
+        # limits_chrmd_dict = limits_chrmd_df.to_dict(orient="index")
 
         # function to get matching values from limits_chrmd_df
         def make_min_max(row):
-            chromosome = str(row.name)
-            limits = limits_chrmd_dict.get(chromosome)
-            if limits:
+            chromosome = row.name[0]
+            if chromosome in limits_chrmd_df.index:
+                limits = limits_chrmd_df.loc[chromosome]
+
                 return (
                     limits[START_COL],
                     limits[END_COL],
@@ -363,7 +363,8 @@ def chrmd_limits(chrmd_df, limits):
     # dictionary as limits
     else:
         chrmd_df["min_max"] = [
-            limits.get(index) for index in chrmd_df.index
+            limits.get(index)
+            for index in list(chrmd_df.index.get_level_values(CHROM_COL))
         ]  # fills with None the chromosomes not specified
 
 

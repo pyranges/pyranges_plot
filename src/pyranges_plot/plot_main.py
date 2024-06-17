@@ -88,7 +88,7 @@ def plot(
         they do not overlap) and False for unpacked (one row per gene).
 
     color_col: str, default None
-        Name of the column used to color the genes.
+        Name of the column used to color the genes. If not specified, id_col will be used.
 
     thickness_col: str, default None
         Name of the data column with max 2 different values to plot the intervals correspondig to one value to
