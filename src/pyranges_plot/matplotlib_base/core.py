@@ -77,3 +77,14 @@ def make_annotation(item, fig, ax, geneinfo, tag_background):
             fig.canvas.draw()
 
     fig.canvas.mpl_connect("motion_notify_event", on_hover)
+
+
+def rgb_string_to_tuple(rgb_string):
+    # Store the numbers
+    rgb_string = rgb_string.lstrip("rgb(").rstrip(")")
+
+    # Split the string by commas and convert to floats
+    r, g, b = map(int, rgb_string.split(","))
+
+    # Convert to floats in the range [0, 1]
+    return (r / 255.0, g / 255.0, b / 255.0)

@@ -174,6 +174,10 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border):
     # 1-plt colormap to list
     if isinstance(colormap, mcolors.ListedColormap):
         colormap = list(colormap.colors)  # colors of plt object
+        colormap = [
+            "rgb({}, {}, {})".format(int(r * 255), int(g * 255), int(b * 255))
+            for r, g, b in colormap
+        ]  # compatible with plotly
 
     # 2-list to dict
     if isinstance(colormap, list):
@@ -190,14 +194,14 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border):
         else:
             colormap = colormap[:n_color_tags]
         # make plotly rgb colors compatible with plt
-        if colormap[0][:3] == "rgb":
-            numb_list = [
-                rgb[rgb.find("(") + 1 : rgb.find(")")].split(",") for rgb in colormap
-            ]
-            colormap = [
-                "#{:02x}{:02x}{:02x}".format(int(r), int(g), int(b))
-                for r, g, b in numb_list
-            ]
+        # if colormap[0][:3] == "rgb":
+        #     numb_list = [
+        #         rgb[rgb.find("(") + 1 : rgb.find(")")].split(",") for rgb in colormap
+        #     ]
+        #     colormap = [
+        #         "#{:02x}{:02x}{:02x}".format(int(r), int(g), int(b))
+        #         for r, g, b in numb_list
+        #     ]
         # create dict of colors
         colormap = {
             str(color_tags.iloc[i]): colormap[i % len(colormap)]

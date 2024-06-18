@@ -1,7 +1,7 @@
 import pyranges as pr
 from pyranges.core.names import START_COL, END_COL
 
-from .core import coord2percent, percent2coord, make_annotation
+from .core import coord2percent, percent2coord, make_annotation, rgb_string_to_tuple
 from matplotlib.patches import Rectangle
 import pandas as pd
 
@@ -190,8 +190,14 @@ def plot_row(
     start = int(row[START_COL])
     stop = int(row[END_COL])
     exon_color = row[COLOR_INFO]
+    if isinstance(exon_color, str) and exon_color[:3] == "rgb":
+        exon_color = rgb_string_to_tuple(exon_color)
     exon_border = row[BORDER_COLOR_COL]
+    if isinstance(exon_border, str) and exon_border[:3] == "rgb":
+        exon_border = rgb_string_to_tuple(exon_border)
     exon_height = row[THICK_COL]
+    if isinstance(arrow_color, str) and arrow_color[:3] == "rgb":
+        arrow_color = rgb_string_to_tuple(arrow_color)
 
     # Plot EXON as rectangle
     exon_rect = Rectangle(

@@ -7,40 +7,22 @@ from pyranges_plot.core import cumdelting
 from pyranges_plot.names import PR_INDEX_COL, ORISTART_COL, ORIEND_COL, CUM_DELTA_COL
 
 
-def calculate_ticks(subdf, num_ticks=10):
+def calculate_ticks(chrom_md_grouped, chrom, num_ticks=10):
     """Calculate tick values for a given data range."""
 
     # Calculate range and initial tick interval
-    data_min = subdf[ORISTART_COL].min()
-    data_max = subdf[ORIEND_COL].max()
+    data_min = chrom_md_grouped.loc[chrom]["min_max"][0]
+    data_max = chrom_md_grouped.loc[chrom]["min_max"][1]
     data_range = data_max - data_min
-    initial_interval = data_range / (num_ticks - 1)
-
-    # Calculate a 'nice' interval between ticks
-    # The exponent of the range
-    exponent = np.floor(np.log10(initial_interval))
-    # Fractional part of the range
-    fractional_part = initial_interval / 10**exponent
-
-    # Determine nice fractional part
-    if fractional_part < 1.5:
-        nice_fractional_part = 1
-    elif fractional_part < 3:
-        nice_fractional_part = 2
-    elif fractional_part < 7:
-        nice_fractional_part = 5
-    else:
-        nice_fractional_part = 10
-
-    nice_interval = nice_fractional_part * 10**exponent
+    int_interval = int(data_range / (num_ticks - 1))
+    if int_interval == 0:
+        int_interval = 2
 
     # Calculate tick values
-    tick_values = np.arange(
-        start=data_min - (data_min % nice_interval), stop=data_max, step=nice_interval
-    )
+    tick_values = np.arange(start=data_min, stop=data_max, step=int_interval)
     # Adjust the last tick value if necessary
     if tick_values[-1] < data_max:
-        tick_values = np.append(tick_values, tick_values[-1] + nice_interval)
+        tick_values = np.append(tick_values, tick_values[-1] + int_interval)
 
     return tick_values
 
@@ -101,9 +83,8 @@ def create_fig(
         )  # add 5% to limit coordinates range
 
         # Work with x labels
-        chrom_subdf = subdf[subdf[CHROM_COL] == chrom]
-        x_ticks_val = list(calculate_ticks(chrom_subdf))
-        x_ticks_name = list(calculate_ticks(chrom_subdf))
+        x_ticks_val = list(calculate_ticks(chrmd_df_grouped, chrom))
+        x_ticks_name = list(calculate_ticks(chrmd_df_grouped, chrom))
 
         # consider specified x_ticks
         if x_ticks:
