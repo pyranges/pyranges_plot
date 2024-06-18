@@ -27,9 +27,8 @@ author = "Ester Muñoz del Campo, Marco Mariotti"
 # ones.
 
 
-
 extensions = [
-    'sphinx_rtd_theme',
+    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
 ]
 autosummary_generate = True  # Enable summary table generation
