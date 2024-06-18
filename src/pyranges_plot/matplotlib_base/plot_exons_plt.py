@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 
-from .core import plt_popup_warning, coord2percent
+from .core import plt_popup_warning, coord2percent, rgb_string_to_tuple
 from .fig_axes import create_fig
 from .data2plot import (
     apply_gene_bridge,
@@ -41,6 +41,12 @@ def plot_exons_plt(
     """Create Matplotlib plot."""
 
     # Get default plot features
+    # deal with rgb color options
+    for key, val in feat_dict.items():
+        if isinstance(val, str) and val[:3] == "rgb":
+            feat_dict[key] = rgb_string_to_tuple(val)
+
+    # store values
     intron_color = feat_dict["intron_color"]
     tag_bkg = feat_dict["tag_bkg"]
     fig_bkg = feat_dict["fig_bkg"]
