@@ -26,13 +26,16 @@ r_tile = r.tile(2)
 r_tile["transcript_id"] = ["r.tile(2)"] * len(r_tile)  # rename for plot
 
 # Get plot
+prp.set_engine("plt")
+
 prp.plot(
     [r, r_window, tile_g, r_tile],
-    engine="plt",
     id_col="transcript_id",
     exon_border="black",
     title_chr=" ",
-    limits=(-6, None),
-    to_file="fig3_2.png",
-    file_size=(7, 4),
+    limits=(-8, None),
+    to_file=("fig3_2.png", (700, 400)),
+    text=True,
+    text_pad=0.05,
+    theme="Mariotti_lab",
 )

@@ -1,5 +1,6 @@
 import pyranges as pr
 import pyranges_plot as prp
+from pyranges_plot.plot_features import builtin_themes
 
 # Load data
 g = pr.PyRanges(
@@ -40,6 +41,10 @@ g_spl_subseq_rev["transcript_id"] = ["g.spliced_subsequence(-5,-1,id)"] * len(
 )
 
 # Get plot
+prp.set_engine("plt")
+cmap = builtin_themes["Mariotti_lab"]["colormap"]
+cmap += ["lightpink", "lightyellow"]
+prp.set_options("colormap", cmap)
 prp.plot(
     [
         g,
@@ -48,10 +53,12 @@ prp.plot(
         pr.concat([g_subseq, g_subseq_id]),
         pr.concat([g_spl_subseq_for, g_spl_subseq_rev]),
     ],
-    engine="plt",
+    warnings=False,
     id_col="transcript_id",
     title_chr=" ",
-    limits=(-12, None),
-    to_file="fig3_1.png",
-    file_size=(7, 5),
+    limits=(-15, None),
+    to_file=("fig3_1.png", (700, 500)),
+    text=True,
+    text_pad=0.05,
+    theme="Mariotti_lab",
 )
