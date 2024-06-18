@@ -9,7 +9,7 @@ a = pr.PyRanges(
         "Start": [2, 12, 17, 22, 27, 32, 33],
         "End": [5, 14, 20, 26, 29, 37, 36],
         "Strand": ["+"] * 2 + ["-"] * 3 + ["+"] * 2,
-        "color_by": ["a"] * 7,
+        "to_color": ["a"] * 7,
     }
 )
 
@@ -19,7 +19,7 @@ b = pr.PyRanges(
         "Start": [6, 11, 18, 24, 34],
         "End": [8, 13, 19, 28, 36],
         "Strand": ["+"] * 3 + ["-"] * 1 + ["+"] * 1,
-        "color_by": ["b"] * 5,
+        "to_color": ["b"] * 5,
     }
 )
 
@@ -29,18 +29,19 @@ a_ov_b_slack = a.overlap(b, slack=2)
 a_ov_b_nostrand = a.overlap(b, strand_behavior="ignore")
 a_ov_b_opstrand = a.overlap(b, strand_behavior="opposite")
 for pr_obj in [a_ov_b, a_ov_b_slack, a_ov_b_nostrand, a_ov_b_opstrand]:
-    pr_obj["color_by"] = ["overlap"] * len(pr_obj)
+    print(pr_obj)
+    pr_obj["to_color"] = ["overlap"] * len(pr_obj)
 
 # intersection
 a_inters_b = a.intersect(b)
-a_inters_b["color_by"] = ["intersect"] * len(a_inters_b)
+a_inters_b["to_color"] = ["intersect"] * len(a_inters_b)
 a_setinters_b = a.set_intersect(b)
-a_setinters_b["color_by"] = ["setintersect"] * len(a_setinters_b)
+a_setinters_b["to_color"] = ["setintersect"] * len(a_setinters_b)
 
 
 # subtract
 a_subt_b = a.subtract_ranges(b)
-a_subt_b["color_by"] = ["subtract"] * len(a_subt_b)
+a_subt_b["to_color"] = ["subtract"] * len(a_subt_b)
 
 # Get plot
 prp.set_engine("plt")
@@ -71,9 +72,9 @@ prp.plot(
     title_chr=" ",
     warnings=False,
     to_file=("fig3_3.png", (800, 400)),
-    color_col="color_by",
+    color_col="to_color",
     arrow_color="black",
     arrow_line_width=0.5,
-    arrow_size=0.0005,
+    # arrow_size=3,
     theme="Mariotti_lab",
 )
