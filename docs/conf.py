@@ -31,6 +31,7 @@ author = "Ester Muñoz del Campo, Marco Mariotti"
 extensions = [
     "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
 ]
 autosummary_generate = True  # Enable summary table generation
 

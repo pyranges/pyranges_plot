@@ -5,7 +5,10 @@ Getting started
 ---------------
 
 The first step to obtain a plot is always setting the **engine**. The way to do it is using
-the ``set_engine`` function after importing.::
+the ``set_engine`` function after importing.
+
+.. code-block::
+
     import pyranges_plot as prp
 
     # As engine use 'plotly' or 'ply' for Plotly and 'matplotlib' or 'plt' for Matplotlib
@@ -18,9 +21,11 @@ the :code:`plot` function.
 Pyranges Plot evolves around the :code:`plot` function, which admits output definition
 through its parameters and appearance customization options through ``kargs``. To showcase
 its functionalities we will load some example data using a dictionary, however Pyranges
-includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges
-documentation<https://pyranges1.readthedocs.io/en/latest/>`_ to know more!).
-.. code::
+includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_
+to know more!).
+
+.. code-block::
+
     import pyranges as pr
 
     p = pr.PyRanges({"Chromosome": [1, 1, 2, 2, 2, 2, 2, 3],
@@ -31,7 +36,9 @@ documentation<https://pyranges1.readthedocs.io/en/latest/>`_ to know more!).
                     "feature1": ["a", "a", "b", "b", "c", "c", "c", "d"],
                     "feature2": ["A", "A", "B", "B", "C", "C", "C", "D"]})
     print(p)
-.. code::
+
+.. code-block::
+
       index  |      Chromosome  Strand      Start      End  transcript_id    feature1    feature2
       int64  |           int64  object      int64    int64  object           object      object
     -------  ---  ------------  --------  -------  -------  ---------------  ----------  ----------
@@ -47,7 +54,9 @@ documentation<https://pyranges1.readthedocs.io/en/latest/>`_ to know more!).
     Contains 3 chromosomes and 2 strands.
 
 Once the set up is ready, a minimal plot can be obtained with just:
-.. code::
+
+.. code-block::
+
     prp.plot(p)
 
 .. image:: images/prp_rtd_01.png
@@ -56,7 +65,9 @@ The output will be an interactive plot by default, but it can also be a pdf or p
 if desired (as explained later in this tutorial). The image represents an interactive plotly
 plot where the intervals are displayed individually because no id column has been specified.
 To link the intervals, an ``id_column`` must be provided.
-.. code::
+
+.. code-block::
+
     prp.set_id_col("transcript_id")
     prp.plot(p)
 
@@ -73,7 +84,9 @@ limit of 25, so in a case where the data contains more genes it will only show t
 unless the ``max_ngenes`` parameter is specified. For example, we can set the maximum number of
 genes as 2. Note that in the case of plotting more than 25 a warning about the plot's
 integrity will appear.
-.. code::
+
+.. code-block::
+
     prp.plot(p, max_shown=2)
 
 .. image:: images/prp_rtd_03.png
@@ -89,7 +102,9 @@ provided as a dictionary, tuple or PyRanges object:
 * Tuple option sets the limits of all plotted chromosomes as specified.
 
 * PyRanges object can also be used to define limits, allowing the visualization of one object's genes in another object's range window.
-.. code::
+
+.. code-block::
+
     prp.plot(p, limits={1: (None, 100), 2: (60, 200), 3: None})
     prp.plot(p, limits=(0,300))
 
@@ -100,7 +115,9 @@ Coloring
 --------
 We can try to color the genes according to the strand column instead of the ID (default).
 For that the ``color_col`` parameter should be used.
-.. code::
+
+.. code-block::
+
     prp.plot(p, color_col="Strand")
 
 .. image:: images/prp_rtd_06.png
@@ -108,7 +125,9 @@ For that the ``color_col`` parameter should be used.
 This way we see the "+" strand genes in one color and the "-" in another color. Additionally,
 these colors can be customized through the ``colormap`` parameter. For this case we can
 specify it as a dictionary in the following way:
-.. code::
+
+.. code-block::
+
     prp.plot(
         p,
         color_col="Strand",
@@ -121,7 +140,9 @@ The parameter ``colormap`` is very versatile because it accepts dictionaries for
 coloring, but also Matplotlib and Plotly color objects such as colormaps (or even just
 the string name of these objects) as well as lists of colors in hex or rgb. For example,
 we can use the Dark2 Matplotlib colormap, even if the plot is based on Plotly:
-.. code::
+
+.. code-block::
+
     prp.plot(p, colormap="Dark2")
 
 .. image:: images/prp_rtd_08.png
@@ -135,7 +156,9 @@ preferentially placed one beside the other. But this disposition can be displaye
 as 'full' if the user wants to display one gene under the other by setting the ``packed``
 parameter as ``False``. Also, a legend can be added by setting the ``legend`` parameter
 to ``True``.
-.. code::
+
+.. code-block::
+
     prp.plot(p, packed=False, legend = True)
 
 .. image:: images/prp_rtd_09.png
@@ -148,7 +171,9 @@ string must contain the desired column names within curly brackets as shown in t
 Similarly, the title of the chromosome plots can be customized giving the desired string to
 the ``title_chr`` parameter, where the correspondent chromosome value of the data is referred
 to as {chrom}. An example could be the following:
-.. code::
+
+.. code-block::
+
     prp.plot(
         p,
         tooltip="first feature: {feature1}\nsecond feature: {feature2}",
@@ -170,7 +195,9 @@ For this plot the ``thickness_col`` will be used to highlight the overlapping in
 This way some intervals will appear with a bigger height than others according to the
 thickness column. Note that this column can only have 2 different values, as only 2 height
 values are accepted.
-.. code::
+
+.. code-block::
+
     # Store data
     p_ala = pr.PyRanges({
         "Start": [10, 50, 90] + [13, 60, 72, 120],
@@ -206,7 +233,9 @@ Another way to highligh these overlapping regions playing with colors and depth.
 plot will be exported to png instead of showing an interactive plot, for that the ``to_file``
 parameter will be used. Additionally, the color appearance of the plot will be customized by
 providing the "dark" ``theme``.
-.. code::
+
+.. code-block::
+
     # Plot both PyRanges using interval thickness to differentiate
     prp.plot(
         [p_ala, p_cys],
@@ -227,7 +256,9 @@ Show transcript structure
 Another interesting feature is showing the transcript structure, so the CDS appear as
 wider rectangles than UTR regions. For that the proper information should be stored in
 the "Feature" column of the data. A usage example is:
-.. code::
+
+.. code-block::
+
     pp = pr.PyRanges({
      "Chromosome": [1, 1, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4],
      "Strand": ["+", "+", "-", "-", "+", "+", "+", "+", "-", "-", "-", "-", "+", "+"],
@@ -254,7 +285,9 @@ Additionally, the threshold can be defined by the user through kargs or setting 
 default options as explained in the next section using ``shrink_threshold``, when a float
 is provided as shrink_threshold it will be interpreted as a fraction of the original
 coordinate range, while when an int is given it will be interpreted as number of base pairs.
-.. code::
+
+.. code-block::
+
     ppp = pr.PyRanges({'Chromosome': ['1'] * 10 + ['2'] * 10,
                     'Strand': ['+', '+', '+', '+', '-', '-', '-', '-', '+', '+'] + ["+", "+", "+", "+", "-", "-", "-", "-", "+", "+"],
                     'Start': [90, 61, 104, 228, 9, 142, 52, 149, 218, 151] + [5, 27, 37, 47, 1, 7, 42, 37, 60, 80],
@@ -279,10 +312,14 @@ default options values, the ``print_options`` function should be used. These val
 modified for all the following plots through the set_options function. However, for a
 single plot, these features can be given as kargs to the plot function (see shrink_threshold
 in the example above).
-.. code::
+
+.. code-block::
+
     # Check the default options values
     prp.print_options()
-.. code::
+
+.. code-block::
+
     +------------------+-------------+---------+--------------------------------------------------------------+
     |     Feature      |    Value    | Edited? |                         Description                          |
     +------------------+-------------+---------+--------------------------------------------------------------+
@@ -340,7 +377,9 @@ in the example above).
 
 
 Once you found the feature you would like to customize, it can be modified:
-.. code::
+
+.. code-block::
+
     # Change the default options values
     prp.set_options('plot_bkg', 'rgb(173, 216, 230)')
     prp.set_options('plot_border', '#808080')
@@ -353,9 +392,13 @@ Once you found the feature you would like to customize, it can be modified:
 
 
 Now the modified values will be marked when checking the options values:
-.. code::
+
+.. code-block::
+
     prp.print_options()
-.. code::
+
+.. code-block::
+
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     colormap     |      Alphabet      |         | Sequence of colors to assign to every group of intervals     |
     |                  |                    |         | sharing the same “color_col” value. It can be provided as a  |
@@ -414,7 +457,8 @@ To return to the original appearance of the plot, the ``reset_options`` function
 all or some parameters. By default, it will reset all the features, but it also accepts a
 string for resetting a single feature or a list of strings to reset a few.
 
-.. code::
+.. code-block::
+
     prp.reset_options()  # reset all
     prp.reset_options('plot_background')  # reset one feature
     prp.reset_options(['plot_border', 'title_color'])  # reset a few features
@@ -426,7 +470,9 @@ PyRanges compatibility
 
 To add the plot function to PyRanges objects the function ``register_plot`` has been implemented.
 It allows registering :code:`plot` to enable :code:`p.plot()` calls. Its usage is the following:
-.. code::
+
+.. code-block::
+
     import pyranges_plot as prp
     prp.set_engine("matplotlib")
     prp.register_plot()

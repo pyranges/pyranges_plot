@@ -4,6 +4,7 @@ API reference
 #. :doc:`Plot function <./prp_plot>`
 #. :doc:`Setting variables <./prp_settings>` the variables to be set: engine(compulsory), id_col, theme and warnings
 #. :doc:`Register plot <./prp_registerplot>`
+#. :doc:`Customization options <./prp_options>`
 
 .. toctree::
    :maxdepth: 2
@@ -12,3 +13,4 @@ API reference
    prp_plot
    prp_settings
    prp_registerplot
+   prp_options
