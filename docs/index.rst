@@ -2,7 +2,7 @@ Pyranges Plot documentation
 ===========================
 
 Pyranges Plot is a Python library specifically tailored to perform
-along Pyranges<https://github.com/pyranges/pyranges_1.x.git>`_ objects. It provides
+along `Pyranges<https://github.com/pyranges/pyranges_1.x.git>`_ objects. It provides
 user-friendly and customizable visualizations for genomic intervals datasets, a perfect
 tandem for Pyranges' efficient and intuitive genomic data manipulation methods.
 
@@ -12,14 +12,16 @@ can be based on either of two engines: Matplotlib and Plotly, to be defined by t
 
 Documentation outline
 ~~~~~~~~~~~~~~~~~~~~~
-#. :doc:`Installation <./installation>`
-#. tutorial
-#. api
-#. options
-(...)
-forgot my notebook
+#. 🚀 :doc:`Installation <./installation>`
+#. 🚀 :doc:`Tutorial <./tutorial>`
+#. 🚀 :doc:`API reference <./api_reference>`
+
 
 .. toctree::
-(...)
+   :maxdepth: 1
+   :hidden:
+   :caption: Contents:
 
-
+   installation
+   tutorial
+   api_reference
