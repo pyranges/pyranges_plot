@@ -36,7 +36,6 @@ def plot_exons_ply(
     """Create Plotly plot."""
 
     # Get default plot features
-    # tag_background = feat_dict['tag_background']
     intron_color = feat_dict["intron_color"]
     fig_bkg = feat_dict["fig_bkg"]
     plot_bkg = feat_dict["plot_bkg"]
