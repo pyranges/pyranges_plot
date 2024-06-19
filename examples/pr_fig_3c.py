@@ -75,6 +75,7 @@ prp.plot(
     ],
     title_chr=" ",
     warnings=False,
+    text=False,
     to_file=("fig_3c.png", (800, 400)),
     color_col="to_color",
     arrow_color="black",

@@ -36,6 +36,7 @@ plt.rcParams["figure.subplot.left"] = 0.27
 prp.plot(
     [r, r_window, tile_g, r_tile],
     packed=False,
+    text=False,
     id_col="transcript_id",
     exon_border="black",
     title_chr=" ",

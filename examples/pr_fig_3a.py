@@ -55,6 +55,7 @@ prp.plot(
         pr.concat([g_spl_subseq_for, g_spl_subseq_rev]),
     ],
     packed=False,
+    text=False,
     warnings=False,
     id_col="transcript_id",
     title_chr=" ",

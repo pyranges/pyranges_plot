@@ -26,23 +26,24 @@ gr_2 = gr_2[["Chromosome", "Feature", "Start", "End", "Strand", "Parent"]]
 
 
 # Figure 1
-# interactive plot to show tooltip (Figure 1.1)
+# interactive plot to show tooltip (Figure 1.A)
 prp.set_engine("plt")
-prp.plot(gr, file_size=(5, 3))
+prp.plot(gr, title_size=30, text_size=15)
 
-# show id, color col and cmap and save as png (Figure 1.2)
+# show id, color col and cmap and save as png (Figure 1.B)
 prp.plot(
     gr_1,
     id_col="transcript_id",
     color_col="Strand",
     colormap={"+": "lightgreen", "-": "lightblue"},
-    to_file="fig1_2.png",
-    file_size=(5, 2),
+    to_file=("fig_1b.png", (500, 200)),
+    limits=(-5, None),
+    text_pad=2,
 )
 
 
 # Figure 2
-# show thick_cds and save png (Figure 2.1)
+# show thick_cds and save png (Figure 2.A)
 prp.plot(
     gr_2,
     id_col="Parent",
@@ -52,11 +53,13 @@ prp.plot(
     arrow_size=0.04,
 )
 
-# show introns off and save png (Figure 2.2)
+# show introns off and save png (Figure 2.B)
 prp.plot(
     gr_1,
     id_col="transcript_id",
     shrink=True,
     to_file=("fig_2b.png", (500, 300)),
     arrow_size=0.04,
+    text_pad=2,
+    limits=(5, None),
 )

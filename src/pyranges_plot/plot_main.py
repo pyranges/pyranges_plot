@@ -57,7 +57,7 @@ def plot(
     shrink=False,
     limits=None,
     thick_cds=False,
-    text=False,
+    text=True,
     legend=False,
     title_chr="Chromosome {chrom}",
     y_labels=None,
@@ -121,7 +121,7 @@ def plot(
         must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
         Feature value other than exon and CDS will be discarded for plotting.
 
-    text: {bool, '{string}'}, default False
+    text: {bool, '{string}'}, default True
         Whether an annotation should appear beside the gene in the plot. If True, the id/index will be used. To
         customize the annotation use the '{string}' option to choose another data column. Providing the text as
         a '{data_column_name}' allows slicing in the case of strings by using '{data_column_name[:4]}'.
