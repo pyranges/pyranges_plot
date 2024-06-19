@@ -29,11 +29,17 @@ author = "Ester Muñoz del Campo, Marco Mariotti"
 
 
 extensions = [
-    "sphinx_rtd_theme",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx_rtd_theme",
+    "autoapi.extension",
 ]
 autosummary_generate = True  # Enable summary table generation
+
+# AutoAPI settings
+autoapi_type = "python"
+autoapi_dirs = ["../src/pyranges_plot"]  # Adjust the path as necessary
+autoapi_generate_api_docs = True
 
 autodoc_default_options = {
     "members": True,
