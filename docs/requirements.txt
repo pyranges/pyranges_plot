@@ -1,4 +1,4 @@
-pyranges_plot==0.0.24
+pyranges_plot==0.0.25
 Sphinx==7.3.7
 sphinx-rtd-theme==2.0.0
 sphinx-autoapi==3.0.0
