@@ -19,7 +19,15 @@ Similarly, some other variables can be set prior to the plot call, like ``id_col
 the :code:`plot` function.
 
 Pyranges Plot evolves around the :code:`plot` function, which admits output definition
-through its parameters and appearance customization options through ``kargs``. To showcase
+through its parameters and additional appearance customization options. All the
+parameters are explained in detail below, however to illustrate the options usage, the
+following figure can be used as a cheat sheet. Note that these are not :code:`plot`
+parameters as such but can be given as ``kargs`` as well as pre-setting them, as
+explained later on.
+
+.. image:: options_fig_wm.png
+
+To showcase
 its functionalities we will load some example data using a dictionary, however Pyranges
 includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_
 to know more!).
