@@ -1,4 +1,5 @@
 import pandas as pd
+import importlib
 from pyranges.core.names import END_COL
 
 from .names import CUM_DELTA_COL
@@ -7,6 +8,15 @@ from .plot_features import (
     plot_features_dict_in_use,
     builtin_themes,
 )
+
+
+def check4dependency(name):
+    """Check if a module is installed"""
+    try:
+        importlib.import_module(name)
+        return True
+    except ImportError:
+        return False
 
 
 # CORE FUNCTIONS

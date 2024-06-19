@@ -1,5 +1,5 @@
 import pandas as pd
-from matplotlib.patches import Rectangle
+
 
 # import pyranges as pr
 from .core import (
@@ -21,8 +21,6 @@ from .data_preparation import (
     subdf_assigncolor,
 )
 from .introns_off import introns_resize, recalc_axis
-from .matplotlib_base.plot_exons_plt import plot_exons_plt
-from .plotly_base.plot_exons_ply import plot_exons_ply
 from pyranges.core.names import (
     CHROM_COL,
     START_COL,
@@ -38,10 +36,24 @@ from .names import (
     CUM_DELTA_COL,
     EXON_IX_COL,
     TEXT_PAD_COL,
-    COLOR_TAG_COL,
-    COLOR_INFO,
     THICK_COL,
 )
+
+# Check for matplotlib
+try:
+    from .matplotlib_base.plot_exons_plt import plot_exons_plt
+
+    missing_plt_flag = 0
+except ImportError:
+    missing_plt_flag = 1
+
+# Check for plotly
+try:
+    from .plotly_base.plot_exons_ply import plot_exons_ply
+
+    missing_ply_flag = 0
+except ImportError:
+    missing_ply_flag = 1
 
 
 def plot(
@@ -495,66 +507,66 @@ def plot(
     # print(subdf)
 
     if engine in ["plt", "matplotlib"]:
-        # Create legend items list
-        if legend:
-            legend_item_d = (
-                subdf.groupby(COLOR_TAG_COL)[COLOR_INFO]
-                .apply(lambda x: Rectangle((0, 0), 1, 1, color=list(x)[0]))
-                .to_dict()
+        if not missing_plt_flag:
+            plot_exons_plt(
+                subdf=subdf,
+                depth_col=depth_col,
+                tot_ngenes_l=tot_ngenes_l,
+                feat_dict=feat_dict,
+                genesmd_df=genesmd_df,
+                chrmd_df=chrmd_df,
+                chrmd_df_grouped=chrmd_df_grouped,
+                ts_data=ts_data,
+                max_shown=max_shown,
+                id_col=ID_COL,
+                transcript_str=thick_cds,
+                tooltip=tooltip,
+                legend=legend,
+                y_labels=y_labels,
+                text=text,
+                title_chr=title_chr,
+                packed=packed,
+                to_file=to_file,
+                file_size=file_size,
+                warnings=warnings,
+                tick_pos_d=tick_pos_d,
+                ori_tick_pos_d=ori_tick_pos_d,
+            )
+
+        else:
+            raise Exception(
+                "Make sure to install matplotlib dependecies by running `pip install pyranges-plot[plt]`"
+            )
+
+    elif engine in ["ply", "plotly"]:
+        if not missing_ply_flag:
+            plot_exons_ply(
+                subdf=subdf,
+                depth_col=depth_col,
+                feat_dict=feat_dict,
+                genesmd_df=genesmd_df,
+                chrmd_df=chrmd_df,
+                chrmd_df_grouped=chrmd_df_grouped,
+                ts_data=ts_data,
+                max_shown=max_shown,
+                id_col=ID_COL,
+                transcript_str=thick_cds,
+                tooltip=tooltip,
+                legend=legend,
+                y_labels=y_labels,
+                text=text,
+                title_chr=title_chr,
+                packed=packed,
+                to_file=to_file,
+                file_size=file_size,
+                warnings=warnings,
+                tick_pos_d=tick_pos_d,
+                ori_tick_pos_d=ori_tick_pos_d,
             )
         else:
-            legend_item_d = {}
-
-        plot_exons_plt(
-            subdf=subdf,
-            depth_col=depth_col,
-            tot_ngenes_l=tot_ngenes_l,
-            feat_dict=feat_dict,
-            genesmd_df=genesmd_df,
-            chrmd_df=chrmd_df,
-            chrmd_df_grouped=chrmd_df_grouped,
-            ts_data=ts_data,
-            legend_item_d=legend_item_d,
-            max_shown=max_shown,
-            id_col=ID_COL,
-            transcript_str=thick_cds,
-            tooltip=tooltip,
-            legend=legend,
-            y_labels=y_labels,
-            text=text,
-            title_chr=title_chr,
-            packed=packed,
-            to_file=to_file,
-            file_size=file_size,
-            warnings=warnings,
-            tick_pos_d=tick_pos_d,
-            ori_tick_pos_d=ori_tick_pos_d,
-        )
-
-    elif engine == "ply" or engine == "plotly":
-        plot_exons_ply(
-            subdf=subdf,
-            depth_col=depth_col,
-            feat_dict=feat_dict,
-            genesmd_df=genesmd_df,
-            chrmd_df=chrmd_df,
-            chrmd_df_grouped=chrmd_df_grouped,
-            ts_data=ts_data,
-            max_shown=max_shown,
-            id_col=ID_COL,
-            transcript_str=thick_cds,
-            tooltip=tooltip,
-            legend=legend,
-            y_labels=y_labels,
-            text=text,
-            title_chr=title_chr,
-            packed=packed,
-            to_file=to_file,
-            file_size=file_size,
-            warnings=warnings,
-            tick_pos_d=tick_pos_d,
-            ori_tick_pos_d=ori_tick_pos_d,
-        )
+            raise Exception(
+                "Make sure to install plotly dependecies by running `pip install pyranges-plot[plotly]`"
+            )
 
     else:
         raise Exception("Please define engine with set_engine().")

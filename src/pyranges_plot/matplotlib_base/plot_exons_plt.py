@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.patches import Rectangle
 from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 
 from .core import plt_popup_warning, coord2percent, rgb_string_to_tuple
@@ -8,7 +9,7 @@ from .data2plot import (
     apply_gene_bridge,
     plot_introns,
 )
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO, COLOR_TAG_COL
 
 arrow_style = "round"
 
@@ -22,7 +23,6 @@ def plot_exons_plt(
     chrmd_df,
     chrmd_df_grouped,
     ts_data,
-    legend_item_d,
     id_col,
     max_shown=25,
     transcript_str=False,
@@ -65,6 +65,16 @@ def plot_exons_plt(
     x_ticks = feat_dict["x_ticks"]
 
     # Create figure and axes
+    # check for legend
+    # Create legend items list
+    if legend:
+        legend_item_d = (
+            subdf.groupby(COLOR_TAG_COL)[COLOR_INFO]
+            .apply(lambda x: Rectangle((0, 0), 1, 1, color=list(x)[0]))
+            .to_dict()
+        )
+    else:
+        legend_item_d = {}
     # pixel in inches
     px = 1 / plt.rcParams["figure.dpi"]
     x = file_size[0] * px

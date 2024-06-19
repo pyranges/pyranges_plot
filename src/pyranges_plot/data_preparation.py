@@ -1,10 +1,24 @@
 import numpy as np
 from intervaltree import IntervalTree
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import pyranges as pr
-import plotly.colors as pc
 from pyranges.core.names import CHROM_COL, START_COL, END_COL
+
+# Check for matplotlib
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as mcolors
+
+    missing_plt_flag = 0
+except ImportError:
+    missing_plt_flag = 1
+# Check for plotly
+try:
+    import plotly.colors as pc
+
+    missing_ply_flag = 0
+except ImportError:
+    missing_ply_flag = 1
+
 
 from .names import (
     PR_INDEX_COL,
@@ -14,7 +28,7 @@ from .names import (
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
 )
-from .core import cumdelting, get_engine, get_warnings
+from .core import cumdelting, get_engine, get_warnings, check4dependency
 from .matplotlib_base.core import plt_popup_warning
 
 
@@ -110,28 +124,34 @@ def update_y(genesmd_df, exon_height, v_spacer):
 ###colors for genes
 def is_pltcolormap(colormap_string):
     """Checks whether the string given is a valid plt colormap name."""
-    try:
-        colormap = plt.colormaps[colormap_string]
-        if colormap is not None and isinstance(colormap, mcolors.Colormap):
-            return True
-        else:
+
+    if check4dependency("matplotlib"):
+        try:
+            colormap = plt.colormaps[colormap_string]
+            if colormap is not None and isinstance(colormap, mcolors.Colormap):
+                return True
+            else:
+                return False
+
+        except KeyError:
             return False
 
-    except KeyError:
+    else:
         return False
 
 
 def is_plycolormap(colormap_string):
     """Checks whether the string given is a valid plotly color object name."""
 
-    if hasattr(pc.sequential, colormap_string):
-        return True
-    elif hasattr(pc.diverging, colormap_string):
-        return True
-    elif hasattr(pc.cyclical, colormap_string):
-        return True
-    elif hasattr(pc.qualitative, colormap_string):
-        return True
+    if check4dependency("plotly"):
+        if hasattr(pc.sequential, colormap_string):
+            return True
+        elif hasattr(pc.diverging, colormap_string):
+            return True
+        elif hasattr(pc.cyclical, colormap_string):
+            return True
+        elif hasattr(pc.qualitative, colormap_string):
+            return True
 
 
 def get_plycolormap(colormap_string):
@@ -168,11 +188,11 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border):
             colormap = get_plycolormap(colormap)
         else:
             raise Exception(
-                "The provided string does not match any plt or plotly colormap."
+                "The provided string does not match any installed dependency colormap."
             )
 
     # 1-plt colormap to list
-    if isinstance(colormap, mcolors.ListedColormap):
+    if not missing_plt_flag and isinstance(colormap, mcolors.ListedColormap):
         colormap = list(colormap.colors)  # colors of plt object
         colormap = [
             "rgb({}, {}, {})".format(int(r * 255), int(g * 255), int(b * 255))

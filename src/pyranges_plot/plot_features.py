@@ -1,5 +1,17 @@
 import copy
 
+ori_l = ["#f05f89", "#f0db36", "#7bc45f", "#5e4699", "#f7943a", "#537ebf", "#ee3a36"]
+darker_l = ["#9b3c59", "#a28b22", "#4d6e3a", "#3c285f", "#a46327", "#345a7d", "#9c2523"]
+lighter_l = [
+    "#ffadc9",
+    "#ffee76",
+    "#a8e89a",
+    "#816bb9",
+    "#ffc56b",
+    "#82b3ff",
+    "#ff7a74",
+]
+prp_cmap = ori_l + lighter_l + darker_l
 
 plot_features_dict = {
     "arrow_color": ("grey", "Color of the arrow indicating strand.", " "),
@@ -14,7 +26,7 @@ plot_features_dict = {
         " ",
     ),
     "colormap": (
-        "Alphabet",
+        prp_cmap,
         "Sequence of colors to assign to every group of intervals sharing the same “color_col” value. It can be provided as a Matplotlib colormap, a Plotly color sequence (built as lists), a string naming the previously mentioned color objects from Matplotlib and Plotly, or a dictionary with the following structure {color_column_value1: color1, color_column_value2: color2, ...}. When a specific color_col value is not specified in the dictionary it will be colored in black.",
         " ",
     ),
