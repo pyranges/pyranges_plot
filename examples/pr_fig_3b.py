@@ -34,7 +34,7 @@ prp.plot(
     exon_border="black",
     title_chr=" ",
     limits=(-8, None),
-    to_file=("fig3_2.png", (700, 400)),
+    to_file=("fig_3b.png", (700, 400)),
     text=True,
     text_pad=0.05,
     theme="Mariotti_lab",

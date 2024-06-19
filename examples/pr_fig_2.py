@@ -48,8 +48,8 @@ prp.plot(
     id_col="Parent",
     thick_cds=True,
     text=False,
-    to_file="fig2_1.png",
-    file_size=(5, 3),
+    to_file=("fig_2a.png", (500, 300)),
+    arrow_size=0.04,
 )
 
 # show introns off and save png (Figure 2.2)
@@ -57,6 +57,6 @@ prp.plot(
     gr_1,
     id_col="transcript_id",
     shrink=True,
-    to_file="fig2_2.png",
-    file_size=(5, 3),
+    to_file=("fig_2b.png", (500, 300)),
+    arrow_size=0.04,
 )

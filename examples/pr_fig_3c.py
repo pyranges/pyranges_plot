@@ -45,6 +45,8 @@ a_subt_b["to_color"] = ["subtract"] * len(a_subt_b)
 
 # Get plot
 prp.set_engine("plt")
+# customize left margin to fit titles
+ori_margin = plt.rcParams["figure.subplot.left"]
 plt.rcParams["figure.subplot.left"] = 0.4  # Adjust the left margin
 prp.plot(
     [
@@ -71,10 +73,12 @@ prp.plot(
     ],
     title_chr=" ",
     warnings=False,
-    to_file=("fig3_3.png", (800, 400)),
+    to_file=("fig_3c.png", (800, 400)),
     color_col="to_color",
     arrow_color="black",
     arrow_line_width=0.5,
-    # arrow_size=3,
     theme="Mariotti_lab",
 )
+
+# reset rcparams
+plt.rcParams["figure.subplot.left"] = ori_margin

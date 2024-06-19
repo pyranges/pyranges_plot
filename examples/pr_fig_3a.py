@@ -44,7 +44,7 @@ g_spl_subseq_rev["transcript_id"] = ["g.spliced_subsequence(-5,-1,id)"] * len(
 prp.set_engine("plt")
 cmap = builtin_themes["Mariotti_lab"]["colormap"]
 cmap += ["lightpink", "lightyellow"]
-prp.set_options("colormap", cmap)
+
 prp.plot(
     [
         g,
@@ -57,8 +57,9 @@ prp.plot(
     id_col="transcript_id",
     title_chr=" ",
     limits=(-15, None),
-    to_file=("fig3_1.png", (700, 500)),
+    to_file=("fig_3a.png", (700, 500)),
     text=True,
     text_pad=0.05,
     theme="Mariotti_lab",
+    colormap=cmap,
 )

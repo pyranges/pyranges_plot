@@ -36,7 +36,7 @@ def plot_direction(
 
     if strand:
         # create and plot direction lines
-        if item_size > item_threshold:
+        if item_size <= item_threshold:
             dir_flag = 1
             ##diagonal_line = OX arrow extension(item middle point +- incl), OY arrow extension (item middle point + half of exon width)
             top_plus = (
@@ -242,7 +242,7 @@ def plot_row(
         plot_direction(
             ax,
             strand,
-            incl,
+            incl * 2,
             stop - start,  # itself as threshold
             start,
             stop,
@@ -367,8 +367,8 @@ def plot_introns(
             plot_direction(
                 ax,
                 strand,
-                intron_size,
                 arrow_size,
+                intron_size,
                 start,
                 stop,
                 incl,
