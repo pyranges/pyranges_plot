@@ -1,4 +1,5 @@
-Sphinx==7.3.7
-sphinx_autoapi
-sphinxcontrib-napoleon==0.7
+pyranges_plot
+sphinx
 sphinx_rtd_theme
+sphinx.ext.autodoc
+sphinx.ext.napoleon
