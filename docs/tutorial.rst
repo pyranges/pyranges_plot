@@ -25,10 +25,9 @@ following figure can be used as a cheat sheet. Note that these are not :code:`pl
 parameters as such but can be given as ``kargs`` as well as pre-setting them, as
 explained later on.
 
-.. image:: options_fig_wm.png
+.. image:: images/options_fig_wm.png
 
-To showcase
-its functionalities we will load some example data using a dictionary, however Pyranges
+To showcaseits functionalities we will load some example data using a dictionary, however Pyranges
 includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_
 to know more!).
 
