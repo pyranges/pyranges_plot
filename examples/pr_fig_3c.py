@@ -45,9 +45,11 @@ a_subt_b["to_color"] = ["subtract"] * len(a_subt_b)
 
 # Get plot
 prp.set_engine("plt")
+
 # customize left margin to fit titles
 ori_margin = plt.rcParams["figure.subplot.left"]
-plt.rcParams["figure.subplot.left"] = 0.4  # Adjust the left margin
+plt.rcParams["figure.subplot.left"] = 0.4
+
 prp.plot(
     [
         a,

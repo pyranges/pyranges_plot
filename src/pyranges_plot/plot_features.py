@@ -80,17 +80,20 @@ theme_dark = {
 }
 
 # Mariotti theme
+ori_l = ["#f05f89", "#f0db36", "#7bc45f", "#5e4699", "#f7943a", "#537ebf", "#ee3a36"]
+darker_l = ["#9b3c59", "#a28b22", "#4d6e3a", "#3c285f", "#a46327", "#345a7d", "#9c2523"]
+lighter_l = [
+    "#ffadc9",
+    "#ffee76",
+    "#a8e89a",
+    "#816bb9",
+    "#ffc56b",
+    "#82b3ff",
+    "#ff7a74",
+]
+
 theme_mariotti = {
-    "colormap": [
-        "#f05f89",
-        "#f0db36",
-        "#7bc45f",
-        "#5e4699",
-        "#f7943a",
-        "#537ebf",
-        "#ee3a36",
-        "#ee3a36",
-    ],
+    "colormap": ori_l + lighter_l + darker_l,
     "shrunk_bkg": "#e7e0f5",
     "fig_bkg": "#fff5ee",
     "title_color": "#590000",

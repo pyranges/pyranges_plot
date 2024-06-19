@@ -1,5 +1,6 @@
 import pyranges as pr
 import pyranges_plot as prp
+import matplotlib.pyplot as plt
 
 # Start r object
 r = pr.PyRanges(
@@ -28,14 +29,19 @@ r_tile["transcript_id"] = ["r.tile(2)"] * len(r_tile)  # rename for plot
 # Get plot
 prp.set_engine("plt")
 
+# customize left margin to fit titles
+ori_margin = plt.rcParams["figure.subplot.left"]
+plt.rcParams["figure.subplot.left"] = 0.27
+
 prp.plot(
     [r, r_window, tile_g, r_tile],
+    packed=False,
     id_col="transcript_id",
     exon_border="black",
     title_chr=" ",
-    limits=(-8, None),
-    to_file=("fig_3b.png", (700, 400)),
-    text=True,
-    text_pad=0.05,
+    to_file=("fig_3b.png", (600, 400)),
     theme="Mariotti_lab",
 )
+
+# reset rcparams
+plt.rcParams["figure.subplot.left"] = ori_margin
