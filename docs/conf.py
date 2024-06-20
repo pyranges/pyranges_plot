@@ -29,7 +29,7 @@ author = "Ester Muñoz del Campo, Marco Mariotti"
 
 
 extensions = [
-    "sphinx.ext.autodoc",
+    #"sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
     "autoapi.extension",
