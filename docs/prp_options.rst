@@ -1,7 +1,8 @@
 Customizable options
 --------------------
 
-Functions related to check, set and reset the plot customizable options.
+Functions related to check, set and reset the plot customizable options. For graphical
+explanation check the first figure of the :ref:`tutorial <tutorial>`.
 
 .. automodule:: pyranges_plot
     :members:

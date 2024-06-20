@@ -47,7 +47,7 @@ def set_id_col(name):
 
 
 def get_id_col():
-    """Shows the current defined ID column (id_col)."""
+    """Returns the currently defined ID column (id_col)."""
 
     return ID_COL
 
@@ -58,7 +58,7 @@ ENGINE = None
 
 def set_engine(name):
     """
-    Defines the engine for the plots
+    Defines the engine for the plots.
 
     Parameters
     ----------
@@ -78,7 +78,7 @@ def set_engine(name):
 
 
 def get_engine():
-    """Shows the current defined engine."""
+    """Returns the currently defined engine."""
 
     return ENGINE
 
@@ -120,7 +120,7 @@ theme = None
 
 def set_theme(name):
     """
-    Defines the engine for the plots
+    Defines the color theme for the plots.
 
     Parameters
     ----------
@@ -166,7 +166,7 @@ def set_theme(name):
 
 
 def get_theme():
-    """Shows the current defined engine."""
+    """Returns the currently defined color theme."""
 
     return theme
 
@@ -176,17 +176,18 @@ def get_theme():
 
 def set_options(varname, value=None):
     """
-    Define some features of the plot layout.
+    Define some feature options of the plot layout.
 
     Parameters
     ----------
     varname: {str, dict}
 
-        Name of the variable to change, or dictionary with the variable: value pairs.
+        Name of the variable to change, or dictionary with the {variable: value} pairs.
+        To check the available customizable options use prp.print_default().
 
     value:
 
-        New value of the variable to be assigned if needed.
+        New value of the variable to be assigned to varname if needed.
 
     Examples
     --------
@@ -195,6 +196,8 @@ def set_options(varname, value=None):
     >>> prp.set_options('plot_background', 'magenta')
 
     >>> prp.set_options('title_size', 20)
+
+    >>> prp.set_options({'plot_background': 'magenta', 'title_size': 20})
 
     """
 
@@ -279,7 +282,6 @@ def reset_options(varname="all"):
 
     >>> prp.reset_options(['title_size', 'tag_background'])
 
-    >>> prp.reset_options('title_color')
     """
 
     plot_features_dict_in_use = get_options()

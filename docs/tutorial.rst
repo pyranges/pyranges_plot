@@ -482,5 +482,4 @@ is the following:
 .. code-block::
 
     import pyranges_plot as prp
-    prp.set_engine("matplotlib")
-    prp.register_plot()
+    prp.register_plot("matplotlib")

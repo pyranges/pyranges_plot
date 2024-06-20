@@ -154,7 +154,7 @@ def plot(
         provided as a string containing the column names of the values to be shown within curly brackets.
         For example if you want to show the value of the pointed gene for the column "col1" a valid tooltip
         string could be: "Value of col1: {col1}". Note that the values in the curly brackets are not
-        strings. If you want to introduce a newline you can use "\n".
+        strings. If you want to introduce a newline you can use a newline character "\" + "n".
 
     to_file: {str, tuple}, default None
         Name of the file to export specifying the desired extension. The supported extensions are '.png' and '.pdf'.
@@ -175,17 +175,19 @@ def plot(
 
     >>> import pyranges as pr, pyranges_plot as prp
 
+    >>> prp.set_engine('plotly')
+
     >>> p = pr.PyRanges({"Chromosome": [1]*5, "Strand": ["+"]*3 + ["-"]*2, "Start": [10,20,30,25,40], "End": [15,25,35,30,50], "transcript_id": ["t1"]*3 + ["t2"]*2}, "feature1": ["A", "B", "C", "A", "B"])
 
-    >>> plot(p, engine='plt', id_col="transcript_id",  max_shown=25, colormap='Set3')
+    >>> plot(p, id_col="transcript_id",  max_shown=25, colormap='Set3', text=False)
 
-    >>> plot(p, engine='matplotlib', id_col="transcript_id", color_col='Strand', colormap={'+': 'green', '-': 'red'})
+    >>> plot(p, id_col="transcript_id", color_col='Strand', colormap={'+': 'green', '-': 'red'})
 
-    >>> plot(p, engine='ply', id_col="transcript_id", limits = {'1': (1000, 50000), '2': None, '3': (10000, None)})
+    >>> plot(p, limits = {'1': (1000, 50000), '2': None, '3': (10000, None)}, title_chr="Chrom: {chrom}")
 
-    >>> plot(p, engine='plotly', id_col="transcript_id", shrink=True, tooltip = "Feature1: {feature1}")
+    >>> plot([p, p], id_col="transcript_id", shrink=True, tooltip = "Feature1: {feature1}")
 
-    >>> plot(data, engine='plt', id_col="transcript_id", color_col='Strand', packed=False, to_file='my_plot.pdf')
+    >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
 
     # Treat input data as list

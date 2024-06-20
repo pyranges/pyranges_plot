@@ -1,8 +1,11 @@
 # pyranges_plot
-Gene visualization package for dataframe objects generated with [PyRanges](https://pyranges.readthedocs.io/en/latest/index.html).
+Gene visualization package for dataframe objects generated with [PyRanges](https://pyranges1.readthedocs.io/).
 
-
-
+Pyranges is scbfjgnk...
+PyRanges Plot significantly facilitates genomic data
+interpretation by providing powerful, customizable, and user-friendly visualizations. It
+effectively covers the gap between data manipulation and visualization, thereby accelerating
+the analysis workflow in genomic research.
 
 ## Overview
 The goal is getting a plot displaying a series of genes, transcripts, or any kind
@@ -57,7 +60,7 @@ since the graphical dependencies are not installed.
 
 
 ## Documentation
-Pyranges Plot documentation and tutorial can be found at [readthedocs](https://pyranges-plot.readthedocs.io/en/latest/).
+Pyranges Plot documentation and tutorial can be found at https://pyranges-plot.readthedocs.io/.
 
 
 ## Coming soon
