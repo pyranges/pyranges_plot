@@ -117,12 +117,12 @@ def plot(
         Whether to compress the intron ranges to facilitate visualization or not.
 
     limits: {None, dict, tuple, pyranges.pyranges_main.PyRanges}, default None
-        Customization of coordinates for the chromosome plots.
-        - None: minimum and maximum exon coordinate plotted plus a 5% of the range on each side.
+        Customization of coordinates for the chromosome plots.\n
+        - None: minimum and maximum exon coordinate plotted plus a 5% of the range on each side.\n
         - dict: {chr_name1: (min_coord, max coord), chr_name2: (min_coord, max_coord), ...}. Not
         all the plotted chromosomes need to be specified in the dictionary and some coordinates
-        can be indicated as None, both cases lead to the use of the default value.
-        - tuple: the coordinate limits of all chromosomes will be defined as indicated.
+        can be indicated as None, both cases lead to the use of the default value.\n
+        - tuple: the coordinate limits of all chromosomes will be defined as indicated.\n
         - pyranges.pyranges_main.PyRanges: for each matching chromosome between the plotted data
         and the limits data, the limits will be defined by the minimum and maximum coordinates
         in the pyranges object defined as limits. If some plotted chromosomes are not present they
