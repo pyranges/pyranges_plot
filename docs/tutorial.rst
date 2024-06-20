@@ -27,7 +27,7 @@ explained later on.
 
 .. image:: images/options_fig_wm.png
 
-To showcaseits functionalities we will load some example data using a dictionary, however Pyranges
+To showcase its functionalities we will load some example data using a dictionary, however Pyranges
 includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_
 to know more!).
 
@@ -475,8 +475,9 @@ string for resetting a single feature or a list of strings to reset a few.
 PyRanges compatibility
 ----------------------
 
-To add the plot function to PyRanges objects the function ``register_plot`` has been implemented.
-It allows registering :code:`plot` to enable :code:`p.plot()` calls. Its usage is the following:
+To add the plot function to PyRanges objects, the function ``register_plot`` has been implemented.
+It allows registering :code:`plot` to enable :code:`pyranges.PyRanges.plot()` calls. Its usage
+is the following:
 
 .. code-block::
 
