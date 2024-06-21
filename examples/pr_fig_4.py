@@ -11,4 +11,4 @@ p = pr.read_gtf(
 
 p_cds = p[p["Feature"] == "CDS"]
 
-prp.plot(p_cds, id_col="gene_name", text=False, legend=True, to_file="fig_4.png")
+prp.plot(p_cds, id_col="gene_name", text=False, legend=True, to_file=("fig_4.png", (600,500)), arrow_size=0.05)

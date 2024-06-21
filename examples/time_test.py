@@ -24,14 +24,6 @@ end_loading_m = memory_usage()[0]
 d_cds = d[d["Feature"] == feat]
 
 # Check number of genes in each chrom
-# d_cds.groupby("Chromosome").apply(
-#     lambda x: print(
-#         "CHROM:"
-#         + str(x["Chromosome"].iloc[0])
-#         + ":   "
-#         + str(len(x.groupby("gene_id")))
-#     )
-# )
 
 # Chromosome subset
 d_cds_chrom = d_cds[d_cds["Chromosome"] == chrom]
