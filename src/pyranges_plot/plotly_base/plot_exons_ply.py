@@ -32,6 +32,7 @@ def plot_exons_ply(
     warnings=None,
     tick_pos_d=None,
     ori_tick_pos_d=None,
+    subset_warn=0,
 ):
     """Create Plotly plot."""
 
@@ -128,31 +129,30 @@ def plot_exons_ply(
     # insert silent information for warnings
     if warnings:
         fig.data[0].customdata = np.array([0, 0, 0])  # [tot_ngenes_l, 0, 0])
-        if (
-            "_blackwarning!" in genesmd_df.columns
-            and "_iterwarning!" in genesmd_df.columns
-        ):
+        if "_blackwarning!" in subdf.columns and "_iterwarning!" in subdf.columns:
             fig.data[0].customdata = np.array(
-                [0, 91124, 91321]
-            )  # [tot_ngenes_l, 91124, 91321])
+                [subset_warn, 91124, 91321]
+            )  # [subset_warn, 91124, 91321])
+        elif "_blackwarning!" in subdf.columns and "_iterwarning!" not in subdf.columns:
+            fig.data[0].customdata = np.array(
+                [subset_warn, 91124, 0]
+            )  # [subset_warn, 91124, 0])
+        elif "_blackwarning!" not in subdf.columns and "_iterwarning!" in subdf.columns:
+            fig.data[0].customdata = np.array(
+                [subset_warn, 0, 91321]
+            )  # [subset_warn, 0, 91321])
         elif (
-            "_blackwarning!" in genesmd_df.columns
-            and "_iterwarning!" not in genesmd_df.columns
+            "_blackwarning!" not in subdf.columns
+            and "_iterwarning!" not in subdf.columns
         ):
             fig.data[0].customdata = np.array(
-                [0, 91124, 0]
-            )  # [tot_ngenes_l, 91124, 0])
-        elif (
-            "_blackwarning!" not in genesmd_df.columns
-            and "_iterwarning!" in genesmd_df.columns
-        ):
-            fig.data[0].customdata = np.array(
-                [0, 0, 91321]
-            )  # [tot_ngenes_l, 0, 91321])
+                [subset_warn, 0, 0]
+            )  # [subset_warn, 0, 91321])
     else:
         fig.data[0].customdata = np.array(["no warnings"])
 
     if to_file is None:
+        print(fig["data"][0]["customdata"][0])
         app_instance = initialize_dash_app(fig, max_shown)
         app_instance.run(port=plotly_port)
 

@@ -349,6 +349,13 @@ def plot(
             df_d[pr_ix], tot_ngenes = make_subset(df_item, ID_COL, max_shown)
             tot_ngenes_l.append(tot_ngenes)
 
+    for tot_ngenes in tot_ngenes_l:
+        if tot_ngenes > max_shown:
+            subset_warn = 1
+            break
+        else:
+            subset_warn = 0
+
     # concat subset dataframes and create new column with input list index
     if not df_d:
         raise Exception("The provided PyRanges object/s are empty.")
@@ -507,6 +514,7 @@ def plot(
     # print("\n\n")
     # print("data used for plotting")
     # print(subdf)
+    print(tot_ngenes_l)
 
     if engine in ["plt", "matplotlib"]:
         if not missing_plt_flag:
@@ -564,6 +572,7 @@ def plot(
                 warnings=warnings,
                 tick_pos_d=tick_pos_d,
                 ori_tick_pos_d=ori_tick_pos_d,
+                subset_warn=subset_warn,
             )
         else:
             raise Exception(

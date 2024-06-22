@@ -78,20 +78,20 @@ def initialize_dash_app(fig, max_shown):
     def show_subs_warning(grfig):
         if grfig["data"][0]["customdata"][0] == "no warnings":
             return False
-        n_genes = int(grfig["data"][0]["customdata"][0])
-        if n_genes > max_shown:
+        warn = int(grfig["data"][0]["customdata"][0])
+        if warn:
             return True
 
     @app.callback(
         Output("alert-uncolored", "is_open"),
         Input("genes-plot", "figure"),
     )
-    # def show_uncol_warning(grfig):
-    #     if grfig["data"][0]["customdata"][0] == "no warnings":
-    #         return False
-    #     sign = int(grfig["data"][0]["customdata"][1])
-    #     if sign == 91124:
-    #         return True
+    def show_uncol_warning(grfig):
+        if grfig["data"][0]["customdata"][0] == "no warnings":
+            return False
+        sign = int(grfig["data"][0]["customdata"][1])
+        if sign == 91124:
+            return True
 
     @app.callback(
         Output("alert-iteration", "is_open"),
