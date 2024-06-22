@@ -27,7 +27,7 @@ information, but if desired the plot can be directly exported to a png or pdf fi
 
 
 <p align="center">
-    <img src="https://github.com/emunozdc/pyranges_plot/raw/main/images/general_ex.png">
+    <img src="https://github.com/pyranges/pyranges_plot/blob/main/images/general_ex.png">
 </p>
 
 
