@@ -7,7 +7,9 @@ from memory_profiler import memory_usage
 prp.set_engine("plt")
 prp.set_warnings(False)
 
-# https://ftp.ensembl.org/pub/release-112/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.46.112.gtf.gz
+# Download data: https://ftp.ensembl.org/pub/release-112/gtf/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.46.112.gtf.gz
+
+# Define chromosome and feature to test
 chrom = "X"
 feat = "CDS"
 
@@ -24,6 +26,14 @@ end_loading_m = memory_usage()[0]
 d_cds = d[d["Feature"] == feat]
 
 # Check number of genes in each chrom
+# d_cds.groupby("Chromosome").apply(
+#     lambda x: print(
+#         "CHROM:"
+#         + str(x["Chromosome"].iloc[0])
+#         + ":   "
+#         + str(len(x.groupby("gene_id")))
+#     )
+# )
 
 # Chromosome subset
 d_cds_chrom = d_cds[d_cds["Chromosome"] == chrom]
@@ -32,11 +42,13 @@ d_cds_chrom = d_cds[d_cds["Chromosome"] == chrom]
 end_subset_t = time.time()
 end_subset_m = memory_usage()[0]
 
+# Perform plot
 prp.plot(d_cds_chrom, id_col="gene_id", to_file="_tmp.png", max_shown=3000)
 
 end_plot_t = time.time()
 end_plot_m = memory_usage()[0]
 
+# Print results
 print("==============================================================")
 print(f"Drosophila melanogaster | Chromosome {chrom} | Feature {feat}\n")
 

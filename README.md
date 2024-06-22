@@ -13,21 +13,18 @@ of ranges contained in a PyRanges object. It displays the genes' intron-exon str
 in its corresponding chromosome, enabling easy visualization of your PyRanges data. The 
 Pyranges version compatible with Pyranges Plot is >= 1.0.0 (find it at https://github.com/pyranges/pyranges_1.x.git).
 
-To obtain the plot there are some features to be defined by the user, one is the 
-**engine** since it can be based on Matplotlib or Plotly, the other is optional and 
-refers to the name of the **gene ID** column in your data. The rest of features can 
-either be left as default or be customized. In example, the plot shows the first 25 
-genes of the dataframe by default, but this can be modified. 
+To obtain a plot, the variable `engine` must be specified by the user first. This variable 
+defines the graphic library on which the plots will be based: the valid `engine` options 
+are "matplotlib" or "plt" for Matplotlib and "plotly" or "ply" for Plotly. 
 
-In the case of coloring, Pyranges Plot offers a wide versatility. The data feature 
-(column) according to which the genes will be colored is by default the gene ID, but 
-this "color column" can be selected manually. Color specifications can be left as the 
-default colormap or be provided as dictionaries, lists or color objects from either 
-Matplotlib or Plotly regardless of the chosen engine. When a colormap or list of colors 
-is specified, the colors assigned to the genes will iterate over the provided ones 
-following the color column pattern. In the case of concrete color instructions such as 
-dictionary, the genes will be colored according to it while the non-specified ones will 
-be colored in black.
+Every other functionality can be defined during the `plot` function call. These 
+functionalities include the ID column to group the intervals belonging to the same item 
+(transcript, gene, protein...), items disposition, coloring criteria and palette, labels 
+and output form among others. The input for the `plot` fucntion is 1 or more PyRanges 
+objects, and the output is by default an interactive plot with zooming options and tooltip 
+information, but if desired the plot can be directly exported to a png or pdf file.
+
+
 
 <p align="center">
     <img src="https://github.com/emunozdc/pyranges_plot/raw/main/images/general_ex.png">
