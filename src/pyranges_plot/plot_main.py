@@ -12,6 +12,7 @@ from .core import (
     get_theme,
     set_options,
 )
+from .plot_features import prp_cmap
 from .data_preparation import (
     make_subset,
     get_genes_metadata,
@@ -322,6 +323,8 @@ def plot(
     }
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
+    if colormap == "Mariotti_lab palette":
+        colormap = prp_cmap
 
     # restore options set before plot is called
     set_theme(oldtheme)
@@ -514,7 +517,7 @@ def plot(
     # print("\n\n")
     # print("data used for plotting")
     # print(subdf)
-    print(tot_ngenes_l)
+    # print(tot_ngenes_l)
 
     if engine in ["plt", "matplotlib"]:
         if not missing_plt_flag:

@@ -89,8 +89,8 @@ Playing with limits
 Since the data has only 4 genes all of them are plotted, but the function has a default
 limit of 25, so in a case where the data contains more genes it will only show the top 25,
 unless the ``max_ngenes`` parameter is specified. For example, we can set the maximum number of
-genes as 2. Note that in the case of plotting more than 25 a warning about the plot's
-integrity will appear.
+genes as 2. Note that in the case of plotting less genes than the total amount in the data a
+warning will appear.
 
 .. code-block::
 
@@ -104,7 +104,7 @@ exons of each chromosome, but these can be customized. The user can decide to ch
 some of the coordinate limits leaving the rest as default if desired. The limits can be
 provided as a dictionary, tuple or PyRanges object:
 
-* Dictionary where the keys should be the data's chromosome names in string format and the values can be either ``None`` or a tuple indicating the limits. When a chromosome is not specified in the dictionary, or it is assigned ``None`` the coordinates will appear as default.
+* Dictionary where the keys should be the data's chromosome names as string and the values can be either ``None`` or a tuple indicating the limits. When a chromosome is not specified in the dictionary, or it is assigned ``None`` the coordinates will appear as default.
 
 * Tuple option sets the limits of all plotted chromosomes as specified.
 
@@ -146,7 +146,8 @@ specify it as a dictionary in the following way:
 The parameter ``colormap`` is very versatile because it accepts dictionaries for specific
 coloring, but also Matplotlib and Plotly color objects such as colormaps (or even just
 the string name of these objects) as well as lists of colors in hex or rgb. For example,
-we can use the Dark2 Matplotlib colormap, even if the plot is based on Plotly:
+we can use the Dark2 Matplotlib colormap, even if the plot is based on Plotly (all dependencies
+must be installed):
 
 .. code-block::
 
@@ -160,7 +161,7 @@ Display options
 
 The disposition of the genes is by default a packed disposition, so the genes are
 preferentially placed one beside the other. But this disposition can be displayed
-as 'full' if the user wants to display one gene under the other by setting the ``packed``
+as 'full' if the user wants to show one gene under the other by setting the ``packed``
 parameter as ``False``. Also, a legend can be added by setting the ``legend`` parameter
 to ``True``.
 
@@ -327,60 +328,61 @@ in the example above).
 
 .. code-block::
 
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    |     Feature      |    Value    | Edited? |                         Description                          |
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    |     colormap     |  Alphabet   |         | Sequence of colors to assign to every group of intervals     |
-    |                  |             |         | sharing the same “color_col” value. It can be provided as a  |
-    |                  |             |         | Matplotlib colormap, a Plotly color sequence (built as       |
-    |                  |             |         | lists), a string naming the previously mentioned color       |
-    |                  |             |         | objects from Matplotlib and Plotly, or a dictionary with     |
-    |                  |             |         | the following structure {color_column_value1: color1,        |
-    |                  |             |         | color_column_value2: color2, ...}. When a specific           |
-    |                  |             |         | color_col value is not specified in the dictionary it will   |
-    |                  |             |         | be colored in black.                                         |
-    |   exon_border    |    None     |         | Color of the interval's rectangle border.                    |
-    |     fig_bkg      |    white    |         | Bakground color of the whole figure.                         |
-    |    grid_color    |  lightgrey  |         | Color of x coordinates grid lines.                           |
-    |     plot_bkg     |    white    |         | Background color of the plots.                               |
-    |   plot_border    |    black    |         | Color of the line delimiting the plots.                      |
-    |    shrunk_bkg    | lightyellow |         | Color of the shrunk region background.                       |
-    |     tag_bkg      |    grey     |         | Background color of the tooltip annotation for the gene in   |
-    |                  |             |         | Matplotlib.                                                  |
-    |   title_color    |    black    |         | Color of the plots' titles.                                  |
-    |    title_size    |     18      |         | Size of the plots' titles.                                   |
-    |     x_ticks      |    None     |         | Int, list or dict defining the x_ticks to be displayed.      |
-    |                  |             |         | When int, number of ticks to be placed on each plot. When    |
-    |                  |             |         | list, it corresponds to de values used as ticks. When dict,  |
-    |                  |             |         | the keys must match the Chromosome values of the data,       |
-    |                  |             |         | while the values can be either int or list of int; when int  |
-    |                  |             |         | it corresponds to the number of ticks to be placed; when     |
-    |                  |             |         | list of int it corresponds to de values used as ticks. Note  |
-    |                  |             |         | that when the tick falls within a shrunk region it will not  |
-    |                  |             |         | be diplayed.                                                 |
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    |   arrow_color    |    grey     |         | Color of the arrow indicating strand.                        |
-    | arrow_line_width |      1      |         | Line width of the arrow lines                                |
-    |    arrow_size    |    0.006    |         | Float corresponding to the fraction of the plot or int       |
-    |                  |             |         | corresponding to the number of positions occupied by a       |
-    |                  |             |         | direction arrow.                                             |
-    |   exon_height    |     0.6     |         | Height of the exon rectangle in the plot.                    |
-    |   intron_color   |    None     |         | Color of the intron lines. When None, the color of the       |
-    |                  |             |         | first interval will be used.                                 |
-    |     text_pad     |    0.005    |         | Space where the id annotation is placed beside the           |
-    |                  |             |         | interval. When text_pad is float, it represents the          |
-    |                  |             |         | percentage of the plot space, while an int pad represents    |
-    |                  |             |         | number of positions or base pairs.                           |
-    |    text_size     |     10      |         | Fontsize of the text annotation beside the intervals.        |
-    |     v_spacer     |     0.5     |         | Vertical distance between the intervals and plot border.     |
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    |   plotly_port    |    8050     |         | Port to run plotly app.                                      |
-    | shrink_threshold |    0.01     |         | Minimum length of an intron or intergenic region in order    |
-    |                  |             |         | for it to be shrunk while using the “shrink” feature. When   |
-    |                  |             |         | threshold is float, it represents the fraction of the plot   |
-    |                  |             |         | space, while an int threshold represents number of           |
-    |                  |             |         | positions or base pairs.                                     |
-    +------------------+-------------+---------+--------------------------------------------------------------+
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |     Feature      |        Value         | Edited? |                         Description                          |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |     colormap     | Mariotti_lab palette |         | Sequence of colors to assign to every group of intervals     |
+    |                  |                      |         | sharing the same “color_col” value. It can be provided as a  |
+    |                  |                      |         | Matplotlib colormap, a Plotly color sequence (built as       |
+    |                  |                      |         | lists), a string naming the previously mentioned color       |
+    |                  |                      |         | objects from Matplotlib and Plotly, or a dictionary with     |
+    |                  |                      |         | the following structure {color_column_value1: color1,        |
+    |                  |                      |         | color_column_value2: color2, ...}. When a specific           |
+    |                  |                      |         | color_col value is not specified in the dictionary it will   |
+    |                  |                      |         | be colored in black.                                         |
+    |   exon_border    |         None         |         | Color of the interval's rectangle border.                    |
+    |     fig_bkg      |        white         |         | Bakground color of the whole figure.                         |
+    |    grid_color    |      lightgrey       |         | Color of x coordinates grid lines.                           |
+    |     plot_bkg     |        white         |         | Background color of the plots.                               |
+    |   plot_border    |        black         |         | Color of the line delimiting the plots.                      |
+    |    shrunk_bkg    |     lightyellow      |         | Color of the shrunk region background.                       |
+    |     tag_bkg      |         grey         |         | Background color of the tooltip annotation for the gene in   |
+    |                  |                      |         | Matplotlib.                                                  |
+    |   title_color    |        black         |         | Color of the plots' titles.                                  |
+    |    title_size    |          18          |         | Size of the plots' titles.                                   |
+    |     x_ticks      |         None         |         | Int, list or dict defining the x_ticks to be displayed.      |
+    |                  |                      |         | When int, number of ticks to be placed on each plot. When    |
+    |                  |                      |         | list, it corresponds to de values used as ticks. When dict,  |
+    |                  |                      |         | the keys must match the Chromosome values of the data,       |
+    |                  |                      |         | while the values can be either int or list of int; when int  |
+    |                  |                      |         | it corresponds to the number of ticks to be placed; when     |
+    |                  |                      |         | list of int it corresponds to de values used as ticks. Note  |
+    |                  |                      |         | that when the tick falls within a shrunk region it will not  |
+    |                  |                      |         | be diplayed.                                                 |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |   arrow_color    |         grey         |         | Color of the arrow indicating strand.                        |
+    | arrow_line_width |          1           |         | Line width of the arrow lines                                |
+    |    arrow_size    |        0.006         |         | Float corresponding to the fraction of the plot or int       |
+    |                  |                      |         | corresponding to the number of positions occupied by a       |
+    |                  |                      |         | direction arrow.                                             |
+    |   exon_height    |         0.6          |         | Height of the exon rectangle in the plot.                    |
+    |   intron_color   |         None         |         | Color of the intron lines. When None, the color of the       |
+    |                  |                      |         | first interval will be used.                                 |
+    |     text_pad     |        0.005         |         | Space where the id annotation is placed beside the           |
+    |                  |                      |         | interval. When text_pad is float, it represents the          |
+    |                  |                      |         | percentage of the plot space, while an int pad represents    |
+    |                  |                      |         | number of positions or base pairs.                           |
+    |    text_size     |          10          |         | Fontsize of the text annotation beside the intervals.        |
+    |     v_spacer     |         0.5          |         | Vertical distance between the intervals and plot border.     |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |   plotly_port    |         8050         |         | Port to run plotly app.                                      |
+    | shrink_threshold |         0.01         |         | Minimum length of an intron or intergenic region in order    |
+    |                  |                      |         | for it to be shrunk while using the “shrink” feature. When   |
+    |                  |                      |         | threshold is float, it represents the fraction of the plot   |
+    |                  |                      |         | space, while an int threshold represents number of           |
+    |                  |                      |         | positions or base pairs.                                     |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+
 
 
 Once you found the feature you would like to customize, it can be modified:
@@ -406,58 +408,61 @@ Now the modified values will be marked when checking the options values:
 
 .. code-block::
 
-    +------------------+--------------------+---------+--------------------------------------------------------------+
-    |     colormap     |      Alphabet      |         | Sequence of colors to assign to every group of intervals     |
-    |                  |                    |         | sharing the same “color_col” value. It can be provided as a  |
-    |                  |                    |         | Matplotlib colormap, a Plotly color sequence (built as       |
-    |                  |                    |         | lists), a string naming the previously mentioned color       |
-    |                  |                    |         | objects from Matplotlib and Plotly, or a dictionary with     |
-    |                  |                    |         | the following structure {color_column_value1: color1,        |
-    |                  |                    |         | color_column_value2: color2, ...}. When a specific           |
-    |                  |                    |         | color_col value is not specified in the dictionary it will   |
-    |                  |                    |         | be colored in black.                                         |
-    |   exon_border    |        None        |         | Color of the interval's rectangle border.                    |
-    |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
-    |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
-    |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |
-    |   plot_border    |      #808080       |    *    | Color of the line delimiting the plots.                      |
-    |    shrunk_bkg    |    lightyellow     |         | Color of the shrunk region background.                       |
-    |     tag_bkg      |        grey        |         | Background color of the tooltip annotation for the gene in   |
-    |                  |                    |         | Matplotlib.                                                  |
-    |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
-    |    title_size    |         18         |         | Size of the plots' titles.                                   |
-    |     x_ticks      |        None        |         | Int, list or dict defining the x_ticks to be displayed.      |
-    |                  |                    |         | When int, number of ticks to be placed on each plot. When    |
-    |                  |                    |         | list, it corresponds to de values used as ticks. When dict,  |
-    |                  |                    |         | the keys must match the Chromosome values of the data,       |
-    |                  |                    |         | while the values can be either int or list of int; when int  |
-    |                  |                    |         | it corresponds to the number of ticks to be placed; when     |
-    |                  |                    |         | list of int it corresponds to de values used as ticks. Note  |
-    |                  |                    |         | that when the tick falls within a shrunk region it will not  |
-    |                  |                    |         | be diplayed.                                                 |
-    +------------------+--------------------+---------+--------------------------------------------------------------+
-    |   arrow_color    |        grey        |         | Color of the arrow indicating strand.                        |
-    | arrow_line_width |         1          |         | Line width of the arrow lines                                |
-    |    arrow_size    |       0.006        |         | Float corresponding to the fraction of the plot or int       |
-    |                  |                    |         | corresponding to the number of positions occupied by a       |
-    |                  |                    |         | direction arrow.                                             |
-    |   exon_height    |        0.6         |         | Height of the exon rectangle in the plot.                    |
-    |   intron_color   |        None        |         | Color of the intron lines. When None, the color of the       |
-    |                  |                    |         | first interval will be used.                                 |
-    |     text_pad     |       0.005        |         | Space where the id annotation is placed beside the           |
-    |                  |                    |         | interval. When text_pad is float, it represents the          |
-    |                  |                    |         | percentage of the plot space, while an int pad represents    |
-    |                  |                    |         | number of positions or base pairs.                           |
-    |    text_size     |         10         |         | Fontsize of the text annotation beside the intervals.        |
-    |     v_spacer     |        0.5         |         | Vertical distance between the intervals and plot border.     |
-    +------------------+--------------------+---------+--------------------------------------------------------------+
-    |   plotly_port    |        8050        |         | Port to run plotly app.                                      |
-    | shrink_threshold |        0.01        |         | Minimum length of an intron or intergenic region in order    |
-    |                  |                    |         | for it to be shrunk while using the “shrink” feature. When   |
-    |                  |                    |         | threshold is float, it represents the fraction of the plot   |
-    |                  |                    |         | space, while an int threshold represents number of           |
-    |                  |                    |         | positions or base pairs.                                     |
-    +------------------+--------------------+---------+--------------------------------------------------------------+
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |     Feature      |        Value         | Edited? |                         Description                          |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |     colormap     | Mariotti_lab palette |         | Sequence of colors to assign to every group of intervals     |
+    |                  |                      |         | sharing the same “color_col” value. It can be provided as a  |
+    |                  |                      |         | Matplotlib colormap, a Plotly color sequence (built as       |
+    |                  |                      |         | lists), a string naming the previously mentioned color       |
+    |                  |                      |         | objects from Matplotlib and Plotly, or a dictionary with     |
+    |                  |                      |         | the following structure {color_column_value1: color1,        |
+    |                  |                      |         | color_column_value2: color2, ...}. When a specific           |
+    |                  |                      |         | color_col value is not specified in the dictionary it will   |
+    |                  |                      |         | be colored in black.                                         |
+    |   exon_border    |         None         |         | Color of the interval's rectangle border.                    |
+    |     fig_bkg      |        white         |         | Bakground color of the whole figure.                         |
+    |    grid_color    |      lightgrey       |         | Color of x coordinates grid lines.                           |
+    |     plot_bkg     |  rgb(173, 216, 230)  |    *    | Background color of the plots.                               |
+    |   plot_border    |       #808080        |    *    | Color of the line delimiting the plots.                      |
+    |    shrunk_bkg    |     lightyellow      |         | Color of the shrunk region background.                       |
+    |     tag_bkg      |         grey         |         | Background color of the tooltip annotation for the gene in   |
+    |                  |                      |         | Matplotlib.                                                  |
+    |   title_color    |       magenta        |    *    | Color of the plots' titles.                                  |
+    |    title_size    |          18          |         | Size of the plots' titles.                                   |
+    |     x_ticks      |         None         |         | Int, list or dict defining the x_ticks to be displayed.      |
+    |                  |                      |         | When int, number of ticks to be placed on each plot. When    |
+    |                  |                      |         | list, it corresponds to de values used as ticks. When dict,  |
+    |                  |                      |         | the keys must match the Chromosome values of the data,       |
+    |                  |                      |         | while the values can be either int or list of int; when int  |
+    |                  |                      |         | it corresponds to the number of ticks to be placed; when     |
+    |                  |                      |         | list of int it corresponds to de values used as ticks. Note  |
+    |                  |                      |         | that when the tick falls within a shrunk region it will not  |
+    |                  |                      |         | be diplayed.                                                 |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |   arrow_color    |         grey         |         | Color of the arrow indicating strand.                        |
+    | arrow_line_width |          1           |         | Line width of the arrow lines                                |
+    |    arrow_size    |        0.006         |         | Float corresponding to the fraction of the plot or int       |
+    |                  |                      |         | corresponding to the number of positions occupied by a       |
+    |                  |                      |         | direction arrow.                                             |
+    |   exon_height    |         0.6          |         | Height of the exon rectangle in the plot.                    |
+    |   intron_color   |         None         |         | Color of the intron lines. When None, the color of the       |
+    |                  |                      |         | first interval will be used.                                 |
+    |     text_pad     |        0.005         |         | Space where the id annotation is placed beside the           |
+    |                  |                      |         | interval. When text_pad is float, it represents the          |
+    |                  |                      |         | percentage of the plot space, while an int pad represents    |
+    |                  |                      |         | number of positions or base pairs.                           |
+    |    text_size     |          10          |         | Fontsize of the text annotation beside the intervals.        |
+    |     v_spacer     |         0.5          |         | Vertical distance between the intervals and plot border.     |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+    |   plotly_port    |         8050         |         | Port to run plotly app.                                      |
+    | shrink_threshold |         0.01         |         | Minimum length of an intron or intergenic region in order    |
+    |                  |                      |         | for it to be shrunk while using the “shrink” feature. When   |
+    |                  |                      |         | threshold is float, it represents the fraction of the plot   |
+    |                  |                      |         | space, while an int threshold represents number of           |
+    |                  |                      |         | positions or base pairs.                                     |
+    +------------------+----------------------+---------+--------------------------------------------------------------+
+
 
 
 To return to the original appearance of the plot, the ``reset_options`` function can restore
@@ -482,4 +487,6 @@ is the following:
 .. code-block::
 
     import pyranges_plot as prp
+
+    # Register plot function and define engine simultaneously
     prp.register_plot("matplotlib")

@@ -26,7 +26,7 @@ plot_features_dict = {
         " ",
     ),
     "colormap": (
-        prp_cmap,
+        "Mariotti_lab palette",
         "Sequence of colors to assign to every group of intervals sharing the same “color_col” value. It can be provided as a Matplotlib colormap, a Plotly color sequence (built as lists), a string naming the previously mentioned color objects from Matplotlib and Plotly, or a dictionary with the following structure {color_column_value1: color1, color_column_value2: color2, ...}. When a specific color_col value is not specified in the dictionary it will be colored in black.",
         " ",
     ),

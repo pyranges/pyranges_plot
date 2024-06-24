@@ -384,6 +384,7 @@ def print_options(return_keys=False):
                 ]
             )
         ].copy()
+
         intragen_feat_df = feat_df[
             feat_df.index.isin(
                 [
@@ -398,6 +399,7 @@ def print_options(return_keys=False):
                 ]
             )
         ].copy()
+
         other_feat_df = feat_df[
             feat_df.index.isin(["shrink_threshold", "plotly_port"])
         ].copy()
