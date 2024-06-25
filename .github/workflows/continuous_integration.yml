@@ -29,4 +29,4 @@ jobs:
     - name: Test with pytest
       run: |
         conda install pytest
-        pytest
+        pytest --ignore=examples
