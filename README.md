@@ -46,7 +46,7 @@ If the user wishes to use only one of the engines, the installation of all depen
 can be avoided by using the engine-specific installation options:
 ```
 # For matplotlib
-pip install pyranges-plot[plt]
+pip install pyranges-plot[matplotlib]
 
 # For plotly
 pip install pyranges-plot[plotly]

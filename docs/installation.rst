@@ -10,7 +10,7 @@ commands: ::
 
     pip install pyranges-plot[plotly]
 
-    pip install pyranges-plot[plt]
+    pip install pyranges-plot[matplotlib]
 
 To install all dependencies in order to be able to use both engines' functionalities,
 the [all] option must be specified: ::

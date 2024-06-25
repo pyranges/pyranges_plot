@@ -323,7 +323,7 @@ def plot(
     }
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
-    if colormap == "Mariotti_lab palette":
+    if colormap == "popart":
         colormap = prp_cmap
 
     # restore options set before plot is called
