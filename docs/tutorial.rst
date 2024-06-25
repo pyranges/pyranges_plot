@@ -27,21 +27,13 @@ explained later on.
 
 .. image:: images/options_fig_wm.png
 
-To showcase its functionalities we will load some example data using a dictionary, however Pyranges
-includes a series of data loading options like gff, gtf, bam... (take a look at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_
-to know more!).
+To showcase its functionalities we will load some example data included in the Pyranges Plot package,
+however Pyranges provides a series of data loading options like gff, gtf, bam... (take a look
+at `Pyranges documentation <https://pyranges1.readthedocs.io/en/latest/>`_ to know more!).
 
 .. code-block::
 
-    import pyranges as pr
-
-    p = pr.PyRanges({"Chromosome": [1, 1, 2, 2, 2, 2, 2, 3],
-                    "Strand": ["+", "+", "-", "-", "+", "+", "+", "+"],
-                    "Start": [1, 40, 10, 70, 85, 110, 150, 140],
-                    "End": [11, 60, 25, 80, 100, 115, 180, 152],
-                    "transcript_id":["t1", "t1", "t2", "t2", "t3", "t3", "t3", "t4"],
-                    "feature1": ["a", "a", "b", "b", "c", "c", "c", "d"],
-                    "feature2": ["A", "A", "B", "B", "C", "C", "C", "D"]})
+    p = prp.example_data.p1
     print(p)
 
 .. code-block::
@@ -207,25 +199,11 @@ values are accepted.
 .. code-block::
 
     # Store data
-    p_ala = pr.PyRanges({
-        "Start": [10, 50, 90] + [13, 60, 72, 120],
-        "End": [20, 75, 130] + [16, 63, 75, 123],
-        "Chromosome": [1]*7,
-        "id": ["gene1"]*7,
-        "trait1": ["exon"]*3 + ["aa"]*4 ,
-        "trait2": ["gene_1"]*3 + ["Ala"]*4,
-        "depth": [0]*3 + [1]*4,
-    })
+    p_ala = prp.example_data.p_ala
+    p_cys = prp.example_data.p_cys
 
-    p_cys = pr.PyRanges({
-        "Start": [10, 50, 90] + [15, 55, 62, 100, 110],
-        "End": [20, 75, 130] + [18, 58, 65, 103, 113],
-        "Chromosome": [1]*8,
-        "id": ["gene1"]*8,
-        "trait1": ["exon"]*3 + ["aa"]*5 ,
-        "trait2": ["gene_1"]*3 + ["Cys"]*5,
-        "depth": [0]*3 + [1]*5,
-    })
+    print(p_ala)
+    print(p_cys)
 
     # Plot both PyRanges using depth to differentiate
     prp.plot(
@@ -234,6 +212,38 @@ values are accepted.
         y_labels=["pr Alanine", "pr Cysteine"],
         thickness_col="trait1",
     )
+
+.. code-block::
+
+      index  |      Start      End    Chromosome  id        trait1    trait2      depth
+      int64  |      int64    int64         int64  object    object    object      int64
+    -------  ---  -------  -------  ------------  --------  --------  --------  -------
+          0  |         10       20             1  gene1     exon      gene_1          0
+          1  |         50       75             1  gene1     exon      gene_1          0
+          2  |         90      130             1  gene1     exon      gene_1          0
+          3  |         13       16             1  gene1     aa        Ala             1
+          4  |         60       63             1  gene1     aa        Ala             1
+          5  |         72       75             1  gene1     aa        Ala             1
+          6  |        120      123             1  gene1     aa        Ala             1
+    PyRanges with 7 rows, 7 columns, and 1 index columns.
+    Contains 1 chromosomes.
+
+      index  |      Start      End    Chromosome  id        trait1    trait2      depth
+      int64  |      int64    int64         int64  object    object    object      int64
+    -------  ---  -------  -------  ------------  --------  --------  --------  -------
+          0  |         10       20             1  gene1     exon      gene_1          0
+          1  |         50       75             1  gene1     exon      gene_1          0
+          2  |         90      130             1  gene1     exon      gene_1          0
+          3  |         15       18             1  gene1     aa        Cys             1
+          4  |         55       58             1  gene1     aa        Cys             1
+          5  |         62       65             1  gene1     aa        Cys             1
+          6  |        100      103             1  gene1     aa        Cys             1
+          7  |        110      113             1  gene1     aa        Cys             1
+    PyRanges with 8 rows, 7 columns, and 1 index columns.
+    Contains 1 chromosomes.
+
+
+
 
 .. image:: images/prp_rtd_11.png
 
@@ -267,19 +277,30 @@ the "Feature" column of the data. A usage example is:
 
 .. code-block::
 
-    pp = pr.PyRanges({
-     "Chromosome": [1, 1, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4],
-     "Strand": ["+", "+", "-", "-", "+", "+", "+", "+", "-", "-", "-", "-", "+", "+"],
-     "Start": [1, 40, 10, 70, 85, 110, 150, 140, 30100, 30150, 30500, 30647, 29850, 29970],
-     "End": [11, 60, 25, 80, 100, 115, 180, 152, 30300, 30300, 30700, 30700, 29900, 30000],
-     "transcript_id": ["t1", "t1", "t2", "t2", "t3", "t3", "t3", "t4", "t5", "t5", "t5", "t5", "t6", "t6"],
-     "feature1": ["1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2"],
-     "feature2": ["A", "A", "B", "B", "C", "C", "C", "D", "E", "E", "E", "E", "F", "F"],
-     "Feature": ["exon", "exon", "CDS", "CDS", "CDS", "CDS", "CDS", "exon", "exon", "CDS", "CDS", "exon", "CDS", "CDS"]
+    pp = prp.example_data.p2
 
-    })
+    print(pp)
 
     prp.plot(pp, thick_cds=True)
+
+.. code-block::
+
+    index    |    Chromosome    Strand    Start    End      transcript_id    feature1    feature2    Feature
+    int64    |    int64         object    int64    int64    object           object      object      object
+    -------  ---  ------------  --------  -------  -------  ---------------  ----------  ----------  ---------
+    0        |    1             +         1        11       t1               1           A           exon
+    1        |    1             +         40       60       t1               1           A           exon
+    2        |    2             -         10       25       t2               1           B           CDS
+    3        |    2             -         70       80       t2               1           B           CDS
+    ...      |    ...           ...       ...      ...      ...              ...         ...         ...
+    10       |    4             -         30500    30700    t5               2           E           CDS
+    11       |    4             -         30647    30700    t5               2           E           exon
+    12       |    4             +         29850    29900    t6               2           F           CDS
+    13       |    4             +         29970    30000    t6               2           F           CDS
+    PyRanges with 14 rows, 8 columns, and 1 index columns.
+    Contains 4 chromosomes and 2 strands.
+
+
 
 .. image:: images/prp_rtd_12.png
 
@@ -296,16 +317,30 @@ coordinate range, while when an int is given it will be interpreted as number of
 
 .. code-block::
 
-    ppp = pr.PyRanges({'Chromosome': ['1'] * 10 + ['2'] * 10,
-                    'Strand': ['+', '+', '+', '+', '-', '-', '-', '-', '+', '+'] + ["+", "+", "+", "+", "-", "-", "-", "-", "+", "+"],
-                    'Start': [90, 61, 104, 228, 9, 142, 52, 149, 218, 151] + [5, 27, 37, 47, 1, 7, 42, 37, 60, 80],
-                    'End': [92, 64, 113, 229, 12, 147, 57, 155, 224, 153] + [8, 32, 40, 50, 5, 10, 46, 40, 70, 90],
-                    'transcript_id': ['t1', 't1', 't1', 't1', 't2', 't2', 't2', 't2', 't3', 't3'] + ["t4", "t4", "t4", "t4", "t5", "t5", "t5", "t5", "t6", "t6"],
-                    'Feature': ["exon"] * 20
-                    })
+    ppp = prp.example_data.p3
+
+    print(ppp)
 
     prp.plot(ppp, shrink=True)
     prp.plot(ppp, shrink=True, shrink_threshold=0.2)
+
+.. code-block::
+
+    index    |    Chromosome    Strand    Start    End      transcript_id
+    int64    |    object        object    int64    int64    object
+    -------  ---  ------------  --------  -------  -------  ---------------
+    0        |    1             +         90       92       t1
+    1        |    1             +         61       64       t1
+    2        |    1             +         104      113      t1
+    3        |    1             +         228      229      t1
+    ...      |    ...           ...       ...      ...      ...
+    16       |    2             -         42       46       t5
+    17       |    2             -         37       40       t5
+    18       |    2             +         60       70       t6
+    19       |    2             +         80       90       t6
+    PyRanges with 20 rows, 5 columns, and 1 index columns.
+    Contains 2 chromosomes and 2 strands.
+
 
 .. image:: images/prp_rtd_13.png
 .. image:: images/prp_rtd_14.png
