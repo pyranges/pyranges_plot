@@ -16,8 +16,10 @@ feat = "CDS"
 start_loading_t = time.time()
 start_loading_m = memory_usage()[0]
 
-path = "drosophila/Drosophila_melanogaster.BDGP6.46.112.gtf"  ## modify if needed
-d = pr.read_gtf(path)
+# !! Uncomment and modify the following two lines and remove the third one
+# path = "drosophila/Drosophila_melanogaster.BDGP6.46.112.gtf"  ## modify if needed
+# d = pr.read_gtf(path)
+d = pr.PyRanges({"Feature": []})
 
 end_loading_t = time.time()
 end_loading_m = memory_usage()[0]
