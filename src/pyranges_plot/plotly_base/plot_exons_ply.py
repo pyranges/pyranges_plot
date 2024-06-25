@@ -152,7 +152,6 @@ def plot_exons_ply(
         fig.data[0].customdata = np.array(["no warnings"])
 
     if to_file is None:
-        print(fig["data"][0]["customdata"][0])
         app_instance = initialize_dash_app(fig, max_shown)
         app_instance.run(port=plotly_port)
 

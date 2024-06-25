@@ -302,7 +302,7 @@ def get_genes_metadata(df, id_col, color_col, packed, exon_height, v_spacer):
             [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
         ).apply(genesmd_packed)  # add packed ycoord column
         genesmd_df.reset_index(level=CHROM_COL, inplace=True)
-        genesmd_df = genesmd_df.groupby(CHROM_COL).apply(
+        genesmd_df = genesmd_df.groupby(CHROM_COL, observed=True).apply(
             lambda x: update_y(x, exon_height, v_spacer)
         )
         genesmd_df.drop(CHROM_COL, axis=1, inplace=True)
@@ -481,7 +481,7 @@ def get_chromosome_metadata(
         ].max()
     )
     chrmd_df.rename(columns={"ycoord": "pr_line"}, inplace=True)
-    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL)["pr_line"].shift(
+    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_line"].shift(
         -1, fill_value=-(0.5 + exon_height / 2 + v_spacer)
     )
 
