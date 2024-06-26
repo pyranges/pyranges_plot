@@ -503,22 +503,7 @@ def plot(
             lambda x: compute_tpad(x, chrmd_df_grouped) if not x.empty else None
         )
 
-    # print("genesmd")
-    # print(genesmd_df)
-    # print("\n\n")
-    # print("chrmd")
-    # print(chrmd_df)
-    # print("\n\n")
-    # print("grouped_chrmd")
-    # print(chrmd_df_grouped)
-    # print("\n\n")
-    # print("original data")
-    # print(data)
-    # print("\n\n")
-    # print("data used for plotting")
-    # print(subdf)
-    # print(tot_ngenes_l)
-
+    # deal with engine and call proper plot
     if engine in ["plt", "matplotlib"]:
         if not missing_plt_flag:
             plot_exons_plt(
