@@ -21,8 +21,8 @@ jobs:
     - name: Install dependencies
       run: |
         # I am using the pip installed by conda, bad practice but OK in C/I I think
-        pip3.12 install pyranges-plot[all]==0.1.0
-        pip3.12 install ruff pytest
+        pip install pyranges-plot[all]==0.1.0
+        pip install ruff pytest
     - name: Check formatting with ruff
       run: |
          ruff format --check src
