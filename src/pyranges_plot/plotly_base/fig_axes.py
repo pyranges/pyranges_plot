@@ -2,9 +2,9 @@ import plotly.subplots as sp
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
-from pyranges.core.names import CHROM_COL, START_COL, END_COL
+from pyranges.core.names import START_COL, END_COL
 from pyranges_plot.core import cumdelting
-from pyranges_plot.names import PR_INDEX_COL, ORISTART_COL, ORIEND_COL, CUM_DELTA_COL
+from pyranges_plot.names import PR_INDEX_COL, CUM_DELTA_COL
 
 
 def calculate_ticks(chrom_md_grouped, chrom, num_ticks=10):

@@ -97,7 +97,7 @@ def initialize_dash_app(fig, max_shown):
         Output("alert-iteration", "is_open"),
         Input("genes-plot", "figure"),
     )
-    def show_uncol_warning(grfig):
+    def show_iter_warning(grfig):
         if grfig["data"][0]["customdata"][0] == "no warnings":
             return False
         sign = int(grfig["data"][0]["customdata"][2])
