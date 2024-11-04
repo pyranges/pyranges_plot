@@ -3,17 +3,15 @@ Installation
 
 Pyranges Plot requires Python ≥ 3.12 and can be installed using pip.
 
-As the plot production can based on either Plotly or Matplotlib, the graphic library-specific
-installations are enabled. This way if the user wants to install exclusively the dependencies
-correspondent to one of those libraries it can be done by running just one of the following
-commands: ::
+Pyranges Plot supports two alternative graphical libraries ("engines"): plotly and matplotlib.
+At least one must be installed. Use these commands to install Pyranges Plot together with
+your engine of choice::
 
     pip install pyranges-plot[plotly]
 
     pip install pyranges-plot[matplotlib]
 
-To install all dependencies in order to be able to use both engines' functionalities,
-the [all] option must be specified: ::
+To install both engines, use instead::
 
     pip install pyranges-plot[all]
 
