@@ -7,11 +7,14 @@ def register_plot(engine=None):
     """
     Register the plot function as a method to PyRanges.
 
+    Allows to use the plot function as a method of PyRanges, as PyRanges.plot().
+    Optionally, set the plotting engine.
+
     Parameters
     ----------
-    engine: {str}
+    engine: {str}, default None
 
-        String defining the engine for plotting: Matplotlib ('plt', 'matplotlib') or Plotly ('ply', 'plotly').
+        Optional string to set the engine for plotting: Matplotlib ('plt', 'matplotlib') or Plotly ('ply', 'plotly').
 
     Examples
     --------
