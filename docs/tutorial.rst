@@ -114,6 +114,8 @@ The ``limits`` parameter accepts different input types:
 
 .. image:: images/prp_rtd_04.png
 
+To plot with specified limits, use the following code:
+
     >>> prp.plot(p, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
@@ -153,7 +155,13 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
 
 .. image:: images/prp_rtd_08.png
 
-.. @maxtico: please add a plot showcasing the legend=True option. Add some short text before it
+To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
+to interpret the intervals based on their assigned colors. This can be done by setting the 
+**legend** parameter of :func:`plot <pyranges_plot.plot>` as True:
+
+    >>> prp.plot(p, colormap="Dark2", legend=True)
+
+.. image:: images/prp_rtd_20.png
 
 In this section, we have seen how to color intervals based on their attributes.
 Next, we will see how to customize the appearance of the plot itself.
@@ -273,7 +281,7 @@ documentation. For example, here's the "dark" theme:
     >>> prp.set_theme('dark')
     >>> prp.plot(p)
 
-.. @maxtico: please add this plot
+.. image:: images/prp_rtd_16.png
 
 To reset the theme, you can resort again to :func:`reset_options <pyranges_plot.reset_options>`.
 
@@ -288,11 +296,9 @@ To instead display one transcript per row, set the ``packed`` parameter as ``Fal
 
 .. code-block::
 
-    prp.plot(p, packed=False, legend = True)
+    prp.plot(p, packed=False, legend = False)
 
 .. image:: images/prp_rtd_09.png
-
-.. @maxtico: please remove legend from text and replace the plot accordingly
 
 
 Pyranges_plot offers the option to reduce horizontal space, occupied by introns or intergenic regions,
@@ -437,7 +443,7 @@ Let's see an example with two PyRanges objects, mapping the occurrences of two a
 
     prp.plot([p_ala, p_cys])
 
-.. @maxtico: please make this plot
+.. image:: images/prp_rtd_17.png
 
 When providing multiple PyRanges objects, it is useful to differentiate them in the plot. The ``y_labels`` parameter
 allows to provide a list of strings, one for each PyRanges object, to be displayed on the left side of the plot:
@@ -449,7 +455,7 @@ allows to provide a list of strings, one for each PyRanges object, to be display
         y_labels=["pr Alanine", "pr Cysteine"]
     )
 
-.. @maxtico: make this plot
+.. image:: images/prp_rtd_18.png
 
 Customizing depth and thickness
 -------------------------------
@@ -469,13 +475,14 @@ closer the interval will be to the top of the plot, ensuring its visibility:
         depth_col="depth"
     )
 
-.. @maxtico: make this plot
+.. image:: images/prp_rtd_19.png
 
 Another way to highlight overlapping regions is by playing with the height (or thickness) of the blocks representing
 intervals. This is achieved by using the ``thickness_col`` parameter, which defines a data column name whose values
 determine thickness of the corresponding intervals:
 
 .. code-block::
+
     prp.plot(
         [p_ala, p_cys],
         id_col="id",
@@ -484,10 +491,7 @@ determine thickness of the corresponding intervals:
         thickness_col="trait1",
     )
 
-
 .. image:: images/prp_rtd_11.png
-
-.. @maxtico: replace this last plot (I changed the code but didn't update the plot)
 
 
 Additional information: tooltips and titles
