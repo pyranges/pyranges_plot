@@ -377,6 +377,7 @@ def print_options(return_keys=False):
                     "plot_border",
                     "title_size",
                     "title_color",
+                    "title_font",
                     "grid_color",
                     "exon_border",
                     "shrunk_bkg",

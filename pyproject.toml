@@ -84,6 +84,6 @@ deps =
     intervaltree>=3.1.0
     kaleido>=0.2.1
 commands = 
-    pytest tests/test_mpl.py --mpl --mpl-results-path=results --mpl-generate-summary=html
     pytest tests/test_ply.py
+    pytest tests/test_mpl.py --mpl --mpl-results-path=results --mpl-generate-summary=html
 """
