@@ -76,7 +76,7 @@ def create_fig(
             raise ValueError("add_aligned_plots must be a list.")
 
     # Defining vertical spacing between plots
-    def_vertical_spacing = 0.3
+    def_vertical_spacing = 0.25
     if custom_dict_list:
         for custom_dict in custom_dict_list:
             vertical_spacing = custom_dict.get('y_space', def_vertical_spacing)
@@ -89,14 +89,25 @@ def create_fig(
     total_rows = num_main_rows + num_additional_rows
     row_heights_additional = [0.5] * num_additional_rows
 
-    fig = sp.make_subplots(
-        rows=total_rows,
-        cols=1,
-        row_heights=chrmd_df_grouped["y_height"].to_list()+row_heights_additional,
-        subplot_titles=titles,
-        shared_xaxes=True,
-        vertical_spacing=vertical_spacing,
-    )
+    shared_axes = False
+    if add_aligned_plots:
+        shared_axes = True
+        fig = sp.make_subplots(
+            rows=total_rows,
+            cols=1,
+            row_heights=chrmd_df_grouped["y_height"].to_list()+row_heights_additional,
+            subplot_titles=titles,
+            shared_xaxes=shared_axes,
+            vertical_spacing=vertical_spacing,
+        )
+    else:
+        fig = sp.make_subplots(
+            rows=total_rows,
+            cols=1,
+            row_heights=chrmd_df_grouped["y_height"].to_list()+row_heights_additional,
+            subplot_titles=titles,
+            shared_xaxes=shared_axes,
+        )
 
     # one subplot per chromosome
     for i in range(total_rows):

@@ -4,6 +4,7 @@ from PIL import Image, ImageChops
 import os
 import pytest
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 data1 = pr.PyRanges(
     {
@@ -84,6 +85,30 @@ data4 = pr.PyRanges(
 data5 = data4.copy()
 data5["depth"] = [1, 0]
 
+vcf = pr.PyRanges(
+    {
+        "Chromosome": ["1"] * 9,  # CHROM renamed to Chromosome
+        "Start": [500, 3500, 300, 1300, 3500, 4500, 4900, 5600, 6000],  # POS column renamed to Start
+        "End": [501, 3501, 301, 1301, 3501, 4501, 4901, 5601, 6001],  # End is calculated as Start + 1
+        "ID": ["."] * 9,  # ID from the VCF file
+        "REF": ["A"] * 9,  # REF column
+        "ALT": ["T"] * 9,  # ALT column
+        "QUAL": ["."] * 9,  # QUAL column
+        "FILTER": ["PASS"] * 9,  # FILTER column
+        "transcript_id": ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"],  # Extracted from INFO
+        "second_id": ["a", "a", "a", "a", "b", "b", "b", "b", "b"],  # Extracted from INFO
+        "Count": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    }
+)
+
+# Create a scatter plot trace with the adapted Start positions
+aligned_traces = [
+    (go.Scatter(
+        x=[500, 3500, 300, 1300, 3500, 4500, 4900, 5600, 6000],  # Adapted Start positions
+        y=[1, 2, 3, 4, 5, 6, 7, 8, 9],  # Arbitrary y-values for demonstration
+        mode='markers'
+    ), {"title": "VCF Scatter Plot"})
+]
 
 prp.set_engine("ply")
 prp.set_id_col("transcript_id")
@@ -528,6 +553,116 @@ def test16(test_name):
         tooltip="{depth}",
         colormap={"0": "#505050", "1": "goldenrod"},
         to_file=output_path
+    )  # colormap as dict
+    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
+
+    # Opening images
+    baseline = Image.open(baseline_path).convert("RGB")
+    result = Image.open(output_path).convert("RGB")
+
+    # Resizing images to avoid pytest crash
+    if result.size != baseline.size:
+        result = result.resize(baseline.size)
+
+    diff = ImageChops.difference(baseline, result)
+
+    if diff.getbbox():
+        # Save the diff image for inspection
+        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
+        diff.save(diff_path)
+        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
+
+@pytest.mark.parametrize("test_name", ["test17"])
+def test17(test_name):
+    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
+    prp.plot(
+        [data1, vcf],
+        id_col="transcript_id",
+        to_file=output_path
+    )  # colormap as dict
+    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
+
+    # Opening images
+    baseline = Image.open(baseline_path).convert("RGB")
+    result = Image.open(output_path).convert("RGB")
+
+    # Resizing images to avoid pytest crash
+    if result.size != baseline.size:
+        result = result.resize(baseline.size)
+
+    diff = ImageChops.difference(baseline, result)
+
+    if diff.getbbox():
+        # Save the diff image for inspection
+        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
+        diff.save(diff_path)
+        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
+
+aligned = prp.make_scatter(vcf,y='Count')
+@pytest.mark.parametrize("test_name", ["test18"])
+def test18(test_name):
+    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
+    prp.plot(
+        [data1, vcf],
+        id_col="transcript_id",
+        add_aligned_plots = [aligned],
+        to_file=output_path,
+    )  # colormap as dict
+    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
+
+    # Opening images
+    baseline = Image.open(baseline_path).convert("RGB")
+    result = Image.open(output_path).convert("RGB")
+
+    # Resizing images to avoid pytest crash
+    if result.size != baseline.size:
+        result = result.resize(baseline.size)
+
+    diff = ImageChops.difference(baseline, result)
+
+    if diff.getbbox():
+        # Save the diff image for inspection
+        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
+        diff.save(diff_path)
+        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
+
+aligned1 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18)
+@pytest.mark.parametrize("test_name", ["test19"])
+def test19(test_name):
+    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
+    prp.plot(
+        [data1, vcf],
+        id_col="transcript_id",
+        add_aligned_plots = [aligned1],
+        to_file=output_path,
+    )  # colormap as dict
+    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
+
+    # Opening images
+    baseline = Image.open(baseline_path).convert("RGB")
+    result = Image.open(output_path).convert("RGB")
+
+    # Resizing images to avoid pytest crash
+    if result.size != baseline.size:
+        result = result.resize(baseline.size)
+
+    diff = ImageChops.difference(baseline, result)
+
+    if diff.getbbox():
+        # Save the diff image for inspection
+        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
+        diff.save(diff_path)
+        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
+
+aligned2 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18,y_axis_len=0.5,y_space=0.5)
+@pytest.mark.parametrize("test_name", ["test20"])
+def test20(test_name):
+    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
+    prp.plot(
+        [data1, vcf],
+        id_col="transcript_id",
+        add_aligned_plots = [aligned2],
+        to_file=output_path,
     )  # colormap as dict
     baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
 

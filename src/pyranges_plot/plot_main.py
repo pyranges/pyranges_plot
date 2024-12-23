@@ -520,22 +520,30 @@ def plot(
     else:
         strand = ""
 
-    subdf['REF'] = subdf['REF'].astype(str)
-    subdf['REF'] = subdf['REF'].replace(['nan', 'NaN','None'], np.nan)
+    if 'REF' in subdf.columns:
+        subdf['REF'] = subdf['REF'].astype(str)
+        subdf['REF'] = subdf['REF'].replace(['nan', 'NaN','None'], np.nan)
     
     if tooltip is None:
         # Create a list to store the updated tooltips
         updated_tooltips = []
         subdf['__tooltip__']=""
         for index, row in subdf.iterrows():
-            if pd.notna(row["REF"]):
-                tool_str = row["REF"] + ">" + row["ALT"]
-                geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}<br>{tool_str}"
+            if 'REF' in subdf.columns:
+                if pd.notna(row.get("REF",None)):
+                    tool_str = row["REF"] + ">" + row["ALT"]
+                    geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}<br>{tool_str}"
+                else:
+                    if strand:
+                        geneinfo = f"[{strand}] ({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default with strand
+                    else:
+                        geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default without strand
             else:
                 if strand:
                     geneinfo = f"[{strand}] ({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default with strand
                 else:
                     geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default without strand
+
             updated_tooltips.append(geneinfo)
         # Assign the updated tooltips back to the DataFrame
         subdf['__tooltip__'] = updated_tooltips
