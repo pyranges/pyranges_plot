@@ -557,60 +557,55 @@ provided as part of the example dataset and can be loaded into memory as follows
 
     >>> vcf = prp.example_data.ncbi_vcf()
     >>> vcf
-        CHROM       POS            ID    REF    ALT QUAL FILTER                                               INFO
-    0          1    943995   rs761448939      C    G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...
-    1          1    964512   rs756054473      C    A,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...
-    2          1    976215     rs7417106      A  C,G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_1000G;E_Cited;E_Phe...
-    3          1   1013983  rs1644247121      G      A  NaN      .  dbSNP_156;TSA=SNV;E_Phenotype_or_Disease;CLIN_...
-    4          1   1014063  rs1245686232      T      A  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...
-    ...      ...       ...           ...    ...    ...  ...    ...                                                ...
-    242181     Y   2787551   rs104894971      C      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...
-    242182     Y   2787592   rs104894975      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...
-    242183     Y   2787600   rs104894977      G      A  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...
-    242184     Y   7063898   rs199659121      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_ESP;E_Pheno...
-    242185     Y  12735725   rs778145751  TAAGT      T  NaN      .  dbSNP_156;TSA=indel;E_Freq;E_Cited;E_Phenotype...
-
-    [242186 rows x 8 columns]
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
+    int64    |    object        int32     object        object    object    object    category    ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           ...
+    PyRanges with 242186 rows, 9 columns, and 1 index columns. (2 columns not shown: "INFO", "End").
+    Contains 25 chromosomes.
 
 Above, we leveraged the builtin example data. In real use cases, you would load data from a file, 
-using **read_vcf**.
+using :func:`read_vcf() <pyranges_plot.vcf.read_vcf>`.
 
-By default, **read_vcf** produces a Pandas dataframe containing 8 columns eight essential columns 
-extracted from the VCF file:
+By default, :func:`read_vcf() <pyranges_plot.vcf.read_vcf>` generates a PyRanges object that includes all the columns extracted 
+from the VCF file. Additionally, it adds or modifies the following three columns, required to be a Pyranges object:
 
-* **CHROM**: The chromosome name.
-* **POS**: The position of the variant.
-* **ID**: The identifier of the variant (e.g., dbSNP ID).
-* **REF**: The reference allele.
-* **ALT**: The alternative allele.
-* **QUAL**: The quality score of the variant call.
-* **FILTER**: Information about filters applied to the variant.
-* **INFO**: Additional annotation information.
+* **Chromosome**: The chromosome name.
+* **Start**: The start position of the variant.
+* **End**: The end position of the variant.
 
 The INFO column in the VCF file contains a wealth of additional information, often encoded as key-value 
 pairs separated by semicolons. However, in its current form, this column is not readily interpretable 
 or easy to analyze due to its compact format. Fortunately, you can easily manipulate the INFO column to 
-expand and extract this embedded information into separate, more accessible columns using the **split_fields** 
-function:
+expand and extract this embedded information into separate, more accessible columns using the 
+:func:`split_fields() <pyranges_plot.vcf.split_fields>` function:
 
 .. code-block::
 
-    >>> vcf_split = prp.split_fields(vcf,target_cols="INFO",field_sep=";")
+    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
     >>> vcf_split
-        CHROM       POS            ID    REF    ALT QUAL FILTER                                               INFO     INFO_0
-    0          1    943995   rs761448939      C    G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156
-    1          1    964512   rs756054473      C    A,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156
-    2          1    976215     rs7417106      A  C,G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_1000G;E_Cited;E_Phe...  dbSNP_156
-    3          1   1013983  rs1644247121      G      A  NaN      .  dbSNP_156;TSA=SNV;E_Phenotype_or_Disease;CLIN_...  dbSNP_156
-    4          1   1014063  rs1245686232      T      A  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156
-    ...      ...       ...           ...    ...    ...  ...    ...                                                ...        ...
-    242181     Y   2787551   rs104894971      C      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156
-    242182     Y   2787592   rs104894975      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156
-    242183     Y   2787600   rs104894977      G      A  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156
-    242184     Y   7063898   rs199659121      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_ESP;E_Pheno...  dbSNP_156
-    242185     Y  12735725   rs778145751  TAAGT      T  NaN      .  dbSNP_156;TSA=indel;E_Freq;E_Cited;E_Phenotype...  dbSNP_156
-
-    [242186 rows x 28 columns]
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     INFO_1     INFO_2                  INFO_3                  ...
+    int64    |    object        int32     object        object    object    object    category    int32     object     object     object                  object                  ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  ---------  ----------------------  ----------------------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  TSA=SNV    E_Freq                  E_1000G                 ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  TSA=SNV    E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...        ...                     ...                     ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  TSA=indel  E_Freq                  E_Cited                 ...
+    PyRanges with 242186 rows, 28 columns, and 1 index columns. (16 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 25 chromosomes.
 
 Note that the column names generated when splitting the INFO column are assigned sequentially, prefixed with 
 the name of the original column (e.g., INFO_0, INFO_1, and so on). If you prefer more descriptive column names, 
@@ -623,22 +618,22 @@ directly from the VCF file:
 
 .. code-block::
 
-    >>> ren = prp.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
-    >>> ren
-        CHROM        POS            ID REF    ALT QUAL FILTER                                               INFO     INFO_0  TSA
-    0          1     943995   rs761448939   C    G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  SNV
-    1          1     964512   rs756054473   C    A,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  SNV
-    2          1     976215     rs7417106   A  C,G,T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_1000G;E_Cited;E_Phe...  dbSNP_156  SNV
-    3          1    1013983  rs1644247121   G      A  NaN      .  dbSNP_156;TSA=SNV;E_Phenotype_or_Disease;CLIN_...  dbSNP_156  SNV
-    4          1    1014063  rs1245686232   T      A  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  SNV
-    ...      ...        ...           ...  ..    ...  ...    ...                                                ...        ...  ...
-    242181     Y   2787551   rs104894971      C      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156    SNV
-    242182     Y   2787592   rs104894975      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156    SNV
-    242183     Y   2787600   rs104894977      G      A  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156    SNV
-    242184     Y   7063898   rs199659121      A      T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_ESP;E_Pheno...  dbSNP_156    SNV
-    242185     Y  12735725   rs778145751  TAAGT      T  NaN      .  dbSNP_156;TSA=indel;E_Freq;E_Cited;E_Phenotype...  dbSNP_156  indel
-
-    [242186 rows x 31 columns]
+    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
+    >>> vcf_split
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
+    int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  --------  ----------------------  ----------------------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  SNV       E_Freq                  E_1000G                 ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...       ...                     ...                     ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  indel     E_Freq                  E_Cited                 ...
+    PyRanges with 242186 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 25 chromosomes.
 
 Let's begin plotting! First, we'll select a specific region to focus on and observe the genes within it. For this 
 example, the chosen region is 173900000:173920000:
@@ -667,47 +662,22 @@ Similarly, we need to focus on the SNPs within the selected region:
 
 .. code-block::
 
-    >>> coord_vcf = ren[(ren["CHROM"]=="1")& (ren["POS"] > 173900000 ) & (ren["POS"] < 173920000) ]
+    >>> coord_vcf = vcf_split.loci["1",173900000:173920000]
     >>> coord_vcf
-        CHROM        POS            ID         REF ALT QUAL FILTER                                               INFO     INFO_0  ...
-    12765     1  173903891  rs1572084425           A   G  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156  ...
-    12766     1  173903902   rs121909564           G   A  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  ...
-    12767     1  173903902  rs2102772927  GGGTTGGCTA   G  NaN      .  dbSNP_156;TSA=deletion;E_Cited;E_Phenotype_or_...  dbSNP_156  ...
-    12768     1  173903908  rs1572084448           G   T  NaN      .  dbSNP_156;TSA=SNV;E_Cited;E_Phenotype_or_Disea...  dbSNP_156  ...
-    12769     1  173903968   rs121909555           G   A  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  ...
-    ...     ...        ...           ...         ...  ..  ...    ...                                                ...        ...  ...
-    12855     1  173914893   rs387906575           A   G  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  ...
-    12856     1  173914920  rs1572092195           C   G  NaN      .  dbSNP_156;TSA=SNV;E_Phenotype_or_Disease;CLIN_...  dbSNP_156  ...
-    12857     1  173917217   rs199469508           A   G  NaN      .  dbSNP_156;TSA=SNV;E_Phenotype_or_Disease;CLIN_...  dbSNP_156  ...
-    12858     1  173917231    rs61736655           G   T  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_1000G;E_ESP;E_Pheno...  dbSNP_156  ...
-    12859     1  173917430  rs1658038847           G   C  NaN      .  dbSNP_156;TSA=SNV;E_Freq;E_Cited;E_Phenotype_o...  dbSNP_156  ...
-
-    [95 rows x 31 columns]
-
-Pyranges Plot uses PyRanges objects as input to create visualizations. However, since we currently have the VCF 
-data in a Pandas DataFrame, we need to convert it into a PyRanges object. For a DataFrame to qualify as a PyRanges 
-object, it must include columns for chromosome, start, and end positions. To facilitate this transformation, you 
-can use the **vcf_preparation** function, which takes care of reformatting the VCF data and returns a PyRanges object 
-ready to be plotted:
-
-.. code-block::
-
-    >>> p_vcf = prp.vcf_preparation(coord_vcf)
-    >>> p_vcf
-    [index    |    Chromosome    Start      ID            REF         ALT       QUAL        FILTER      ...
-    int64    |    object        int32      object        object      object    category    category    ...
-    -------  ---  ------------  ---------  ------------  ----------  --------  ----------  ----------  -----
-    12765    |    1             173903891  rs1572084425  A           G         nan         .           ...
-    12766    |    1             173903902  rs121909564   G           A         nan         .           ...
-    12767    |    1             173903902  rs2102772927  GGGTTGGCTA  G         nan         .           ...
-    12768    |    1             173903908  rs1572084448  G           T         nan         .           ...
-    ...      |    ...           ...        ...           ...         ...       ...         ...         ...
-    12856    |    1             173914920  rs1572092195  C           G         nan         .           ...
-    12857    |    1             173917217  rs199469508   A           G         nan         .           ...
-    12858    |    1             173917231  rs61736655    G           T         nan         .           ...
-    12859    |    1             173917430  rs1658038847  G           C         nan         .           ...
-    PyRanges with 95 rows, 33 columns, and 1 index columns. (26 columns not shown: "INFO", "INFO_0", "TSA", ...).
-    Contains 1 chromosomes.]
+    index    |    Chromosome    Start      ID            REF         ALT       QUAL      FILTER      End        INFO_0     TSA       INFO_2                  INFO_3                  ...
+    int64    |    object        int32      object        object      object    object    category    int32      object     object    object                  object                  ...
+    -------  ---  ------------  ---------  ------------  ----------  --------  --------  ----------  ---------  ---------  --------  ----------------------  ----------------------  -----
+    12765    |    1             173903891  rs1572084425  A           G         nan       .           173903892  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    12766    |    1             173903902  rs121909564   G           A         nan       .           173903903  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    12767    |    1             173903902  rs2102772927  GGGTTGGCTA  G         nan       .           173903903  dbSNP_156  deletion  E_Cited                 E_Phenotype_or_Disease  ...
+    12768    |    1             173903908  rs1572084448  G           T         nan       .           173903909  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    ...      |    ...           ...        ...           ...         ...       ...       ...         ...        ...        ...       ...                     ...                     ...
+    12856    |    1             173914920  rs1572092195  C           G         nan       .           173914921  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_likely_pathogenic  ...
+    12857    |    1             173917217  rs199469508   A           G         nan       .           173917218  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    12858    |    1             173917231  rs61736655    G           T         nan       .           173917232  dbSNP_156  SNV       E_Freq                  E_1000G                 ...
+    12859    |    1             173917430  rs1658038847  G           C         nan       .           173917431  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    PyRanges with 95 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 1 chromosomes.
 
 Finally, we are ready to visualize our data. By combining the gene annotation from the selected genomic region with 
 the prepared PyRanges object representing the SNPs, we can generate an insightful plot that overlays both datasets. 
@@ -717,7 +687,7 @@ Here's how you can do it:
 
 .. code-block::
 
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID')
+    >>> prp.plot([reg,coord_vcf],id_col='ID')
 
 .. image:: images/prp_rtd_21.png
 
@@ -727,9 +697,9 @@ while omitting it for VCF data:
 
 .. code-block::
 
-    >>> reg["Articial_col"]=reg["Parent"]
-    >>> p_vcf[0]['Artificial_col'] = ''
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}')
+    >>> reg["Text_col"]=reg["Parent"]
+    >>> coord_vcf['Text_col'] = ''
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}')
 
 .. image:: images/prp_rtd_22.png
 
@@ -740,14 +710,15 @@ parameter:
 
 .. code-block::
 
+    >>> import plotly.graph_objects as go
     >>> aligned_traces = [
-    ...     go.Scatter(
+    ...     (go.Scatter(
     ...         x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
     ...         y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     ...         mode='markers'
-    ...     )
+    ...     ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
     ... ]
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}',add_aligned_plots=aligned_traces)
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_23.png
 
@@ -757,15 +728,17 @@ parameter:
     If your dataset spans multiple chromosomes, you will need to filter it beforehand to focus on a specific chromosome for this 
     feature to work correctly.
 
-Additionally, the add_aligned_plots parameter also accepts a list of tuples, where each tuple consists of two elements: the first 
-is the scatterplot object, and the second is a dictionary for customizing the title of the aligned plot. This dictionary allows 
-you to control three title parameters:
+As you observed, the add_aligned_plots parameter accepts as input a list of tuples, where each tuple consists of two elements: 
+the first is the scatterplot object, and the second is a dictionary for customizing the title of the aligned plot.This dictionary 
+allows you to control three title parameters:
 
 * title: The text of the title.
 * title_size: The font size of the title.
 * title_color: The color of the title text.
+* y_space: Determines de distance between the main plot and the aligned plots
+* y_axis_len: Determines the height of the added plot
 
-For example:
+We already used the options to customise the title., let's now customise the y axis length and the space between these plots:
 
 .. code-block::
 
@@ -774,24 +747,33 @@ For example:
     ...              x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
     ...              y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     ...              mode='markers'
-    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
+    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'y_axis_len': 0.5, 'y_space': 0.5})
     ... ]
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}',add_aligned_plots=[aligned])
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_24.png
 
-If your dataset is too large to manually create a Plotly scatterplot, Pyranges Plot offers a convenient function called **make_scatter**. 
-This function allows you to automatically generate a scatterplot directly from your data, counting the number of variants
-per position:
+If your dataset is too large to manually create a Plotly scatterplot, Pyranges Plot offers a convenient function called :func:`make_scatter() <pyranges_plot.make_scatter>`. 
+This function allows you to automatically generate a scatterplot directly from your data, introducing the numeric column for the
+y axis.
+
+First we will use Numpy to create a random Count column
 
 .. code-block::
 
-    >>> aligned = prp.make_scatter(p_vcf[0])
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}',add_aligned_plots=[aligned])
+    >>> import numpy as np
+    >>> coord_vcf['Count']=coord_vcf.apply(lambda row: np.random.randint(0, 100), axis=1)
+
+Next, we will use this column to define the y-axis for the plot:
+
+.. code-block::
+
+    >>> aligned = prp.make_scatter(coord_vcf, y='Count')
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_25.png
 
-The **make_scatter** function includes several options that allow you to customize your plot to better fit your needs. For instance, 
+The :func:`make_scatter() <pyranges_plot.make_scatter>` function includes several options that allow you to customize your plot to better fit your needs. For instance, 
 you can use the following parameters:
 
 * color_by: Specify a column from your dataset to color the markers based on its values.
@@ -799,13 +781,16 @@ you can use the following parameters:
 * title_size: Adjust the font size of the title for better visibility.
 * title_color: Change the color of the title text to match your design preferences.
 * size_by: Define a column to dynamically adjust the marker sizes based on its values.
+* y_space: Determines de distance between the main plot and the aligned plots
+* y_axis_len: Determines the height of the added plot
 
-These customization options make it easy to generate informative and visually appealing scatterplots tailored to your data. For example:
+These customization options make it easy to generate informative and visually appealing scatterplots tailored to your data.
+In our case we are going to color our genetic variants by its type (**TSA** column):
 
 .. code-block::
 
-    >>> aligned = prp.make_scatter(p_vcf[0], color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
-    >>> prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}',add_aligned_plots=[aligned])
+    >>> aligned = prp.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_26.png
 
@@ -823,7 +808,7 @@ Example:
 
 .. code-block::
 
-    >>> p = prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
+    >>> p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
     >>> p
     <dash.dash.Dash object at 0x73321d74e990>
 
@@ -833,7 +818,7 @@ integrate it into the PyRanges Plot layout. Below is an example of a PyRanges Pl
 
 .. code-block::
 
-    p = prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
+    p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
 
     # Example additional data
     variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
