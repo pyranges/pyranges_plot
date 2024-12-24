@@ -568,7 +568,6 @@ def plot(
                 transcript_str=thick_cds,
                 tooltip=tooltip,
                 legend=legend,
-                add_aligned_plots=add_aligned_plots,
                 y_labels=y_labels,
                 text=text,
                 title_chr=title_chr,
