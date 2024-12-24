@@ -42,7 +42,7 @@ plot_features_dict = {
     "plot_bkg": ("white", "Background color of the plots.", " "),
     "plot_border": ("black", "Color of the line delimiting the plots.", " "),
     "plotly_port": (8050, "Port to run plotly app.", " "),
-    "return_plot": (None, "Whether the plot is returned or not."," "),
+    "return_plot": (None, "Whether the plot is returned or not.", " "),
     "shrink_threshold": (
         0.01,
         "Minimum length of an intron or intergenic region in order for it to be shrunk while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",

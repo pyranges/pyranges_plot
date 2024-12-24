@@ -64,10 +64,16 @@ def create_fig(
             if all(isinstance(item, go.Scatter) for item in add_aligned_plots):
                 # Case: List of go.Scatter objects
                 additional_plots = add_aligned_plots
-            elif all(isinstance(item, tuple) and len(item) == 2 for item in add_aligned_plots):
+            elif all(
+                isinstance(item, tuple) and len(item) == 2 for item in add_aligned_plots
+            ):
                 # Case: List of tuples
-                additional_plots = [item[0] for item in add_aligned_plots]  # First element of tuples
-                custom_dict_list = [item[1] for item in add_aligned_plots]  # Second element of tuples
+                additional_plots = [
+                    item[0] for item in add_aligned_plots
+                ]  # First element of tuples
+                custom_dict_list = [
+                    item[1] for item in add_aligned_plots
+                ]  # Second element of tuples
             else:
                 raise ValueError(
                     "add_aligned_plots must be a list of go.Scatter objects or a list of tuples (go.Scatter, custom_dict)."
@@ -79,7 +85,7 @@ def create_fig(
     def_vertical_spacing = 0.25
     if custom_dict_list:
         for custom_dict in custom_dict_list:
-            vertical_spacing = custom_dict.get('y_space', def_vertical_spacing)
+            vertical_spacing = custom_dict.get("y_space", def_vertical_spacing)
     else:
         vertical_spacing = def_vertical_spacing
 
@@ -95,7 +101,7 @@ def create_fig(
         fig = sp.make_subplots(
             rows=total_rows,
             cols=1,
-            row_heights=chrmd_df_grouped["y_height"].to_list()+row_heights_additional,
+            row_heights=chrmd_df_grouped["y_height"].to_list() + row_heights_additional,
             subplot_titles=titles,
             shared_xaxes=shared_axes,
             vertical_spacing=vertical_spacing,
@@ -104,7 +110,7 @@ def create_fig(
         fig = sp.make_subplots(
             rows=total_rows,
             cols=1,
-            row_heights=chrmd_df_grouped["y_height"].to_list()+row_heights_additional,
+            row_heights=chrmd_df_grouped["y_height"].to_list() + row_heights_additional,
             subplot_titles=titles,
             shared_xaxes=shared_axes,
         )
@@ -147,7 +153,9 @@ def create_fig(
                             x_ticks_val = [
                                 i
                                 for i in np.linspace(
-                                    int(x_ticks_val[0]), int(x_ticks_val[-1]), x_ticks_chrom
+                                    int(x_ticks_val[0]),
+                                    int(x_ticks_val[-1]),
+                                    x_ticks_chrom,
                                 )
                             ]
                             x_ticks_name = x_ticks_val
@@ -212,7 +220,9 @@ def create_fig(
                 x_ticks_val = sorted(to_add)
                 # do not add ticks beyond adjusted limits
                 x_ticks_val = [
-                    num for num in x_ticks_val if num <= chrmd_df_grouped.loc[chrom]["max"]
+                    num
+                    for num in x_ticks_val
+                    if num <= chrmd_df_grouped.loc[chrom]["max"]
                 ]
                 x_ticks_name = sorted(to_add_val)[: len(x_ticks_val)]
 
@@ -294,7 +304,9 @@ def create_fig(
                         # add y_label in the middle of the subplot y axis if needed
                         if y_labels:
                             if pr_line_y_l[j + 1] != 0:
-                                y_ticks_val.append(((pr_line_y) + (pr_line_y_l[j + 1])) / 2)
+                                y_ticks_val.append(
+                                    ((pr_line_y) + (pr_line_y_l[j + 1])) / 2
+                                )
                             else:
                                 y_ticks_val.append((pr_line_y) / 2)
                             y_ticks_name.append(y_labels[int(present_pr_l[j])])
@@ -322,7 +334,10 @@ def create_fig(
             # Determine the y-axis domain of the current subplot
             yaxis_key = f"yaxis{i + 1}" if i > 0 else "yaxis"
             y_domain = fig.layout[yaxis_key].domain
-            new_y_domain = [y_domain[0], y_domain[0] + custom_dict.get("y_axis_len", 0.25)]  # Increase the height by 25%
+            new_y_domain = [
+                y_domain[0],
+                y_domain[0] + custom_dict.get("y_axis_len", 0.25),
+            ]  # Increase the height by 25%
             fig.update_layout({yaxis_key: dict(domain=new_y_domain)})
             y_domain = fig.layout[yaxis_key].domain
 
@@ -331,17 +346,17 @@ def create_fig(
             title_space = 0.025 if y_domain[1] >= 0.4 else 0
             fig.add_annotation(
                 dict(
-                   x=0.5,  # Center the title in the plot
-                   y=y_domain[1]+title_space,
-                   xref="paper",
-                   yref="paper",
-                   text=custom_dict["title"],
-                   showarrow=False,
-                   font=dict(
-                      size=custom_dict.get("title_size", 18),
-                      color=custom_dict.get("title_color", "black"),
-                   ),
-               )
-           )
+                    x=0.5,  # Center the title in the plot
+                    y=y_domain[1] + title_space,
+                    xref="paper",
+                    yref="paper",
+                    text=custom_dict["title"],
+                    showarrow=False,
+                    font=dict(
+                        size=custom_dict.get("title_size", 18),
+                        color=custom_dict.get("title_color", "black"),
+                    ),
+                )
+            )
 
     return fig

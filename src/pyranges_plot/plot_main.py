@@ -23,12 +23,7 @@ from .data_preparation import (
     subdf_assigncolor,
 )
 from .introns_off import introns_resize, recalc_axis
-from pyranges.core.names import (
-    CHROM_COL,
-    START_COL,
-    END_COL,
-    STRAND_COL
-)
+from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .names import (
     PR_INDEX_COL,
     ORISTART_COL,
@@ -511,7 +506,7 @@ def plot(
     # Deal with added plots
     if (len(chrmd_df_grouped) > 1) and add_aligned_plots:
         raise Exception(
-                f"The parameter add_aligned_plots accepts only one chromosome in the input data. The provided data contains {len(chrmd_df_grouped)}"
+            f"The parameter add_aligned_plots accepts only one chromosome in the input data. The provided data contains {len(chrmd_df_grouped)}"
         )
 
     # Creating default tooltip
@@ -520,17 +515,17 @@ def plot(
     else:
         strand = ""
 
-    if 'REF' in subdf.columns:
-        subdf['REF'] = subdf['REF'].astype(str)
-        subdf['REF'] = subdf['REF'].replace(['nan', 'NaN','None'], np.nan)
-    
+    if "REF" in subdf.columns:
+        subdf["REF"] = subdf["REF"].astype(str)
+        subdf["REF"] = subdf["REF"].replace(["nan", "NaN", "None"], np.nan)
+
     if tooltip is None:
         # Create a list to store the updated tooltips
         updated_tooltips = []
-        subdf['__tooltip__']=""
+        subdf["__tooltip__"] = ""
         for index, row in subdf.iterrows():
-            if 'REF' in subdf.columns:
-                if pd.notna(row.get("REF",None)):
+            if "REF" in subdf.columns:
+                if pd.notna(row.get("REF", None)):
                     tool_str = row["REF"] + ">" + row["ALT"]
                     geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}<br>{tool_str}"
                 else:
@@ -546,10 +541,10 @@ def plot(
 
             updated_tooltips.append(geneinfo)
         # Assign the updated tooltips back to the DataFrame
-        subdf['__tooltip__'] = updated_tooltips
-        
+        subdf["__tooltip__"] = updated_tooltips
+
     if tooltip is None:
-        tooltip='{__tooltip__}'
+        tooltip = "{__tooltip__}"
 
     # deal with engine and call proper plot
     if engine in ["plt", "matplotlib"]:

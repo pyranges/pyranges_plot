@@ -197,7 +197,7 @@ def plot_row(
     showinfo_dict = row.to_dict()  # first element of gene rows
     if showinfo:
         if showinfo.startswith("$") and showinfo[1:] in row.index:
-          showinfo = showinfo_dict[showinfo[1:]]
+            showinfo = showinfo_dict[showinfo[1:]]
         showinfo = showinfo.replace("\n", "<br>")
         geneinfo += "<br>" + showinfo.format(**showinfo_dict)
 

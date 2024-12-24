@@ -175,6 +175,7 @@ p_cys = pr.PyRanges(
 # Define the path to the data folder
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
+
 def ncbi_gff():
     """
     Load the example NCBI GFF3 file as a PyRanges object.
@@ -184,7 +185,9 @@ def ncbi_gff():
     """
     file_path = os.path.join(DATA_DIR, "ncbi.gff3")
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"The file 'ncbi.gff3' was not found in the data folder.")
+        raise FileNotFoundError(
+            "The file 'ncbi.gff3' was not found in the data folder."
+        )
     return pr.read_gff3(file_path)
 
 
@@ -197,5 +200,7 @@ def ncbi_vcf():
     """
     file_path = os.path.join(DATA_DIR, "homo_sapiens_clinically_associated.vcf")
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"The file 'homo_sapiens_clinically_associated.vcf' was not found in the data folder.")
+        raise FileNotFoundError(
+            "The file 'homo_sapiens_clinically_associated.vcf' was not found in the data folder."
+        )
     return read_vcf(file_path)

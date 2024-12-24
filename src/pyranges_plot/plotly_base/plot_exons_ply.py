@@ -162,7 +162,7 @@ def plot_exons_ply(
         elif return_plot == "app":
             app_instance = initialize_dash_app(fig, max_shown)
             return app_instance
-        elif return_plot =="fig":
+        elif return_plot == "fig":
             return fig
     else:
         fig.update_layout(width=file_size[0], height=file_size[1])
@@ -223,7 +223,7 @@ def gby_plot_exons(
 
     # Get the gene information to print on hover
     # default
-    if 'vcf' in df.columns and df['vcf'].any():
+    if "vcf" in df.columns and df["vcf"].any():
         tooltip_col = df["Tooltip_col"]
         geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {genename}<br>{tooltip_col}"
     else:

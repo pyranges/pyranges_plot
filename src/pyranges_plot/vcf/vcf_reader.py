@@ -3,13 +3,14 @@ import pyranges as pr
 from pathlib import Path
 from io import StringIO
 
+
 def read_vcf(f: str | Path, nrows: bool | None = None):
     """
     Read a VCF (Variant Call Format) file and convert it into a PyRanges object.
 
     This function processes a VCF file by reading the data, extracting the header and
     data lines, and creating a PyRanges object for genomic analysis. The metadata
-    lines (lines starting with '##') are ignored, and the column names are extracted 
+    lines (lines starting with '##') are ignored, and the column names are extracted
     from the header line (starting with '#CHROM').
 
     Parameters
@@ -38,7 +39,7 @@ def read_vcf(f: str | Path, nrows: bool | None = None):
     -----
     - Missing quality scores ('.') are replaced with pandas.NA.
     - The function reads the file in chunks for large VCF files to handle memory usage.
-    - Columns 'CHROM' and 'POS' are renamed to 'Chromosome' and 'Start' respectively, 
+    - Columns 'CHROM' and 'POS' are renamed to 'Chromosome' and 'Start' respectively,
       to align with PyRanges conventions.
 
     Examples
@@ -69,26 +70,25 @@ def read_vcf(f: str | Path, nrows: bool | None = None):
         "REF": "str",
         "ALT": "str",
         "QUAL": "category",
-        "FILTER": "category"
+        "FILTER": "category",
     }
 
     # Read the file to find the header line and ignore metadata
-    with open(path, 'r') as file:
+    with open(path, "r") as file:
         lines = []
         for line in file:
             if line.startswith("##"):
                 continue  # Skip other metadata lines
             elif line.startswith("#CHROM"):
                 # This is the header line; extract the column names
-                column_names = line.strip('#').strip().split('\t')
+                column_names = line.strip("#").strip().split("\t")
             else:
                 # Append data lines
                 lines.append(line.strip())
 
-
     # Convert the list of lines into a DataFrame
     data = "\n".join(lines)
-    
+
     df_iter = pd.read_csv(
         StringIO(data),
         sep="\t",
@@ -105,9 +105,9 @@ def read_vcf(f: str | Path, nrows: bool | None = None):
     dfs = []
     for chunk in df_iter:
         # Replace missing quality scores represented by "."
-        chunk['QUAL'] = chunk['QUAL'].astype(object).replace('.', pd.NA)
+        chunk["QUAL"] = chunk["QUAL"].astype(object).replace(".", pd.NA)
         dfs.append(chunk)
-    
+
     # Concatenate all chunks into a single DataFrame
     df = pd.concat(dfs, sort=False)
 
