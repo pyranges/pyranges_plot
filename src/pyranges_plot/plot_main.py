@@ -333,7 +333,6 @@ def plot(
     df_d = {}
     tot_ngenes_l = []
     for pr_ix, df_item in enumerate(data):
-
         # deal with empty PyRanges
         if df_item.empty:
             continue
