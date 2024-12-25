@@ -654,7 +654,7 @@ def test19(test_name):
         diff.save(diff_path)
         pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
 
-aligned2 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18,y_axis_len=0.5,y_space=0.5)
+aligned2 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18,height=0.5,y_space=0.5)
 @pytest.mark.parametrize("test_name", ["test20"])
 def test20(test_name):
     output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")

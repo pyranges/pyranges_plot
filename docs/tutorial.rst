@@ -736,7 +736,7 @@ allows you to control three title parameters:
 * title_size: The font size of the title.
 * title_color: The color of the title text.
 * y_space: Determines de distance between the main plot and the aligned plots
-* y_axis_len: Determines the height of the added plot
+* height: Determines the height of the added plot
 
 We already used the options to customise the title., let's now customise the y axis length and the space between these plots:
 
@@ -747,7 +747,7 @@ We already used the options to customise the title., let's now customise the y a
     ...              x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
     ...              y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     ...              mode='markers'
-    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'y_axis_len': 0.5, 'y_space': 0.5})
+    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'height': 0.5, 'y_space': 0.5})
     ... ]
     >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
@@ -782,7 +782,7 @@ you can use the following parameters:
 * title_color: Change the color of the title text to match your design preferences.
 * size_by: Define a column to dynamically adjust the marker sizes based on its values.
 * y_space: Determines de distance between the main plot and the aligned plots
-* y_axis_len: Determines the height of the added plot
+* height: Determines the height of the added plot
 
 These customization options make it easy to generate informative and visually appealing scatterplots tailored to your data.
 In our case we are going to color our genetic variants by its type (**TSA** column):
