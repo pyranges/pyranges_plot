@@ -10,7 +10,7 @@ def make_scatter(
     title: str | None = None,
     title_size: int | None = None,
     title_color: str | None = None,
-    y_axis_len: int | None = None,
+    height: int | None = None,
     y_space: int | None = None,
 ):
     """
@@ -43,7 +43,7 @@ def make_scatter(
         title_color: str, default None
             The color of the plot title. Applicable only if `title` is specified.
             Defaults to None.
-        y_axis_len: int, default None
+        height: int, default None
             Determines the length of the y axis
             Defaults to None.
         y_space: int, default None
@@ -146,7 +146,7 @@ def make_scatter(
     optional_params = {
         "title_size": title_size,
         "title_color": title_color,
-        "y_axis_len": y_axis_len,
+        "height": height,
         "y_space": y_space,
     }
 

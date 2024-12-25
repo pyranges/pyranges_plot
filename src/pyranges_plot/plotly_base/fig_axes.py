@@ -336,7 +336,7 @@ def create_fig(
             y_domain = fig.layout[yaxis_key].domain
             new_y_domain = [
                 y_domain[0],
-                y_domain[0] + custom_dict.get("y_axis_len", 0.25),
+                y_domain[0] + custom_dict.get("height", 0.25),
             ]  # Increase the height by 25%
             fig.update_layout({yaxis_key: dict(domain=new_y_domain)})
             y_domain = fig.layout[yaxis_key].domain
