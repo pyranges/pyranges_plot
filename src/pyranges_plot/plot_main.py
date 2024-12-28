@@ -508,12 +508,6 @@ def plot(
             f"The parameter add_aligned_plots accepts only one chromosome in the input data. The provided data contains {len(chrmd_df_grouped)}"
         )
 
-    # Creating default tooltip
-    if STRAND_COL in subdf.columns:
-        strand = subdf[STRAND_COL].unique()[0]
-    else:
-        strand = ""
-
     if "REF" in subdf.columns:
         subdf["REF"] = subdf["REF"].astype(str)
         subdf["REF"] = subdf["REF"].replace(["nan", "NaN", "None"], np.nan)
@@ -523,6 +517,10 @@ def plot(
         updated_tooltips = []
         subdf["__tooltip__"] = ""
         for index, row in subdf.iterrows():
+            if STRAND_COL in subdf.columns:
+                strand = row.get(STRAND_COL)
+            else:
+                strand = ""
             if "REF" in subdf.columns:
                 if pd.notna(row.get("REF", None)):
                     tool_str = row["REF"] + ">" + row["ALT"]

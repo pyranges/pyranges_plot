@@ -3,8 +3,8 @@ import pyranges as pr
 from PIL import Image, ImageChops
 import os
 import pytest
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from io import BytesIO
 
 data1 = pr.PyRanges(
     {
@@ -88,49 +88,328 @@ data5["depth"] = [1, 0]
 vcf = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,  # CHROM renamed to Chromosome
-        "Start": [500, 3500, 300, 1300, 3500, 4500, 4900, 5600, 6000],  # POS column renamed to Start
-        "End": [501, 3501, 301, 1301, 3501, 4501, 4901, 5601, 6001],  # End is calculated as Start + 1
+        "Start": [
+            500,
+            3500,
+            300,
+            1300,
+            3500,
+            4500,
+            4900,
+            5600,
+            6000,
+        ],  # POS column renamed to Start
+        "End": [
+            501,
+            3501,
+            301,
+            1301,
+            3501,
+            4501,
+            4901,
+            5601,
+            6001,
+        ],  # End is calculated as Start + 1
         "ID": ["."] * 9,  # ID from the VCF file
         "REF": ["A"] * 9,  # REF column
         "ALT": ["T"] * 9,  # ALT column
         "QUAL": ["."] * 9,  # QUAL column
         "FILTER": ["PASS"] * 9,  # FILTER column
-        "transcript_id": ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"],  # Extracted from INFO
-        "second_id": ["a", "a", "a", "a", "b", "b", "b", "b", "b"],  # Extracted from INFO
-        "Count": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        "transcript_id": [
+            "t1",
+            "t2",
+            "t3",
+            "t4",
+            "t5",
+            "t6",
+            "t7",
+            "t8",
+            "t9",
+        ],  # Extracted from INFO
+        "second_id": [
+            "a",
+            "a",
+            "a",
+            "a",
+            "b",
+            "b",
+            "b",
+            "b",
+            "b",
+        ],  # Extracted from INFO
+        "Count": [1, 2, 3, 4, 5, 6, 7, 8, 9],
     }
 )
 
 # Create a scatter plot trace with the adapted Start positions
 aligned_traces = [
-    (go.Scatter(
-        x=[500, 3500, 300, 1300, 3500, 4500, 4900, 5600, 6000],  # Adapted Start positions
-        y=[1, 2, 3, 4, 5, 6, 7, 8, 9],  # Arbitrary y-values for demonstration
-        mode='markers'
-    ), {"title": "VCF Scatter Plot"})
+    (
+        go.Scatter(
+            x=[
+                500,
+                3500,
+                300,
+                1300,
+                3500,
+                4500,
+                4900,
+                5600,
+                6000,
+            ],  # Adapted Start positions
+            y=[1, 2, 3, 4, 5, 6, 7, 8, 9],  # Arbitrary y-values for demonstration
+            mode="markers",
+        ),
+        {"title": "VCF Scatter Plot"},
+    )
 ]
+
+aligned = prp.make_scatter(vcf, y="Count")
+aligned1 = prp.make_scatter(
+    vcf,
+    y="Count",
+    color_by="second_id",
+    title="Human Variants",
+    title_color="Magenta",
+    title_size=18,
+)
+aligned2 = prp.make_scatter(
+    vcf,
+    y="Count",
+    color_by="second_id",
+    title="Human Variants",
+    title_color="Magenta",
+    title_size=18,
+    height=0.5,
+    y_space=0.5,
+)
 
 prp.set_engine("ply")
 prp.set_id_col("transcript_id")
 
 BASELINE_DIR = "tests/baseline_ply"
-RESULTS_DIR = "tests/results_plotly"
 
-@pytest.mark.parametrize("test_name", ["test01"])
+test_cases = [
+    (
+        "test01",
+        prp.plot(
+            data1,
+            color_col="transcript_id",
+            exon_border="black",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test02",
+        prp.plot(
+            data1,
+            id_col="second_id",
+            color_col="transcript_id",
+            shrink=True,
+            exon_border="black",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test03",
+        prp.plot(
+            data1,
+            id_col=["transcript_id", "second_id"],
+            color_col="transcript_id",
+            packed=False,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test04",
+        prp.plot(
+            data1[data1["transcript_id"] == "t4"],
+            id_col="transcript_id",
+            shrink=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test05",
+        prp.plot(
+            data1[data1["transcript_id"] == "t2"],
+            id_col="transcript_id",
+            shrink=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test06",
+        prp.plot(
+            [data2, data3],
+            color_col="transcript_id",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test07",
+        prp.plot(
+            [data2, data3],
+            id_col="Feature",
+            color_col="transcript_id",
+            text="{Feature}",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test08",
+        prp.plot(
+            [data1, data2, data3],
+            id_col="transcript_id",
+            color_col="Feature",
+            y_labels=[1, 2, 3],
+            shrink=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test09",
+        prp.plot(
+            [data2, data2],
+            id_col="transcript_id",
+            packed=False,
+            thick_cds=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test10",
+        prp.plot(
+            data2,
+            thick_cds=True,
+            limits=(75, 125),
+            text="{Feature}",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test11",
+        prp.plot(
+            data3,
+            id_col="transcript_id",
+            limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test12",
+        prp.plot(
+            data2,
+            id_col="transcript_id",
+            limits=data3,
+            arrow_size=0.1,
+            arrow_color="red",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test13",
+        prp.plot(
+            [data2, data3],
+            id_col="transcript_id",
+            color_col="Feature",
+            legend=True,
+            title_chr="TITLE {chrom}",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test14",
+        prp.plot(
+            [data4, data5],
+            id_col="id",
+            color_col="depth",
+            depth_col="depth",
+            tooltip="{depth}",
+            theme="Mariotti_lab",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test15",
+        prp.plot(
+            [data4, data5],
+            id_col="id",
+            color_col="depth",
+            depth_col="depth",
+            tooltip="{depth}",
+            theme="dark",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test16",
+        prp.plot(
+            [data4, data5],
+            id_col="id",
+            color_col="depth",
+            depth_col="depth",
+            tooltip="{depth}",
+            colormap={"0": "#505050", "1": "goldenrod"},
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test17",
+        prp.plot(
+            [data1, vcf],
+            id_col="transcript_id",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test18",
+        prp.plot(
+            [data1, vcf],
+            id_col="transcript_id",
+            add_aligned_plots=[aligned],
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test19",
+        prp.plot(
+            [data1, vcf],
+            id_col="transcript_id",
+            add_aligned_plots=[aligned1],
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test20",
+        prp.plot(
+            [data1, vcf],
+            id_col="transcript_id",
+            add_aligned_plots=[aligned2],
+            return_plot="fig",
+        ),
+    ),
+]
+
+
+@pytest.mark.parametrize("test_name, plot_func", test_cases)
 # test id_col
-def test01(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data1,
-        color_col="transcript_id",
-        exon_border="black",
-        to_file=output_path
-    )
+def test_plot_comparison(test_name, plot_func):
+    p = plot_func
+    result_io = BytesIO()
+    p.write_image(result_io, format="png", width=1200, height=600)
+    result_io.seek(0)
+
+    """
+    output_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
+    with open(output_path, "wb") as f:
+        f.write(result_io.read())
+    """
+
     baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
 
     # Opening images
     baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
+    result = Image.open(result_io).convert("RGB")
 
     # Resizing images to avoid pytest crash
     if result.size != baseline.size:
@@ -139,545 +418,4 @@ def test01(test_name):
     diff = ImageChops.difference(baseline, result)
 
     if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test02"])
-def test02(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data1,
-        id_col="second_id",
-        color_col="transcript_id",
-        shrink=True,
-        exon_border="black",
-        to_file=output_path
-    )
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test03"])
-def test03(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data1,
-        id_col=["transcript_id", "second_id"],
-        color_col="transcript_id",
-        packed=False,
-        to_file=output_path
-        #to_file="tests/img/test03.png",
-    )  # +1 id_col, 1 pr packed False
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test04"])
-def test04(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data1[data1["transcript_id"] == "t4"],
-        id_col="transcript_id",
-        shrink=True,
-        to_file=output_path
-    )
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test05"])
-def test05(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data1[data1["transcript_id"] == "t2"],
-        id_col="transcript_id",
-        shrink=True,
-        to_file=output_path
-    )
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-# test +1 pr
-@pytest.mark.parametrize("test_name", ["test06"])
-def test06(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data2, data3],
-        color_col="transcript_id",
-        to_file=output_path
-    )  # no id col
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test07"])
-def test07(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data2, data3],
-        id_col="Feature",
-        color_col="transcript_id",
-        text="{Feature}",
-        to_file=output_path
-    )  # 1 id_col, text
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test08"])
-def test08(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data1, data2, data3],
-        id_col="transcript_id",
-        color_col="Feature",
-        y_labels=[1, 2, 3],
-        shrink=True,
-        to_file=output_path
-    )  # shrink and y_labels
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test09"])
-def test09(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data2, data2],
-        id_col="transcript_id",
-        packed=False,
-        thick_cds=True,
-        to_file=output_path
-    )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test10"])
-def test10(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data2,
-        thick_cds=True,
-        limits=(75, 125),
-        text="{Feature}",
-        to_file=output_path
-    )  # thick_cds not all exon+cds, text, limits as tuple
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test11"])
-def test11(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data3,
-        id_col="transcript_id",
-        limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
-        to_file=output_path
-    )  # limits as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test12"])
-def test12(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        data2,
-        id_col="transcript_id",
-        limits=data3,
-        arrow_size=0.1,
-        arrow_color="red",
-        to_file=output_path
-    )  # limit as other pr, arrow_size,colorprp.plot(data2, id_col="transcript_id", limits=data3)
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test13"])
-def test13(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data2, data3],
-        id_col="transcript_id",
-        color_col="Feature",
-        legend=True,
-        title_chr="TITLE {chrom}",
-        to_file=output_path
-    )  # legend, title string, intron and exon color
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-# depth
-@pytest.mark.parametrize("test_name", ["test14"])
-def test14(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data4, data5],
-        id_col="id",
-        color_col="depth",
-        depth_col="depth",
-        tooltip="{depth}",
-        theme="Mariotti_lab",
-        to_file=output_path
-    )
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test15"])
-def test15(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data4, data5],
-        id_col="id",
-        color_col="depth",
-        depth_col="depth",
-        tooltip="{depth}",
-        theme="dark",
-        to_file=output_path
-    )
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test16"])
-def test16(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data4, data5],
-        id_col="id",
-        color_col="depth",
-        depth_col="depth",
-        tooltip="{depth}",
-        colormap={"0": "#505050", "1": "goldenrod"},
-        to_file=output_path
-    )  # colormap as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-@pytest.mark.parametrize("test_name", ["test17"])
-def test17(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data1, vcf],
-        id_col="transcript_id",
-        to_file=output_path
-    )  # colormap as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-aligned = prp.make_scatter(vcf,y='Count')
-@pytest.mark.parametrize("test_name", ["test18"])
-def test18(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data1, vcf],
-        id_col="transcript_id",
-        add_aligned_plots = [aligned],
-        to_file=output_path,
-    )  # colormap as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-aligned1 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18)
-@pytest.mark.parametrize("test_name", ["test19"])
-def test19(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data1, vcf],
-        id_col="transcript_id",
-        add_aligned_plots = [aligned1],
-        to_file=output_path,
-    )  # colormap as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
-
-aligned2 = prp.make_scatter(vcf,y='Count',color_by="second_id", title="Human Variants", title_color="Magenta",title_size=18,height=0.5,y_space=0.5)
-@pytest.mark.parametrize("test_name", ["test20"])
-def test20(test_name):
-    output_path = os.path.join(RESULTS_DIR, f"{test_name}.png")
-    prp.plot(
-        [data1, vcf],
-        id_col="transcript_id",
-        add_aligned_plots = [aligned2],
-        to_file=output_path,
-    )  # colormap as dict
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.png")
-
-    # Opening images
-    baseline = Image.open(baseline_path).convert("RGB")
-    result = Image.open(output_path).convert("RGB")
-
-    # Resizing images to avoid pytest crash
-    if result.size != baseline.size:
-        result = result.resize(baseline.size)
-
-    diff = ImageChops.difference(baseline, result)
-
-    if diff.getbbox():
-        # Save the diff image for inspection
-        diff_path = os.path.join(RESULTS_DIR, f"{test_name}_diff.png")
-        diff.save(diff_path)
-        pytest.fail(f"{test_name} does not match the baseline image. See difference at {diff_path}")
+        pytest.fail(f"{test_name} does not match the baseline image.")
