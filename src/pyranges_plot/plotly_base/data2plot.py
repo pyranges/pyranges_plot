@@ -116,6 +116,7 @@ def apply_gene_bridge(
     chrom_ix,
     showinfo,
     legend,
+    return_plot,
     arrow_size,
     arrow_color,
     arrow_line_width,
@@ -148,6 +149,7 @@ def apply_gene_bridge(
             chrom_ix,
             showinfo,
             legend,
+            return_plot,
             arrow_size,
             arrow_color,
             arrow_line_width,
@@ -168,6 +170,7 @@ def plot_row(
     chrom_ix,
     showinfo,
     legend,
+    return_plot,
     arrow_size,
     arrow_color,
     arrow_line_width,
@@ -179,14 +182,22 @@ def plot_row(
 
     # Get the gene information to print on hover
     # default
-    if strand:
-        geneinfo = f"[{strand}] ({row.__oriStart__}, {row.__oriEnd__})<br>ID: {genename}"  # default with strand
+    """
+    if row.get("vcf", True):
+        tooltip_col = row.get("Tooltip_col")
+        geneinfo = f"({row.__oriStart__}, {row.__oriEnd__})<br>ID: {genename}<br>{tooltip_col}"
     else:
-        geneinfo = f"({row.__oriStart__}, {row.__oriEnd__})<br>ID: {genename}"  # default without strand
-
+        if strand:
+            geneinfo = f"[{strand}] ({row.__oriStart__}, {row.__oriEnd__})<br>ID: {genename}"  # default with strand
+        else:
+            geneinfo = f"({row.__oriStart__}, {row.__oriEnd__})<br>ID: {genename}"  # default without strand
+    """
+    geneinfo = ""
     # customized
     showinfo_dict = row.to_dict()  # first element of gene rows
     if showinfo:
+        if showinfo.startswith("$") and showinfo[1:] in row.index:
+            showinfo = showinfo_dict[showinfo[1:]]
         showinfo = showinfo.replace("\n", "<br>")
         geneinfo += "<br>" + showinfo.format(**showinfo_dict)
 

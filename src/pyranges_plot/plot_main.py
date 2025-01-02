@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 # import pyranges as pr
@@ -22,11 +23,7 @@ from .data_preparation import (
     subdf_assigncolor,
 )
 from .introns_off import introns_resize, recalc_axis
-from pyranges.core.names import (
-    CHROM_COL,
-    START_COL,
-    END_COL,
-)
+from pyranges.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .names import (
     PR_INDEX_COL,
     ORISTART_COL,
@@ -64,6 +61,8 @@ def plot(
     warnings=None,
     max_shown=25,
     packed=True,
+    return_plot=None,
+    add_aligned_plots=None,
     color_col=None,
     thickness_col=None,
     depth_col=None,
@@ -302,7 +301,7 @@ def plot(
             "size": int(getvalue("title_size")) - 5,
         },
         "title_dict_ply": {
-            "family": "Arial",
+            "family": getvalue("title_font"),
             "color": getvalue("title_color"),
             "size": int(getvalue("title_size")),
         },
@@ -503,6 +502,47 @@ def plot(
             lambda x: compute_tpad(x, chrmd_df_grouped) if not x.empty else None
         )
 
+    # Deal with added plots
+    if (len(chrmd_df_grouped) > 1) and add_aligned_plots:
+        raise Exception(
+            f"The parameter add_aligned_plots accepts only one chromosome in the input data. The provided data contains {len(chrmd_df_grouped)}"
+        )
+
+    if "REF" in subdf.columns:
+        subdf["REF"] = subdf["REF"].astype(str)
+        subdf["REF"] = subdf["REF"].replace(["nan", "NaN", "None"], np.nan)
+
+    if tooltip is None:
+        # Create a list to store the updated tooltips
+        updated_tooltips = []
+        subdf["__tooltip__"] = ""
+        for index, row in subdf.iterrows():
+            if STRAND_COL in subdf.columns:
+                strand = row.get(STRAND_COL)
+            else:
+                strand = ""
+            if "REF" in subdf.columns:
+                if pd.notna(row.get("REF", None)):
+                    tool_str = row["REF"] + ">" + row["ALT"]
+                    geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}<br>{tool_str}"
+                else:
+                    if strand:
+                        geneinfo = f"[{strand}] ({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default with strand
+                    else:
+                        geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default without strand
+            else:
+                if strand:
+                    geneinfo = f"[{strand}] ({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default with strand
+                else:
+                    geneinfo = f"({(row.__oriStart__)}, {(row.__oriEnd__)})<br>ID: {row['__id_col_2count__'][2]}"  # default without strand
+
+            updated_tooltips.append(geneinfo)
+        # Assign the updated tooltips back to the DataFrame
+        subdf["__tooltip__"] = updated_tooltips
+
+    if tooltip is None:
+        tooltip = "{__tooltip__}"
+
     # deal with engine and call proper plot
     if engine in ["plt", "matplotlib"]:
         if not missing_plt_flag:
@@ -538,30 +578,60 @@ def plot(
 
     elif engine in ["ply", "plotly"]:
         if not missing_ply_flag:
-            plot_exons_ply(
-                subdf=subdf,
-                depth_col=depth_col,
-                feat_dict=feat_dict,
-                genesmd_df=genesmd_df,
-                chrmd_df=chrmd_df,
-                chrmd_df_grouped=chrmd_df_grouped,
-                ts_data=ts_data,
-                max_shown=max_shown,
-                id_col=ID_COL,
-                transcript_str=thick_cds,
-                tooltip=tooltip,
-                legend=legend,
-                y_labels=y_labels,
-                text=text,
-                title_chr=title_chr,
-                packed=packed,
-                to_file=to_file,
-                file_size=file_size,
-                warnings=warnings,
-                tick_pos_d=tick_pos_d,
-                ori_tick_pos_d=ori_tick_pos_d,
-                subset_warn=subset_warn,
-            )
+            if return_plot is not None:
+                return plot_exons_ply(
+                    subdf=subdf,
+                    depth_col=depth_col,
+                    feat_dict=feat_dict,
+                    genesmd_df=genesmd_df,
+                    chrmd_df=chrmd_df,
+                    chrmd_df_grouped=chrmd_df_grouped,
+                    ts_data=ts_data,
+                    max_shown=max_shown,
+                    id_col=ID_COL,
+                    transcript_str=thick_cds,
+                    tooltip=tooltip,
+                    legend=legend,
+                    return_plot=return_plot,
+                    add_aligned_plots=add_aligned_plots,
+                    y_labels=y_labels,
+                    text=text,
+                    title_chr=title_chr,
+                    packed=packed,
+                    to_file=to_file,
+                    file_size=file_size,
+                    warnings=warnings,
+                    tick_pos_d=tick_pos_d,
+                    ori_tick_pos_d=ori_tick_pos_d,
+                    subset_warn=subset_warn,
+                )
+            else:
+                plot_exons_ply(
+                    subdf=subdf,
+                    depth_col=depth_col,
+                    feat_dict=feat_dict,
+                    genesmd_df=genesmd_df,
+                    chrmd_df=chrmd_df,
+                    chrmd_df_grouped=chrmd_df_grouped,
+                    ts_data=ts_data,
+                    max_shown=max_shown,
+                    id_col=ID_COL,
+                    transcript_str=thick_cds,
+                    tooltip=tooltip,
+                    legend=legend,
+                    return_plot=return_plot,
+                    add_aligned_plots=add_aligned_plots,
+                    y_labels=y_labels,
+                    text=text,
+                    title_chr=title_chr,
+                    packed=packed,
+                    to_file=to_file,
+                    file_size=file_size,
+                    warnings=warnings,
+                    tick_pos_d=tick_pos_d,
+                    ori_tick_pos_d=ori_tick_pos_d,
+                    subset_warn=subset_warn,
+                )
         else:
             raise Exception(
                 "Make sure to install plotly dependecies by running `pip install pyranges-plot[plotly]`"

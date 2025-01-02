@@ -104,15 +104,17 @@ This is customizable with the ``limits`` parameter.
 The user can decide to change all or some of the coordinate limits leaving the rest as default if desired.
 The ``limits`` parameter accepts different input types:
 
-* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits (or ``None`` to leave as default).
+* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits`` to leave as default).
 
 * Tuple of two integer numbers, which sets the same limits for all plotted chromosomes.
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> prp.plot(p, limits={1: (None, 100), 2: (60, 200), 3: None})
+    >>> prp.plot(p, limit, 100), 2: (60, 20})
 
 .. image:: images/prp_rtd_04.png
+
+To plot with specified limits, use the following code:
 
     >>> prp.plot(p, limits=(0,300))
 
@@ -153,7 +155,13 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
 
 .. image:: images/prp_rtd_08.png
 
-.. @maxtico: please add a plot showcasing the legend=True option. Add some short text before it
+To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
+to interpret the intervals based on their assigned colors. This can be done by setting the 
+**legend** parameter of :func:`plot <pyranges_plot.plot>` as True:
+
+    >>> prp.plot(p, colormap="Dark2", legend=True)
+
+.. image:: images/prp_rtd_20.png
 
 In this section, we have seen how to color intervals based on their attributes.
 Next, we will see how to customize the appearance of the plot itself.
@@ -197,7 +205,7 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | color_column_value2: color2, ...}. When a specific           |
     |                  |                    |         | color_col value is not specified in the dictionary it will   |
     |                  |                    |         | be colored in black.                                         |
-    |   exon_border    |        None        |         | Color of the interval's rectangle border.                    |
+    |   exon_border    |         |         | Color of the interval's rectangle border.                    |
     |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
     |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
     |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |
@@ -207,7 +215,7 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | Matplotlib.                                                  |
     |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
     |    title_size    |         18         |         | Size of the plots' titles.                                   |
-    |     x_ticks      |        None        |         | Int, list or dict defining the x_ticks to be displayed.      |
+    |     x_ticks      |         |         | Int, list or dict defining the x_ticks to be displayed.      |
     |                  |                    |         | When int, number of ticks to be placed on each plot. When    |
     |                  |                    |         | list, it corresponds to de values used as ticks. When dict,  |
     |                  |                    |         | the keys must match the Chromosome values of the data,       |
@@ -223,7 +231,7 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | corresponding to the number of positions occupied by a       |
     |                  |                    |         | direction arrow.                                             |
     |   exon_height    |        0.6         |         | Height of the exon rectangle in the plot.                    |
-    |   intron_color   |        None        |         | Color of the intron lines. When None, the color of the       |
+    |   intron_color   |         |         | Color of the intron lines, the color of the       |
     |                  |                    |         | first interval will be used.                                 |
     |     text_pad     |       0.005        |         | Space where the id annotation is placed beside the           |
     |                  |                    |         | interval. When text_pad is float, it represents the          |
@@ -273,7 +281,7 @@ documentation. For example, here's the "dark" theme:
     >>> prp.set_theme('dark')
     >>> prp.plot(p)
 
-.. @maxtico: please add this plot
+.. image:: images/prp_rtd_16.png
 
 To reset the theme, you can resort again to :func:`reset_options <pyranges_plot.reset_options>`.
 
@@ -288,11 +296,9 @@ To instead display one transcript per row, set the ``packed`` parameter as ``Fal
 
 .. code-block::
 
-    prp.plot(p, packed=False, legend = True)
+    prp.plot(p, packed=False, legend = False)
 
 .. image:: images/prp_rtd_09.png
-
-.. @maxtico: please remove legend from text and replace the plot accordingly
 
 
 Pyranges_plot offers the option to reduce horizontal space, occupied by introns or intergenic regions,
@@ -437,7 +443,7 @@ Let's see an example with two PyRanges objects, mapping the occurrences of two a
 
     prp.plot([p_ala, p_cys])
 
-.. @maxtico: please make this plot
+.. image:: images/prp_rtd_17.png
 
 When providing multiple PyRanges objects, it is useful to differentiate them in the plot. The ``y_labels`` parameter
 allows to provide a list of strings, one for each PyRanges object, to be displayed on the left side of the plot:
@@ -449,7 +455,7 @@ allows to provide a list of strings, one for each PyRanges object, to be display
         y_labels=["pr Alanine", "pr Cysteine"]
     )
 
-.. @maxtico: make this plot
+.. image:: images/prp_rtd_18.png
 
 Customizing depth and thickness
 -------------------------------
@@ -469,13 +475,14 @@ closer the interval will be to the top of the plot, ensuring its visibility:
         depth_col="depth"
     )
 
-.. @maxtico: make this plot
+.. image:: images/prp_rtd_19.png
 
 Another way to highlight overlapping regions is by playing with the height (or thickness) of the blocks representing
 intervals. This is achieved by using the ``thickness_col`` parameter, which defines a data column name whose values
 determine thickness of the corresponding intervals:
 
 .. code-block::
+
     prp.plot(
         [p_ala, p_cys],
         id_col="id",
@@ -484,10 +491,7 @@ determine thickness of the corresponding intervals:
         thickness_col="trait1",
     )
 
-
 .. image:: images/prp_rtd_11.png
-
-.. @maxtico: replace this last plot (I changed the code but didn't update the plot)
 
 
 Additional information: tooltips and titles
@@ -512,3 +516,396 @@ to as {chrom}. An example could be the following:
         )
 
 .. image:: images/prp_rtd_10.png
+
+Dealing with vcf files
+----------------------
+
+While PyRanges Plot is widely recognized for its robust capabilities in visualizing and managing 
+gene annotations, its functionality extends well beyond this. PyRanges Plot also provides 
+versatile tools for working with Variant Call Format (VCF) files, a standard file format used 
+for storing genetic variant information. This includes parsing VCF files, handling complex metadata 
+and visualizing genetic variants alongside gene annotations.
+
+To begin, we need to set **Plotly** as the rendering engine for visualizing the data. Then, we can load 
+an example annotation in GFF3 format, which consists of a portion of the genome annotation of Homo 
+sapiens chromosome 1:
+
+.. code-block::
+
+    >>> prp.set_engine("plotly")
+    >>> ann = prp.example_data.ncbi_gff()
+    >>> ann
+    index    |    Chromosome    Source         Feature     Start      End        Score     Strand      Frame     frame     ID                          logic_name           Name             ...
+    int64    |    category      object         category    int64      int64      object    category    object    object    object                      object               object           ...
+    -------  ---  ------------  -------------  ----------  ---------  ---------  --------  ----------  --------  --------  --------------------------  -------------------  ---------------  -----
+    0        |    1             havana         ncRNA_gene  173851423  173868940  .         -           .         .         gene:ENSG00000234741        havana_homo_sapiens  GAS5             ...
+    1        |    1             havana_tagene  lnc_RNA     173851423  173867989  .         -           .         .         transcript:ENST00000827943  nan                  GAS5-292         ...
+    2        |    1             havana_tagene  exon        173851423  173851602  .         -           .         .         nan                         nan                  ENSE00004240426  ...
+    3        |    1             havana_tagene  exon        173859207  173859305  .         -           .         .         nan                         nan                  ENSE00004240438  ...
+    ...      |    ...           ...            ...         ...        ...        ...       ...         ...       ...       ...                         ...                  ...              ...
+    2009     |    1             havana         CDS         173947368  173947582  .         -           .         0         CDS:ENSP00000356667         nan                  nan              ...
+    2010     |    1             havana         lnc_RNA     173938575  173941449  .         -           .         .         transcript:ENST00000479099  nan                  RC3H1-203        ...
+    2011     |    1             havana         exon        173938575  173938871  .         -           .         .         nan                         nan                  ENSE00001445398  ...
+    2012     |    1             havana         exon        173941264  173941449  .         -           .         .         nan                         nan                  ENSE00001946317  ...
+    PyRanges with 2013 rows, 28 columns, and 1 index columns. (16 columns not shown: "biotype", "description", "gene_id", ...).
+    Contains 1 chromosomes and 1 strands.
+
+Next, let's load a VCF file, which contains variant information for Homo sapiens. This file is 
+provided as part of the example dataset and can be loaded into memory as follows:
+
+.. code-block::
+
+    >>> vcf = prp.example_data.ncbi_vcf()
+    >>> vcf
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
+    int64    |    object        int32     object        object    object    object    category    ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           ...
+    PyRanges with 242186 rows, 9 columns, and 1 index columns. (2 columns not shown: "INFO", "End").
+    Contains 25 chromosomes.
+
+Above, we leveraged the builtin example data. In real use cases, you would load data from a file, 
+using :func:`read_vcf() <pyranges_plot.vcf.read_vcf>`.
+
+By default, :func:`read_vcf() <pyranges_plot.vcf.read_vcf>` generates a PyRanges object that includes all the columns extracted 
+from the VCF file. Additionally, it adds or modifies the following three columns, required to be a Pyranges object:
+
+* **Chromosome**: The chromosome name.
+* **Start**: The start position of the variant.
+* **End**: The end position of the variant.
+
+The INFO column in the VCF file contains a wealth of additional information, often encoded as key-value 
+pairs separated by semicolons. However, in its current form, this column is not readily interpretable 
+or easy to analyze due to its compact format. Fortunately, you can easily manipulate the INFO column to 
+expand and extract this embedded information into separate, more accessible columns using the 
+:func:`split_fields() <pyranges_plot.vcf.split_fields>` function:
+
+.. code-block::
+
+    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
+    >>> vcf_split
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     INFO_1     INFO_2                  INFO_3                  ...
+    int64    |    object        int32     object        object    object    object    category    int32     object     object     object                  object                  ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  ---------  ----------------------  ----------------------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  TSA=SNV    E_Freq                  E_1000G                 ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  TSA=SNV    E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...        ...                     ...                     ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  TSA=indel  E_Freq                  E_Cited                 ...
+    PyRanges with 242186 rows, 28 columns, and 1 index columns. (16 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 25 chromosomes.
+
+Note that the column names generated when splitting the INFO column are assigned sequentially, prefixed with 
+the name of the original column (e.g., INFO_0, INFO_1, and so on). If you prefer more descriptive column names, 
+you have two options. You can use the **col_name_sep** parameter to automatically extract the column names written 
+in the VCF file (e.g., key-value pairs like DP=10 will produce a column named DP). Alternatively, you can use 
+the **col_names** parameter to manually specify each column name, giving you full control over the naming scheme. 
+Both approaches allow you to tailor the resulting column names to your specific needs, enhancing the readability 
+and usability of your data.In this case, we are going to use the col_name_sep parameter to extract column names 
+directly from the VCF file:
+
+.. code-block::
+
+    >>> vcf_split = prp.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
+    >>> vcf_split
+    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
+    int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
+    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  --------  ----------------------  ----------------------  -----
+    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  SNV       E_Freq                  E_1000G                 ...
+    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...       ...                     ...                     ...
+    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  indel     E_Freq                  E_Cited                 ...
+    PyRanges with 242186 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 25 chromosomes.
+
+Let's begin plotting! First, we'll select a specific region to focus on and observe the genes within it. For this 
+example, the chosen region is 173900000:173920000:
+
+.. code-block::
+
+    >>> reg = ann.loci["1","-",173900000:173920000]
+    >>> reg['ID'] = reg['Parent']
+    >>> reg
+    index    |    Chromosome    Source          Feature          Start      End        Score     Strand      Frame     frame     ID                          logic_name                        ...
+    int64    |    category      object          category         int64      int64      object    category    object    object    object                      object                            ...
+    -------  ---  ------------  --------------  ---------------  ---------  ---------  --------  ----------  --------  --------  --------------------------  --------------------------------  -----
+    1953     |    1             ensembl_havana  gene             173903799  173917327  .         -           .         .         nan        ensembl_havana_gene_homo_sapiens  ...
+    1954     |    1             ensembl_havana  mRNA             173903799  173917327  .         -           .         .         gene:ENSG00000117601  nan                               ...
+    1955     |    1             ensembl_havana  three_prime_UTR  173903799  173903888  .         -           .         .         transcript:ENST00000367698                         nan                               ...
+    1956     |    1             ensembl_havana  exon             173903799  173904065  .         -           .         .         transcript:ENST00000367698                         nan                               ...
+    ...      |    ...           ...             ...              ...        ...        ...       ...         ...       ...       ...                         ...                               ...
+    1977     |    1             havana          exon             173911979  173912014  .         -           .         .         transcript:ENST00000494024                         nan                               ...
+    1978     |    1             havana          exon             173914552  173914919  .         -           .         .         transcript:ENST00000494024                         nan                               ...
+    1979     |    1             havana          exon             173915017  173915186  .         -           .         .         transcript:ENST00000494024                         nan                               ...
+    1980     |    1             havana          exon             173917218  173917316  .         -           .         .         transcript:ENST00000494024                         nan                               ...
+    PyRanges with 28 rows, 28 columns, and 1 index columns. (17 columns not shown: "Name", "biotype", "description", ...).
+    Contains 1 chromosomes and 1 strands.
+
+Similarly, we need to focus on the SNPs within the selected region:
+
+.. code-block::
+
+    >>> coord_vcf = vcf_split.loci["1",173900000:173920000]
+    >>> coord_vcf
+    index    |    Chromosome    Start      ID            REF         ALT       QUAL      FILTER      End        INFO_0     TSA       INFO_2                  INFO_3                  ...
+    int64    |    object        int32      object        object      object    object    category    int32      object     object    object                  object                  ...
+    -------  ---  ------------  ---------  ------------  ----------  --------  --------  ----------  ---------  ---------  --------  ----------------------  ----------------------  -----
+    12765    |    1             173903891  rs1572084425  A           G         nan       .           173903892  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    12766    |    1             173903902  rs121909564   G           A         nan       .           173903903  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    12767    |    1             173903902  rs2102772927  GGGTTGGCTA  G         nan       .           173903903  dbSNP_156  deletion  E_Cited                 E_Phenotype_or_Disease  ...
+    12768    |    1             173903908  rs1572084448  G           T         nan       .           173903909  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
+    ...      |    ...           ...        ...           ...         ...       ...       ...         ...        ...        ...       ...                     ...                     ...
+    12856    |    1             173914920  rs1572092195  C           G         nan       .           173914921  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_likely_pathogenic  ...
+    12857    |    1             173917217  rs199469508   A           G         nan       .           173917218  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
+    12858    |    1             173917231  rs61736655    G           T         nan       .           173917232  dbSNP_156  SNV       E_Freq                  E_1000G                 ...
+    12859    |    1             173917430  rs1658038847  G           C         nan       .           173917431  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
+    PyRanges with 95 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
+    Contains 1 chromosomes.
+
+Finally, we are ready to visualize our data. By combining the gene annotation from the selected genomic region with 
+the prepared PyRanges object representing the SNPs, we can generate an insightful plot that overlays both datasets. 
+Using the prp.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
+or this, simply specify the id_col parameter to indicate the column containing unique identifiers, such as the SNP IDs. 
+Here's how you can do it:
+
+.. code-block::
+
+    >>> prp.plot([reg,coord_vcf],id_col='ID')
+
+.. image:: images/prp_rtd_21.png
+
+In the figure above, the text displaying the ID of each variant may be misinterpreted due to overlapping with other SNP 
+labels. To address this, you can create an artificial column that selectively displays this text only for annotation data 
+while omitting it for VCF data:
+
+.. code-block::
+
+    >>> reg["Text_col"]=reg["Parent"]
+    >>> coord_vcf['Text_col'] = ''
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}')
+
+.. image:: images/prp_rtd_22.png
+
+However, genome variant analysis is not limited to simply identifying the positions of variants. You might also want to 
+explore the distribution of variants by analyzing the number of variants at each position. With PyRanges Plot, you can achieve 
+this by first creating a scatterplot that visualizes these counts, and then including it as input in the **add_aligned_plots**
+parameter:
+
+.. code-block::
+
+    >>> import plotly.graph_objects as go
+    >>> aligned_traces = [
+    ...     (go.Scatter(
+    ...         x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
+    ...         y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    ...         mode='markers'
+    ...     ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
+    ... ]
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+
+.. image:: images/prp_rtd_23.png
+
+.. warning::
+
+    Be careful! The add_aligned_plots parameter is currently only supported when your input data contains a single chromosome. 
+    If your dataset spans multiple chromosomes, you will need to filter it beforehand to focus on a specific chromosome for this 
+    feature to work correctly.
+
+As you observed, the add_aligned_plots parameter accepts as input a list of tuples, where each tuple consists of two elements: 
+the first is the scatterplot object, and the second is a dictionary for customizing the title of the aligned plot.This dictionary 
+allows you to control three title parameters:
+
+* title: The text of the title.
+* title_size: The font size of the title.
+* title_color: The color of the title text.
+* y_space: Determines de distance between the main plot and the aligned plots
+* height: Determines the height of the added plot
+
+We already used the options to customise the title., let's now customise the y axis length and the space between these plots:
+
+.. code-block::
+
+    >>> aligned_traces = [
+    ...          (go.Scatter(
+    ...              x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
+    ...              y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    ...              mode='markers'
+    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'height': 0.5, 'y_space': 0.5})
+    ... ]
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+
+.. image:: images/prp_rtd_24.png
+
+If your dataset is too large to manually create a Plotly scatterplot, Pyranges Plot offers a convenient function called :func:`make_scatter() <pyranges_plot.make_scatter>`. 
+This function allows you to automatically generate a scatterplot directly from your data, introducing the numeric column for the
+y axis.
+
+First we will use Numpy to create a random Count column
+
+.. code-block::
+
+    >>> import numpy as np
+    >>> coord_vcf['Count']=coord_vcf.apply(lambda row: np.random.randint(0, 100), axis=1)
+
+Next, we will use this column to define the y-axis for the plot:
+
+.. code-block::
+
+    >>> aligned = prp.make_scatter(coord_vcf, y='Count')
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+
+.. image:: images/prp_rtd_25.png
+
+The :func:`make_scatter() <pyranges_plot.make_scatter>` function includes several options that allow you to customize your plot to better fit your needs. For instance, 
+you can use the following parameters:
+
+* color_by: Specify a column from your dataset to color the markers based on its values.
+* title: Set a custom title for your scatterplot.
+* title_size: Adjust the font size of the title for better visibility.
+* title_color: Change the color of the title text to match your design preferences.
+* size_by: Define a column to dynamically adjust the marker sizes based on its values.
+* y_space: Determines de distance between the main plot and the aligned plots
+* height: Determines the height of the added plot
+
+These customization options make it easy to generate informative and visually appealing scatterplots tailored to your data.
+In our case we are going to color our genetic variants by its type (**TSA** column):
+
+.. code-block::
+
+    >>> aligned = prp.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
+    >>> prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+
+.. image:: images/prp_rtd_26.png
+
+Enhancing PyRanges Plot with External Visualizations
+----------------------------------------------------
+
+A typical genomic analysis often involves more than just visualizing genomic intervals. Researchers frequently need to incorporate additional 
+plots—potentially using different axes or plot types—to provide context or enhance the interpretation of results.  PyRanges Plot allows you 
+to export your plot to a variable by using the **return_plot** parameter. This parameter accepts two values:
+
+* app: Returns a Dash object, which can be integrated into a custom dashboard.
+* fig: Returns the figure and axes of the data, enabling direct manipulation or combination with other Plotly figures.
+
+Example:
+
+.. code-block::
+
+    >>> p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+    >>> p
+    <dash.dash.Dash object at 0x73321d74e990>
+
+Imagine you have your VCF plot and want to visualize how many variants are present in your dataset. For instance, first you can export 
+the pyranges plot dash object and then you can create a pie chart to display the distribution of variants by type and seamlessly 
+integrate it into the PyRanges Plot layout. Below is an example of a PyRanges Plot combined with a horizontally aligned pie chart:
+
+.. code-block::
+
+    p = prp.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+
+    # Example additional data
+    variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
+    variant_counts = [30, 20, 10, 15, 25]  # Example counts or proportions
+
+    # Create a pie chart
+    pie_chart = go.Figure(
+        go.Pie(
+            labels=variant_types,
+            values=variant_counts,
+            hoverinfo="label+percent",
+            textinfo="label+percent",
+        )
+    )
+    pie_chart.update_layout(title={"text": "Variant Types", "font": {"color": "black", "size": 18}, "x": 0.5},
+                        margin=dict(l=10, r=10, t=30, b=10))
+
+    # Access and extend the existing Dash app's layout
+    p.layout = html.Div(
+        [
+            html.Div(
+                [
+                    html.Div([p.layout], style={"width": "70%", "display": "flex", "justify-content": "center"}),
+                    html.Div(
+                        [dcc.Graph(figure=pie_chart)],
+                        style={
+                            "width": "70%",
+                            "display": "flex",
+                            "align-items": "center",
+                            "justify-content": "center",
+                        },
+                    ),
+                ],
+                style={"display": "flex", "flex-direction": "row"},  # Arrange side by side
+            )
+        ]
+    )
+
+    # Run the Dash app
+    if __name__ == "__main__":
+        p.run_server(debug=True)
+
+.. image:: images/prp_rtd_27.png
+
+.. warning::
+    Hey! This code may cause issues if it is run in an IPython shell. 
+    For a smoother experience, consider using a Jupyter Notebook instead.
+
+This layout can also be implemented vertically, allowing you to stack the PyRanges Plot and the pie chart for a clear and intuitive 
+visualization. Here's how you can achieve this configuration:
+
+.. code-block::
+
+    p = prp.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
+
+    # Example additional data
+    variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
+    variant_counts = [30, 20, 10, 15, 25]  # Example counts or proportions
+
+    # Create a pie chart
+    pie_chart = go.Figure(
+        go.Pie(
+            labels=variant_types,
+            values=variant_counts,
+            hoverinfo="label+percent",
+            textinfo="label+percent",
+        )
+    )
+    pie_chart.update_layout(title={"text": "Variant Types", "font": {"color": "black", "size": 18}, "x": 0.5},
+                        margin=dict(l=10, r=10, t=30, b=10))
+
+
+    # Access and extend the existing Dash app's layout
+    p.layout = html.Div(
+        [
+            p.layout,  # Retain the existing layout from prp.plot
+            html.Div(
+                [
+                    dcc.Graph(figure=pie_chart, style={"margin-bottom": "20px"}),
+                ],
+                style={"display": "flex", "flex-direction": "column"}  # Arrange vertically
+            )
+        ]
+    )
+
+    # Run the Dash app
+    if __name__ == "__main__":
+        p.run_server(debug=True)
+
+.. image:: images/prp_rtd_28.png

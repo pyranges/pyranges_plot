@@ -42,6 +42,7 @@ plot_features_dict = {
     "plot_bkg": ("white", "Background color of the plots.", " "),
     "plot_border": ("black", "Color of the line delimiting the plots.", " "),
     "plotly_port": (8050, "Port to run plotly app.", " "),
+    "return_plot": (None, "Whether the plot is returned or not.", " "),
     "shrink_threshold": (
         0.01,
         "Minimum length of an intron or intergenic region in order for it to be shrunk while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
@@ -65,6 +66,7 @@ plot_features_dict = {
     "text_size": (10, "Fontsize of the text annotation beside the intervals.", " "),
     "title_color": ("black", "Color of the plots' titles.", " "),
     "title_size": (18, "Size of the plots' titles.", " "),
+    "title_font": ("Arial", "Font of the plots' titles.", " "),
     "v_spacer": (0.5, "Vertical distance between the intervals and plot border.", " "),
     "x_ticks": (
         None,

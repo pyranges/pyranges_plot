@@ -13,4 +13,6 @@ from .core import (
 )
 from .plot_main import plot  # noqa: F401
 from .pr_register_plot import register_plot  # noqa: F401
-from .example_data import p1, p2, p3, p_ala, p_cys  # noqa: F401
+from .example_data import p1, p2, p3, p_ala, p_cys, ncbi_gff, ncbi_vcf  # noqa: F401
+from . import vcf  # noqa: F401
+from .make_subsets import make_scatter  # noqa: F401
