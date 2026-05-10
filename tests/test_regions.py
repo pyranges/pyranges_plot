@@ -51,19 +51,9 @@ def test_regions_list_accepts_embedded_pyranges_matplotlib():
 
 def test_regions_column_uses_groups_as_panels_matplotlib():
     pre.set_engine("matplotlib")
-    fig = pre.plot(
-        _data(),
-        id_col="tx",
-        regions="region_group",
-        return_plot="fig",
-        title_chr="{chrom}:{start}-{end}",
-    )
+    fig = pre.plot(_data(), id_col="tx", regions="region_group", return_plot="fig")
 
-    assert [ax.get_title() for ax in fig.axes] == [
-        "left:1,000-2,500",
-        "right:50,000-56,000",
-        "chr2:10-20",
-    ]
+    assert [ax.get_title() for ax in fig.axes] == ["left", "right", "chr2"]
 
 
 def test_regions_list_replaces_chromosome_layout_plotly():

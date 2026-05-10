@@ -106,7 +106,7 @@ def plot(
     thick_cds=False,
     text=True,
     legend=False,
-    title_chr="Chromosome {chrom}",
+    title_chr=None,
     y_labels=None,
     tooltip=None,
     to_file=None,
@@ -168,17 +168,10 @@ def plot(
           will be left as default.
 
     regions: {None, list, str, pyranges.PyRanges}, default None
-        Dedicated region layout. When provided, the default chromosome-grouped layout
-        is replaced by exactly the selected regions, in order, and ``limits`` is ignored.
-
-        - list: entries can be ``(chromosome, start, end)`` tuples or PyRanges
-          objects. Each tuple/row becomes one panel. ``start`` or ``end`` can be
-          ``None`` to use the default limit for that side.
-        - pyranges.PyRanges: each row defines one region panel using its
-          ``Chromosome``, ``Start`` and ``End`` columns.
-        - str: interpreted as a column name in the plotted data. Each distinct
-          value of that column becomes one panel, in data order, and limits are
-          computed from the intervals in that group as usual.
+        Optional panel layout replacing the default one-panel-per-chromosome layout.
+        If provided, panels are exactly these regions in order and ``limits`` is ignored.
+        Use a list of ``(chromosome, start, end)`` tuples and/or PyRanges objects,
+        a PyRanges object (one row per panel), or a column name whose values define panels.
 
     thick_cds: bool, default False
         Display differentially transcript regions belonging and not belonging to CDS. The CDS/exon information
@@ -193,16 +186,11 @@ def plot(
     legend: bool, default False
         Whether the legend should appear in the plot.
 
-    title_chr: str, default "Chromosome {chrom}"
-        Format string for subplot titles. Three placeholders are available:
-        ``{chrom}`` (the chromosome name), ``{start}`` and ``{end}`` (the
-        panel's coordinate range). When ``regions`` declares an explicit window
-        for the panel, ``{start}`` / ``{end}`` are filled with that window;
-        otherwise they are filled with the dynamically determined min/max of
-        the data shown in the panel. Coordinates are formatted with thousands
-        separators (``1,000`` instead of ``1000``). Set this to a custom
-        string to change the format, e.g. ``"Chromosome {chrom}"`` to recover
-        the legacy chromosome-only title.
+    title_chr: {None, str}, default None
+        Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``.
+        If None, pyrangeyes chooses ``"Chromosome {chrom}"`` normally,
+        ``"{chrom}:{start}-{end}"`` for explicit ``regions``, and ``"{chrom}"``
+        when ``regions`` is a column name.
 
     y_labels: list, default None
         Name to identify the PyRanges object/s in the plot.
@@ -439,6 +427,14 @@ def plot(
     # requested region panels and ignore `limits` for this call. Otherwise,
     # keep legacy `limits` behavior as coordinate customization for chromosome
     # panels.
+    if title_chr is None:
+        if isinstance(regions, str):
+            title_chr = "{chrom}"
+        elif regions is not None:
+            title_chr = "{chrom}:{start}-{end}"
+        else:
+            title_chr = "Chromosome {chrom}"
+
     if regions is not None:
         subdf, limits, panel_display = _normalize_regions_to_panels(subdf, regions)
     else:
