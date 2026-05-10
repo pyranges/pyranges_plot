@@ -106,13 +106,14 @@ This is customizable with the ``limits`` parameter.
 The user can decide to change all or some of the coordinate limits leaving the rest as default if desired.
 The ``limits`` parameter accepts different input types:
 
-* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits`` to leave as default).
+* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits.
+  Either coordinate can be ``None`` to leave that side as default.
 
 * Tuple of two integer numbers, which sets the same limits for all plotted chromosomes.
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> pre.plot(p, limit, 100), 2: (60, 20})
+    >>> pre.plot(p, limits={1: (None, 100), 2: (60, 200)})
 
 .. image:: images/prp_rtd_04.png
 
@@ -121,6 +122,20 @@ To plot with specified limits, use the following code:
     >>> pre.plot(p, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
+
+Plotting selected regions as panels
+-----------------------------------
+
+Use ``regions`` to replace the default one-panel-per-chromosome layout with specific panels.
+For example, this makes one panel per transcript by using a column name:
+
+    >>> pre.plot(p, regions="transcript_id", color_col="transcript_id")
+
+.. image:: images/prp_rtd_29.png
+
+Explicit regions are also supported with ``(chromosome, start, end)`` tuples or PyRanges rows:
+
+    >>> pre.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
 Coloring
 --------
