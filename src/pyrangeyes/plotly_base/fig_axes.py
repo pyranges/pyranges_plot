@@ -7,6 +7,16 @@ from pyrangeyes.core import cumdelting
 from pyrangeyes.names import PR_INDEX_COL, CUM_DELTA_COL
 
 
+def _format_coord(v):
+    """Format a numeric coordinate for subplot titles, falling back to '' for None."""
+    if v is None or (isinstance(v, float) and np.isnan(v)):
+        return ""
+    try:
+        return f"{int(v):,}"
+    except (TypeError, ValueError):
+        return str(v)
+
+
 def calculate_ticks(chrom_md_grouped, chrom, num_ticks=10):
     """Calculate tick values for a given data range."""
 
@@ -51,7 +61,19 @@ def create_fig(
     """Generate the figure and axes fitting the data."""
 
     # Unify titles and start figure
-    titles = [title_chr.format(**{"chrom": chrom}) for chrom in chrmd_df_grouped.index]
+    def _fmt_title(row, fallback_chrom):
+        # `row` is a chrmd_df_grouped row; display_chrom/start/end are added by
+        # plot() via _attach_panel_display.
+        return title_chr.format(
+            chrom=row.get("display_chrom", fallback_chrom),
+            start=_format_coord(row.get("display_start")),
+            end=_format_coord(row.get("display_end")),
+        )
+
+    titles = [
+        _fmt_title(chrmd_df_grouped.loc[chrom], chrom)
+        for chrom in chrmd_df_grouped.index
+    ]
     titles = list(pd.Series(titles))
 
     # Additional plots configuration

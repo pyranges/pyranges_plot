@@ -11,11 +11,24 @@ from .core import make_annotation
 from ..names import CUM_DELTA_COL, PR_INDEX_COL
 
 
-def ax_display(ax, title, chrom, t_dict, plot_back, plot_border):
-    """Set plot features."""
+def _format_coord(v):
+    """Format a numeric coordinate for subplot titles, falling back to '' for None."""
+    if v is None or (isinstance(v, float) and np.isnan(v)):
+        return ""
+    try:
+        return f"{int(v):,}"
+    except (TypeError, ValueError):
+        return str(v)
+
+
+def ax_display(ax, title, t_dict, plot_back, plot_border):
+    """Set plot features.
+
+    ``title`` is expected to already be the final, formatted string.
+    """
 
     if title:
-        ax.set_title(title.format(**locals()), fontdict=t_dict)
+        ax.set_title(title, fontdict=t_dict)
 
     ax.set_facecolor(plot_back)
     plt.setp(ax.spines.values(), color=plot_border)
@@ -104,8 +117,20 @@ def create_fig(
 ):
     """Generate the figure and axes fitting the data."""
 
-    # Unify titles
-    titles = [title_chr.format(**{"chrom": chrom}) for chrom in chrmd_df_grouped.index]
+    # Unify titles. Use display_chrom/display_start/display_end set by
+    # plot._attach_panel_display so multi-window panels display the real
+    # chromosome plus the window coordinates.
+    def _fmt_title(row, fallback_chrom):
+        return title_chr.format(
+            chrom=row.get("display_chrom", fallback_chrom),
+            start=_format_coord(row.get("display_start")),
+            end=_format_coord(row.get("display_end")),
+        )
+
+    titles = [
+        _fmt_title(chrmd_df_grouped.loc[chrom], chrom)
+        for chrom in chrmd_df_grouped.index
+    ]
 
     # Additional plots configuration
     additional_plots = []
@@ -168,9 +193,7 @@ def create_fig(
             axes.append(plt.subplot(gs[i]))
             ax = axes[i]
             # Adjust plot display
-            ax_display(
-                ax, title_chr, chrom, title_dict_plt, plot_background, plot_border
-            )
+            ax_display(ax, titles[i], title_dict_plt, plot_background, plot_border)
 
             # set x axis limits
             x_min, x_max = chrmd_df_grouped.loc[chrom]["min_max"]

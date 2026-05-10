@@ -22,6 +22,8 @@ from .data_preparation import (
     compute_tpad,
     subdf_assigncolor,
     assign_label_rows,
+    _normalize_limits_to_panels,
+    _normalize_regions_to_panels,
 )
 from .introns_off import introns_resize, recalc_axis
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
@@ -55,6 +57,37 @@ except ImportError:
     missing_ply_flag = 1
 
 
+def _attach_panel_display(chrmd_df_grouped, panel_display):
+    """Attach per-panel display info (real chromosome + window) to
+    chrmd_df_grouped as columns the rendering layer can read.
+
+    When ``panel_display`` is None (no exploding happened) we still populate
+    sensible defaults so the title formatter has uniform data: display_chrom
+    is the index value (the real chromosome), and display_start/display_end
+    are taken from the dynamic ``min_max`` tuple.
+    """
+    if panel_display:
+        chrmd_df_grouped["display_chrom"] = [
+            panel_display.get(ix, {}).get("chrom", ix) for ix in chrmd_df_grouped.index
+        ]
+        # Prefer the explicit window edges from panel_display when given;
+        # fall back to the dynamic min_max when an edge was None.
+        ds, de = [], []
+        for ix in chrmd_df_grouped.index:
+            info = panel_display.get(ix, {})
+            mn, mx = chrmd_df_grouped.loc[ix]["min_max"]
+            ds.append(info.get("start") if info.get("start") is not None else mn)
+            de.append(info.get("end") if info.get("end") is not None else mx)
+        chrmd_df_grouped["display_start"] = ds
+        chrmd_df_grouped["display_end"] = de
+    else:
+        chrmd_df_grouped["display_chrom"] = list(chrmd_df_grouped.index)
+        chrmd_df_grouped["display_start"] = [
+            mm[0] for mm in chrmd_df_grouped["min_max"]
+        ]
+        chrmd_df_grouped["display_end"] = [mm[1] for mm in chrmd_df_grouped["min_max"]]
+
+
 def plot(
     data,
     *,
@@ -69,6 +102,7 @@ def plot(
     depth_col=None,
     shrink=False,
     limits=None,
+    regions=None,
     thick_cds=False,
     text=True,
     legend=False,
@@ -121,16 +155,30 @@ def plot(
         Whether to compress the intron ranges to facilitate visualization or not.
 
     limits: {None, dict, tuple, pyranges.PyRanges}, default None
-        Customization of coordinates for the chromosome plots.\n
-        - None: minimum and maximum exon coordinate plotted plus a 5% of the range on each side.\n
-        - dict: {chr_name1: (min_coord, max coord), chr_name2: (min_coord, max_coord), ...}. Not
-        all the plotted chromosomes need to be specified in the dictionary and some coordinates
-        can be indicated as None, both cases lead to the use of the default value.\n
-        - tuple: the coordinate limits of all chromosomes will be defined as indicated.\n
+        Customization of coordinates for the chromosome plots.
+
+        - None: minimum and maximum exon coordinate plotted plus a 5% of the range on each side.
+        - dict: {chr_name1: (min_coord, max_coord), chr_name2: (min_coord, max_coord), ...}.
+          Not all the plotted chromosomes need to be specified in the dictionary and some coordinates
+          can be indicated as None, both cases lead to the use of the default value.
+        - tuple: the coordinate limits of all chromosomes will be defined as indicated.
         - pyranges.PyRanges: for each matching chromosome between the plotted data
-        and the limits data, the limits will be defined by the minimum and maximum coordinates
-        in the pyranges object defined as limits. If some plotted chromosomes are not present they
-        will be left as default.
+          and the limits data, the limits will be defined by the minimum and maximum coordinates
+          in the pyranges object defined as limits. If some plotted chromosomes are not present they
+          will be left as default.
+
+    regions: {None, list, str, pyranges.PyRanges}, default None
+        Dedicated region layout. When provided, the default chromosome-grouped layout
+        is replaced by exactly the selected regions, in order, and ``limits`` is ignored.
+
+        - list: entries can be ``(chromosome, start, end)`` tuples or PyRanges
+          objects. Each tuple/row becomes one panel. ``start`` or ``end`` can be
+          ``None`` to use the default limit for that side.
+        - pyranges.PyRanges: each row defines one region panel using its
+          ``Chromosome``, ``Start`` and ``End`` columns.
+        - str: interpreted as a column name in the plotted data. Each distinct
+          value of that column becomes one panel, in data order, and limits are
+          computed from the intervals in that group as usual.
 
     thick_cds: bool, default False
         Display differentially transcript regions belonging and not belonging to CDS. The CDS/exon information
@@ -146,8 +194,15 @@ def plot(
         Whether the legend should appear in the plot.
 
     title_chr: str, default "Chromosome {chrom}"
-        String providing the desired title for the chromosome plots. It should be given in a way where
-        the chromosome value in the data is indicated as {chrom}.
+        Format string for subplot titles. Three placeholders are available:
+        ``{chrom}`` (the chromosome name), ``{start}`` and ``{end}`` (the
+        panel's coordinate range). When ``regions`` declares an explicit window
+        for the panel, ``{start}`` / ``{end}`` are filled with that window;
+        otherwise they are filled with the dynamically determined min/max of
+        the data shown in the panel. Coordinates are formatted with thousands
+        separators (``1,000`` instead of ``1000``). Set this to a custom
+        string to change the format, e.g. ``"Chromosome {chrom}"`` to recover
+        the legacy chromosome-only title.
 
     y_labels: list, default None
         Name to identify the PyRanges object/s in the plot.
@@ -193,6 +248,12 @@ def plot(
     >>> plot(p, id_col="transcript_id", color_col='Strand', colormap={'+': 'green', '-': 'red'})
 
     >>> plot(p, limits = {'1': (1000, 50000), '2': None, '3': (10000, None)}, title_chr="Chrom: {chrom}")
+
+    >>> # Two windows on chromosome 1 shown as separate panels:
+    >>> plot(p, regions = [('1', 1_000, 5_000), ('1', 50_000, 60_000)])
+
+    >>> # Or use a column to define region panels:
+    >>> plot(p, regions = 'transcript_id')
 
     >>> plot([p, p], id_col="transcript_id", shrink=True, tooltip = "Feature1: {feature1}")
 
@@ -374,6 +435,15 @@ def plot(
         level=PR_INDEX_COL
     )  ### change to pr but doesn't work yet!!
 
+    # If `regions` is provided, replace the default chromosome layout with the
+    # requested region panels and ignore `limits` for this call. Otherwise,
+    # keep legacy `limits` behavior as coordinate customization for chromosome
+    # panels.
+    if regions is not None:
+        subdf, limits, panel_display = _normalize_regions_to_panels(subdf, regions)
+    else:
+        subdf, limits, panel_display = _normalize_limits_to_panels(subdf, limits)
+
     # group id_cols in one column to count genes in chrmd
     # if len(ID_COL) > 1:
     #   subdf["__id_col_2count__"] = list(zip(*[subdf[c] for c in ID_COL+[PR_INDEX_COL]+[CHROM_COL]]))
@@ -482,6 +552,7 @@ def plot(
         feat_dict["v_spacer"],
         feat_dict["exon_height"],
     )
+    _attach_panel_display(chrmd_df_grouped, panel_display)
 
     # Deal with introns off
     # adapt coordinates to shrunk
@@ -542,6 +613,7 @@ def plot(
             feat_dict["exon_height"],
             ts_data=ts_data,
         )
+        _attach_panel_display(chrmd_df_grouped, panel_display)
 
         # compute new axis values and positions if needed
         if ts_data:

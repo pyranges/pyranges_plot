@@ -1,9 +1,10 @@
+import warnings
+
 import numpy as np
 from intervaltree import IntervalTree
 import pyranges1 as pr
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL
 import pandas as pd
-import heapq
 
 # Check for matplotlib
 try:
@@ -29,6 +30,7 @@ from .names import (
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
+    PANEL_SEP,
 )
 from .core import cumdelting, get_engine, get_warnings, check4dependency
 from .matplotlib_base.core import plt_popup_warning
@@ -355,6 +357,119 @@ def get_genes_metadata(
 
 
 ##limits
+def _region_specs_from_pyranges(regions):
+    """Return ``(chrom, start, end)`` tuples from a PyRanges object."""
+    specs = []
+    for _, row in regions.iterrows():
+        specs.append((row[CHROM_COL], int(row[START_COL]), int(row[END_COL])))
+    return specs
+
+
+def _normalize_region_specs(regions):
+    """Normalize explicit ``regions=`` input into ``(chrom, start, end)`` tuples."""
+    if isinstance(regions, pr.PyRanges):
+        return _region_specs_from_pyranges(regions)
+
+    if not isinstance(regions, list):
+        raise Exception(
+            "regions must be either a column name, a PyRanges object, or a list of (chrom, start, end) tuples/PyRanges objects."
+        )
+
+    specs = []
+    for region in regions:
+        if isinstance(region, pr.PyRanges):
+            specs.extend(_region_specs_from_pyranges(region))
+        elif isinstance(region, tuple) and len(region) == 3:
+            specs.append(region)
+        else:
+            raise Exception(
+                f"regions entries must be (chrom, start, end) tuples or PyRanges objects; got {region!r}"
+            )
+    return specs
+
+
+def _normalize_regions_to_panels(subdf, regions):
+    """Apply the dedicated ``regions=`` layout.
+
+    When ``regions`` is provided, chromosome-grouped layout is replaced by the
+    exact listed/grouped regions, in order. Synthetic chromosome identifiers are
+    used internally so the existing plotting pipeline can render each region as
+    a separate panel.
+
+    Returns
+    -------
+    new_subdf : pandas.DataFrame
+        Either the original ``subdf`` (when there is at most one window per
+        chromosome) or a row-exploded copy with ``Chromosome`` relabeled to
+        synthetic panel ids of the form ``f"{chrom}{PANEL_SEP}{ix}"``.
+    panel_limits : dict | None
+        Object to pass to :func:`chrmd_limits`, keyed by synthetic panel id.
+    panel_display : dict[str, dict] | None
+        Map ``synthetic_chrom -> {"chrom": real_chrom, "start": s|None, "end": e|None}``
+        used by the rendering layer to build subplot titles. Returns ``None``
+        when no exploding was needed (the rendering code then uses the real
+        chromosome value and the dynamic min/max).
+    """
+    panel_limits = {}
+    panel_display = {}
+    new_frames = []
+
+    if isinstance(regions, str):
+        if regions not in subdf.columns:
+            raise Exception(f"regions column {regions!r} is not present in the data.")
+        for ix, region_name in enumerate(pd.unique(subdf[regions])):
+            panel_id = f"{region_name}{PANEL_SEP}{ix}"
+            block = subdf[subdf[regions] == region_name].copy()
+            block[CHROM_COL] = panel_id
+            new_frames.append(block)
+            panel_limits[panel_id] = (None, None)
+            panel_display[panel_id] = {
+                "chrom": region_name,
+                "start": None,
+                "end": None,
+            }
+    else:
+        for ix, (chrom, start, end) in enumerate(_normalize_region_specs(regions)):
+            panel_id = f"{chrom}{PANEL_SEP}{ix}"
+            block = subdf[subdf[CHROM_COL] == chrom]
+            if start is not None:
+                block = block[block[END_COL] > start]
+            if end is not None:
+                block = block[block[START_COL] < end]
+            block = block.copy()
+            block[CHROM_COL] = panel_id
+            new_frames.append(block)
+            panel_limits[panel_id] = (start, end)
+            panel_display[panel_id] = {
+                "chrom": chrom,
+                "start": start,
+                "end": end,
+            }
+
+    new_subdf = pd.concat(new_frames) if new_frames else subdf.iloc[0:0].copy()
+    panel_order = list(panel_display)
+    present_panel_order = [p for p in panel_order if p in set(new_subdf[CHROM_COL])]
+    new_subdf[CHROM_COL] = new_subdf[CHROM_COL].astype(
+        pd.CategoricalDtype(categories=present_panel_order, ordered=True)
+    )
+    panel_limits = {p: panel_limits[p] for p in present_panel_order}
+    panel_display = {p: panel_display[p] for p in present_panel_order}
+    if not panel_display:
+        raise Exception("regions did not select any intervals to plot.")
+    return new_subdf, panel_limits, panel_display
+
+
+def _normalize_limits_to_panels(subdf, limits):
+    """Keep legacy ``limits`` behavior: it customizes existing chromosome panels."""
+    if isinstance(limits, dict):
+        for chrom, val in limits.items():
+            if val is not None and not isinstance(val, tuple):
+                raise Exception(
+                    f"limits[{chrom!r}] must be a (start, end) tuple or None; use regions= for multiple panels/windows."
+                )
+    return subdf, limits, None
+
+
 def chrmd_limits(chrmd_df, limits):
     """Compute 'min_max' column for chromosome metadata"""
 

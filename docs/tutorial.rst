@@ -106,13 +106,14 @@ This is customizable with the ``limits`` parameter.
 The user can decide to change all or some of the coordinate limits leaving the rest as default if desired.
 The ``limits`` parameter accepts different input types:
 
-* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits`` to leave as default).
+* Dictionary with chromosome names as keys, and a tuple of two integer numbers indicating the limits.
+  Either coordinate can be ``None`` to leave that side as default.
 
 * Tuple of two integer numbers, which sets the same limits for all plotted chromosomes.
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> pre.plot(p, limit, 100), 2: (60, 20})
+    >>> pre.plot(p, limits={1: (None, 100), 2: (60, 200)})
 
 .. image:: images/prp_rtd_04.png
 
@@ -121,6 +122,38 @@ To plot with specified limits, use the following code:
     >>> pre.plot(p, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
+
+Plotting selected regions as panels
+-----------------------------------
+
+Sometimes the desired layout is not one panel per chromosome, but one panel per selected region.
+Use the ``regions`` parameter for this. When ``regions`` is provided, the default chromosome-grouped
+layout is replaced by the listed regions, in order. In that call, ``limits`` is ignored because each
+region defines its own coordinate window.
+
+The most direct form is a list of ``(chromosome, start, end)`` tuples. ``start`` or ``end`` can be
+``None`` to use the default coordinate limit on that side. PyRanges objects can also be included in
+this list; each row becomes one region panel.
+
+    >>> pre.plot(
+    ...     p,
+    ...     regions=[(2, 60, 120), (2, 140, 190), (1, None, None)],
+    ...     color_col="transcript_id",
+    ...     title_chr="{chrom}:{start}-{end}",
+    ... )
+
+.. image:: images/prp_rtd_29.png
+
+A standalone PyRanges object can also define the regions, one row per panel:
+
+    >>> import pyranges1 as pr
+    >>> selected = pr.PyRanges({"Chromosome": [2, 1], "Start": [60, 1], "End": [120, 100]})
+    >>> pre.plot(p, regions=selected, title_chr="{chrom}:{start}-{end}")
+
+Finally, ``regions`` can be a column name. In that case, each distinct value of the column becomes a
+panel, and the coordinate limits are computed from the intervals in that group as usual:
+
+    >>> pre.plot(p, regions="feature1", title_chr="{chrom}:{start}-{end}")
 
 Coloring
 --------
