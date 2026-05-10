@@ -19,6 +19,11 @@ def normalize_plotly_json(obj):
         return list(normalize_plotly_json(i) for i in obj)
     elif isinstance(obj, np.ndarray):
         return normalize_plotly_json(obj.tolist())
+    elif isinstance(obj, np.generic):
+        # Coerce numpy scalars (e.g. np.float64, np.int64) to plain Python
+        # types so DeepDiff does not flag them as different from the
+        # JSON-roundtripped baseline values.
+        return obj.item()
     else:
         return obj
 
