@@ -98,6 +98,7 @@ def plot(
     return_plot=None,
     add_aligned_plots=None,
     color_col=None,
+    outline_col=None,
     thickness_col=None,
     depth_col=None,
     shrink=False,
@@ -136,7 +137,14 @@ def plot(
         they do not overlap) and False for unpacked (one row per gene).
 
     color_col: str, default None
-        Name of the column used to color the genes. If not specified, id_col will be used.
+        Name of the column used to color the interval fill. If not specified, id_col will be used.
+        By default values are mapped through ``colormap``; use ``colormap="direct"`` when the column
+        already contains Matplotlib/Plotly colors.
+
+    outline_col: str, default None
+        Name of the column used to color interval outlines. If not specified, interval outlines use the
+        resolved fill colors. To set one fixed outline color for all intervals, use the ``outline_color``
+        plot option through ``plot(..., outline_color="black")`` or ``set_options("outline_color", "black")``.
 
     thickness_col: str, default None
         Name of a numerical data column whose values specify the height (thickness)
@@ -234,6 +242,16 @@ def plot(
     >>> plot(p, id_col="transcript_id",  max_shown=25, colormap='Set3', text=False)
 
     >>> plot(p, id_col="transcript_id", color_col='Strand', colormap={'+': 'green', '-': 'red'})
+
+    >>> plot(p, id_col="transcript_id", color_col='fill_hex', outline_col='outline_hex', colormap='direct')
+
+    >>> plot(
+    ...     p,
+    ...     id_col="transcript_id",
+    ...     color_col='Strand',
+    ...     outline_col='Feature',
+    ...     colormap={'color': {'+': 'green', '-': 'red'}, 'outline': {'exon': 'black', 'CDS': 'gold'}},
+    ... )
 
     >>> plot(p, limits = {'1': (1000, 50000), '2': None, '3': (10000, None)}, title_chr="Chrom: {chrom}")
 
@@ -364,7 +382,7 @@ def plot(
             "size": int(getvalue("title_size")),
         },
         "grid_color": getvalue("grid_color"),
-        "exon_border": getvalue("exon_border"),
+        "outline_color": getvalue("outline_color"),
         "exon_height": float(getvalue("exon_height")),
         "transcript_utr_width": 0.3 * float(getvalue("exon_height")),
         "v_spacer": getvalue("v_spacer"),
@@ -500,8 +518,17 @@ def plot(
     elif isinstance(color_col, str):
         color_col = [color_col]
 
+    if outline_col is not None:
+        if isinstance(outline_col, str):
+            outline_col = [outline_col]
+        for outline_str in outline_col:
+            if outline_str not in subdf.columns:
+                raise Exception(
+                    f"The provided outline_col {outline_str} is not present in the given data."
+                )
+
     subdf = subdf_assigncolor(
-        subdf, colormap, color_col, feat_dict["exon_border"], warnings
+        subdf, colormap, color_col, outline_col, feat_dict["outline_color"], warnings
     )
 
     # This is needed to maintain the order of the rows when adding multiple pr

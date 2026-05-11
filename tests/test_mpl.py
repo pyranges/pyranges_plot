@@ -95,7 +95,7 @@ pre.set_id_col("transcript_id")
 # test id_col
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test01():
-    pre.plot(data1, color_col="transcript_id", exon_border="black", sort_ranges=True)
+    pre.plot(data1, color_col="transcript_id", outline_color="black", sort_ranges=True)
     fig = plt.gcf()
     return fig
 
@@ -107,7 +107,7 @@ def test02():
         id_col="second_id",
         color_col="transcript_id",
         shrink=True,
-        exon_border="black",
+        outline_color="black",
         sort_ranges=True,
     )
     fig = plt.gcf()

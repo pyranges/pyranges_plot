@@ -34,6 +34,7 @@ from .names import (
 )
 from .core import cumdelting, get_engine, get_warnings, check4dependency
 from .matplotlib_base.core import plt_popup_warning
+from .plot_features import prp_cmap
 
 
 ############ COMPUTE INTRONS OFF THRESHOLD
@@ -171,18 +172,25 @@ def get_plycolormap(colormap_string):
         return getattr(pc.qualitative, colormap_string)
 
 
-def subdf_assigncolor(subdf, colormap, color_col, exon_border, warnings):
-    """Add color information to data."""
+def _channel_colormap(colormap, channel, fallback=None):
+    """Return the colormap configuration for a style channel."""
+    if isinstance(colormap, dict) and (
+        "color" in colormap or "outline" in colormap
+    ):
+        return colormap.get(channel, fallback)
+    return colormap
 
-    # Create COLOR_COL column
-    if len(color_col) > 1:
-        subdf[COLOR_TAG_COL] = list(zip(*[subdf[c] for c in color_col]))
-    else:
-        subdf[COLOR_TAG_COL] = subdf[color_col[0]]
 
-    # Assign colors to
-    color_tags = subdf[COLOR_TAG_COL].drop_duplicates()
+def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
+    """Resolve a tag column into concrete colors."""
+    color_tags = subdf[tag_col].drop_duplicates()
     n_color_tags = len(color_tags)
+
+    if colormap in ["direct", None, False]:
+        subdf[output_col] = subdf[tag_col]
+        return subdf
+    if colormap == "popart":
+        colormap = prp_cmap
 
     # 0-string to colormap object if possible
     if isinstance(colormap, str):
@@ -218,16 +226,6 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border, warnings):
                 subdf["_iterwarning!"] = [1] * len(subdf)
         else:
             colormap = colormap[:n_color_tags]
-        # make plotly rgb colors compatible with plt
-        # if colormap[0][:3] == "rgb":
-        #     numb_list = [
-        #         rgb[rgb.find("(") + 1 : rgb.find(")")].split(",") for rgb in colormap
-        #     ]
-        #     colormap = [
-        #         "#{:02x}{:02x}{:02x}".format(int(r), int(r), int(b))
-        #         for r, r, b in numb_list
-        #     ]
-        # create dict of colors
         colormap = {
             str(color_tags.iloc[i]): colormap[i % len(colormap)]
             for i in range(n_color_tags)
@@ -235,11 +233,11 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border, warnings):
 
     # 3- Use dict to assign color to gene
     if isinstance(colormap, dict):
-        subdf[COLOR_TAG_COL] = subdf[COLOR_TAG_COL].astype(str)
-        subdf[COLOR_INFO] = subdf[COLOR_TAG_COL].map(colormap)
+        subdf[tag_col] = subdf[tag_col].astype(str)
+        subdf[output_col] = subdf[tag_col].map(colormap)
 
         # add black genes warning if needed
-        if subdf[COLOR_INFO].isna().any():
+        if subdf[output_col].isna().any():
             engine = get_engine()
             if warnings is None:
                 warnings = get_warnings()
@@ -249,12 +247,39 @@ def subdf_assigncolor(subdf, colormap, color_col, exon_border, warnings):
                 )
             elif engine in ["ply", "plotly"] and warnings:
                 subdf["_blackwarning!"] = [1] * len(subdf)
-            subdf.fillna({COLOR_INFO: "black"}, inplace=True)
+            subdf.fillna({output_col: "black"}, inplace=True)
 
-    if exon_border:
-        subdf[BORDER_COLOR_COL] = [exon_border] * len(subdf)
+    return subdf
+
+
+def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, warnings):
+    """Add fill and outline color information to data."""
+
+    # Create COLOR_COL column
+    if len(color_col) > 1:
+        subdf[COLOR_TAG_COL] = list(zip(*[subdf[c] for c in color_col]))
     else:
+        subdf[COLOR_TAG_COL] = subdf[color_col[0]]
+
+    color_cmap = _channel_colormap(colormap, "color", fallback=prp_cmap)
+    subdf = _assign_color_channel(
+        subdf, COLOR_TAG_COL, COLOR_INFO, color_cmap, warnings
+    )
+
+    if outline_color is not None:
+        subdf[BORDER_COLOR_COL] = [outline_color] * len(subdf)
+    elif outline_col is None:
         subdf[BORDER_COLOR_COL] = subdf[COLOR_INFO]
+    else:
+        outline_tag_col = "__outline_tag__"
+        if len(outline_col) > 1:
+            subdf[outline_tag_col] = list(zip(*[subdf[c] for c in outline_col]))
+        else:
+            subdf[outline_tag_col] = subdf[outline_col[0]]
+        outline_cmap = _channel_colormap(colormap, "outline", fallback=color_cmap)
+        subdf = _assign_color_channel(
+            subdf, outline_tag_col, BORDER_COLOR_COL, outline_cmap, warnings
+        )
 
     return subdf
 

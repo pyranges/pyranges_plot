@@ -172,6 +172,30 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
 
 .. image:: images/prp_rtd_08.png
 
+If a column already stores literal colors (for example hex strings), set ``colormap="direct"``
+to use those values directly instead of mapping them as categories:
+
+    >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
+    >>> pre.plot(p, color_col="fill", colormap="direct")
+
+By default, interval outlines use the same resolved color as the fill. Use ``outline_col``
+to control outlines independently. When fill and outline columns use different value domains,
+provide a channel mapping with separate ``"color"`` and ``"outline"`` entries:
+
+    >>> pre.plot(
+    ...     p,
+    ...     color_col="Strand",
+    ...     outline_col="feature1",
+    ...     colormap={
+    ...         "color": {"+": "#8ecae6", "-": "#ffb703"},
+    ...         "outline": {"a": "#023047", "b": "#d00000", "c": "#6a4c93", "d": "#2d6a4f"},
+    ...     },
+    ... )
+
+For one fixed outline color, use the ``outline_color`` option:
+
+    >>> pre.plot(p, color_col="Strand", outline_color="black")
+
 To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
 to interpret the intervals based on their assigned colors. This can be done by setting the 
 **legend** parameter of :func:`plot <pyrangeyes.plot>` as True:
@@ -213,16 +237,13 @@ Note that any modified values from the built-in defaults will be marked with an 
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     Feature      |       Value        | Edited? |                         Description                          |
     +------------------+--------------------+---------+--------------------------------------------------------------+
-    |     colormap     |       popart       |         | Sequence of colors to assign to every group of intervals     |
-    |                  |                    |         | sharing the same “color_col” value. It can be provided as a  |
-    |                  |                    |         | Matplotlib colormap, a Plotly color sequence (built as       |
-    |                  |                    |         | lists), a string naming the previously mentioned color       |
-    |                  |                    |         | objects from Matplotlib and Plotly, or a dictionary with     |
-    |                  |                    |         | the following structure {color_column_value1: color1,        |
-    |                  |                    |         | color_column_value2: color2, ...}. When a specific           |
-    |                  |                    |         | color_col value is not specified in the dictionary it will   |
-    |                  |                    |         | be colored in black.                                         |
-    |   exon_border    |         |         | Color of the interval's rectangle border.                    |
+    |     colormap     |       popart       |         | Colors to assign to intervals. Use 'direct' when color_col   |
+    |                  |                    |         | and outline_col already contain literal colors. Otherwise    |
+    |                  |                    |         | provide a Matplotlib colormap, Plotly color sequence, list,  |
+    |                  |                    |         | mapping {value: color}, or channel mapping {'color': ...,    |
+    |                  |                    |         | 'outline': ...}. Missing mapped values are colored black.    |
+    | outline_color    |         |         | Fixed color for interval outlines. When empty, outlines use  |
+    |                  |                    |         | the resolved interval fill colors unless outline_col is set. |
     |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
     |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
     |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |

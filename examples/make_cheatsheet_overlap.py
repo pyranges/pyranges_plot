@@ -158,7 +158,7 @@ for ext in ["png"]:  # , 'pdf']:
         color_col="to_color",
         arrow_line_width=1,
         arrow_color="#4A4A4A",
-        exon_border="#4A4A4A",
+        outline_color="#4A4A4A",
         theme="light",
         colormap=colormap,
     )

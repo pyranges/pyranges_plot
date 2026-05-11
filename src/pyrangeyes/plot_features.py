@@ -27,10 +27,16 @@ plot_features_dict = {
     ),
     "colormap": (
         "popart",
-        "Sequence of colors to assign to every group of intervals sharing the same “color_col” value. It can be provided as a Matplotlib colormap, a Plotly color sequence (built as lists), a string naming the previously mentioned color objects from Matplotlib and Plotly, or a dictionary with the following structure {color_column_value1: color1, color_column_value2: color2, ...}. When a specific color_col value is not specified in the dictionary it will be colored in black.",
+        "Colors to assign to intervals. Use 'direct' when color_col/outline_col already contain literal colors. "
+        "Otherwise provide a Matplotlib colormap, a Plotly color sequence, a list, a mapping "
+        "{color_column_value: color}, or a channel mapping {'color': color_map, 'outline': outline_map}.",
         " ",
     ),
-    "exon_border": (None, "Color of the interval's rectangle border.", " "),
+    "outline_color": (
+        None,
+        "Fixed color for interval outlines. When None, outlines use the resolved interval fill colors.",
+        " ",
+    ),
     "exon_height": (0.6, "Height of the exon rectangle in the plot.", " "),
     "fig_bkg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),

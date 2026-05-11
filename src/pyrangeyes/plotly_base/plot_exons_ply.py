@@ -45,7 +45,7 @@ def plot_exons_ply(
     plot_border = feat_dict["plot_border"]
     title_dict_ply = feat_dict["title_dict_ply"]
     grid_color = feat_dict["grid_color"]
-    exon_border = feat_dict["exon_border"]
+    exon_border = feat_dict["outline_color"]
     exon_height = feat_dict["exon_height"]
     v_spacer = feat_dict["v_spacer"]
     text_size = feat_dict["text_size"]
