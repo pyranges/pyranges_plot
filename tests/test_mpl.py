@@ -15,7 +15,7 @@ data1 = pr.PyRanges(
         "End": [i * 100 for i in [15, 37, 6, 17, 39, 47, 51, 57, 67]],
         "transcript_id": ["t1", "t1", "t2", "t2", "t2", "t3", "t3", "t3", "t4"],
         "second_id": ["a"] * 4 + ["b"] * 5,
-        "Feature": ["mRNA"]*9,
+        "Feature": ["mRNA"] * 9,
     }
 )
 
@@ -95,7 +95,7 @@ pre.set_id_col("transcript_id")
 # test id_col
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test01():
-    pre.plot(data1, color_col="transcript_id", exon_border="black",sort=True)
+    pre.plot(data1, color_col="transcript_id", exon_border="black", sort_ranges=True)
     fig = plt.gcf()
     return fig
 
@@ -108,7 +108,7 @@ def test02():
         color_col="transcript_id",
         shrink=True,
         exon_border="black",
-        sort=True,
+        sort_ranges=True,
     )
     fig = plt.gcf()
     return fig  # 1 id_col
@@ -121,7 +121,7 @@ def test03():
         id_col=["transcript_id", "second_id"],
         color_col="transcript_id",
         packed=False,
-        sort=True
+        sort_ranges=True,
         # to_file="tests/img/test03.png",
     )  # +1 id_col, 1 pr packed False
     fig = plt.gcf()
@@ -145,8 +145,11 @@ def test05():
 # test +1 pr
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test06():
-    pre.plot([data2, data3], color_col="transcript_id", sort=True,
-    #to_file="tests/baseline_mpl/test06.png"
+    pre.plot(
+        [data2, data3],
+        color_col="transcript_id",
+        sort_ranges=True,
+        # to_file="tests/baseline_mpl/test06.png"
     )  # no id col
     fig = plt.gcf()
     return fig
@@ -155,7 +158,11 @@ def test06():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test07():
     pre.plot(
-        [data2, data3], id_col="Feature", color_col="transcript_id", text="{Feature}",sort=True
+        [data2, data3],
+        id_col="Feature",
+        color_col="transcript_id",
+        text="{Feature}",
+        sort_ranges=True,
     )  # 1 id_col, text
     fig = plt.gcf()
     return fig
@@ -169,8 +176,8 @@ def test08():
         color_col="Feature",
         y_labels=[1, 2, 3],
         shrink=True,
-        sort=True,
-        #to_file="tests/baseline_mpl/test08.png"
+        sort_ranges=True,
+        # to_file="tests/baseline_mpl/test08.png"
     )  # shrink and y_labels
     fig = plt.gcf()
     return fig
@@ -183,7 +190,7 @@ def test09():
         id_col="transcript_id",
         packed=False,
         thick_cds=True,
-        sort=True
+        sort_ranges=True,
     )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
     fig = plt.gcf()
     return fig
@@ -192,7 +199,7 @@ def test09():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test10():
     pre.plot(
-        data2, thick_cds=True, limits=(75, 125), text="{Feature}",sort=True
+        data2, thick_cds=True, limits=(75, 125), text="{Feature}", sort_ranges=True
     )  # thick_cds not all exon+cds, text, limits as tuple
     fig = plt.gcf()
     return fig
@@ -204,7 +211,7 @@ def test11():
         data3,
         id_col="transcript_id",
         limits={"1": (None, 1000), "2": (20, 40), "3": None, "4": (-1000, None)},
-        #to_file="tests/baseline_mpl/test11.png"
+        # to_file="tests/baseline_mpl/test11.png"
     )  # limits as dict
     fig = plt.gcf()
     return fig
@@ -213,7 +220,12 @@ def test11():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test12():
     pre.plot(
-        data2, id_col="transcript_id", limits=data3, arrow_size=0.1, arrow_color="red",sort=True
+        data2,
+        id_col="transcript_id",
+        limits=data3,
+        arrow_size=0.1,
+        arrow_color="red",
+        sort_ranges=True,
     )  # limit as other pr, arrow_size,colorprp.plot(data2, id_col="transcript_id", limits=data3)
     fig = plt.gcf()
     return fig
@@ -227,8 +239,8 @@ def test13():
         color_col="Feature",
         legend=True,
         title_chr="TITLE {chrom}",
-        sort=True,
-        #to_file="tests/baseline_mpl/test13.png"
+        sort_ranges=True,
+        # to_file="tests/baseline_mpl/test13.png"
     )  # legend, title string, intron and exon color
     fig = plt.gcf()
     return fig
@@ -244,7 +256,7 @@ def test14():
         depth_col="depth",
         tooltip="{depth}",
         theme="pastel",
-        #to_file="tests/baseline_mpl/test14.png"
+        # to_file="tests/baseline_mpl/test14.png"
     )
     fig = plt.gcf()
     return fig
@@ -259,7 +271,7 @@ def test15():
         depth_col="depth",
         tooltip="{depth}",
         theme="dark",
-        #to_file="tests/baseline_mpl/test15.png"
+        # to_file="tests/baseline_mpl/test15.png"
     )
     fig = plt.gcf()
     return fig
@@ -274,10 +286,11 @@ def test16():
         depth_col="depth",
         tooltip="{depth}",
         colormap={"0": "#505050", "1": "goldenrod"},
-        #to_file="tests/baseline_mpl/test16.png"
+        # to_file="tests/baseline_mpl/test16.png"
     )  # colormap as dict
     fig = plt.gcf()
     return fig
+
 
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test17():
@@ -291,6 +304,7 @@ def test17():
     fig = plt.gcf()
     return fig
 
+
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test18():
     pre.plot(
@@ -298,7 +312,7 @@ def test18():
         id_col="transcript_id",
         packed=False,
         thick_cds=True,
-        #to_file="tests/baseline_mpl/test18.png",
+        # to_file="tests/baseline_mpl/test18.png",
     )
     fig = plt.gcf()
     return fig

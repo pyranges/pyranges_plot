@@ -266,7 +266,7 @@ def codes(vals, desc=False):
 
 
 def get_genes_metadata(
-    df, id_col, color_col, packed, exon_height, v_spacer, order, sort
+    df, id_col, color_col, packed, exon_height, v_spacer, order, sort_ranges
 ):
     """Create genes metadata df."""
 
@@ -291,7 +291,10 @@ def get_genes_metadata(
     if CHROM_COL in color_col:
         genesmd_df = (
             df.groupby(
-                [CHROM_COL, PR_INDEX_COL] + id_col, group_keys=False, observed=True
+                [CHROM_COL, PR_INDEX_COL] + id_col,
+                group_keys=False,
+                observed=True,
+                sort=sort_ranges,
             ).agg(agg_funcs)
             # .reset_index(level=[PR_INDEX_COL, CHROM_COL])
         )
@@ -303,7 +306,10 @@ def get_genes_metadata(
     else:
         genesmd_df = (
             df.groupby(
-                [CHROM_COL, PR_INDEX_COL] + id_col, group_keys=False, observed=True
+                [CHROM_COL, PR_INDEX_COL] + id_col,
+                group_keys=False,
+                observed=True,
+                sort=sort_ranges,
             ).agg(agg_funcs)
             # .reset_index(level=[PR_INDEX_COL, CHROM_COL])
         )
@@ -313,38 +319,26 @@ def get_genes_metadata(
     ).ngroup()
 
     # Sort by pr_ix and chromosome / If user wants to sort the df
-    if sort:
+    if sort_ranges:
         genesmd_df.sort_values(by=[PR_INDEX_COL, "chrix"], inplace=True)
 
     else:
-        # genesmd_df.sort_values(by=[PR_INDEX_COL,chrix], inplace=True)
-        order = order[::-1]
-
-        # Case 1: only one id_col
+        # With y increasing upwards, reverse first-seen input order in the
+        # metadata so the plotted rows read top-to-bottom like the input rows.
+        order_map = {v: i for i, v in enumerate(order)}
         if len(id_col) == 1:
-            idx_s = pd.IndexSlice
-            genesmd_df = genesmd_df.loc[idx_s[:, :, order], :]
-
+            rank = [
+                order_map.get(v, len(order))
+                for v in genesmd_df.index.get_level_values(id_col[0])
+            ]
         else:
-            # Names of the ID column levels
-            id_levels = id_col  # ["transcript_id", "second_id"]
+            id_values = zip(*[genesmd_df.index.get_level_values(col) for col in id_col])
+            rank = [order_map.get(tuple(v), len(order)) for v in id_values]
 
-            # We create a dict mapping the order
-            order_map = {v: i for i, v in enumerate(order)}
-
-            # Doing a temporal column with the order
-            temp_tuples = list(
-                zip(
-                    genesmd_df.index.get_level_values(id_levels[0]),
-                    genesmd_df.index.get_level_values(id_levels[1]),
-                )
-            )
-
-            # Assigning a rank based on the order
-            rank = [order_map.get(t, len(order)) for t in temp_tuples]
-
-            # Reordering
-            genesmd_df = genesmd_df.iloc[np.argsort(rank)]
+        genesmd_df = genesmd_df.assign(__input_order_rank__=rank).sort_values(
+            "__input_order_rank__", ascending=False, kind="stable"
+        )
+        genesmd_df.drop(columns="__input_order_rank__", inplace=True)
 
     genesmd_df["gene_ix_xchrom"] = genesmd_df.groupby(
         ["chrix", PR_INDEX_COL], group_keys=False, observed=True, sort=False
@@ -644,7 +638,7 @@ def no_overlap(a, b, pad=2, pw=None):
 
 
 def assign_label_rows(
-    subdf, id_col, PR_INDEX_COL, text_pad, packed, sort, plot_limits=None
+    subdf, id_col, PR_INDEX_COL, text_pad, packed, sort_ranges, plot_limits=None
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -675,8 +669,8 @@ def assign_label_rows(
     ycoord_map = {}
     pr_rank_map = {}
 
-    # Iterating in sorted cromosomes if sort == True else in original order
-    chrom_iter = sorted(s["chrix"].unique()) if sort else pd.unique(s["chrix"])
+    # Iterating in sorted cromosomes if sort_ranges == True else in original order
+    chrom_iter = sorted(s["chrix"].unique()) if sort_ranges else pd.unique(s["chrix"])
 
     for chrom in chrom_iter:
         current_base = 0  # reiniciate per each chromosome
@@ -704,18 +698,20 @@ def assign_label_rows(
 
         pr_iter = (
             sorted(chrom_df[PR_INDEX_COL].unique(), reverse=True)
-            if sort
+            if sort_ranges
             else pd.unique(chrom_df[PR_INDEX_COL])
         )
         for rank, pr_val in enumerate(pr_iter):
             pr_rank_map[(chrom, pr_val)] = rank
-        # iterate PR_INDEX_COL in ascending order (if sort ==True)
+        # iterate PR_INDEX_COL in ascending order (if sort_ranges == True)
         for pr_val in pr_iter:
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
-            # In case sort is true we reorder the df by start
-            if sort:
+            # In case sort_ranges is true we reorder the df by start
+            if sort_ranges:
                 gdf = (
-                    sub.groupby([PR_INDEX_COL] + id_col, observed=True)
+                    sub.groupby(
+                        [PR_INDEX_COL] + id_col, observed=True, sort=sort_ranges
+                    )
                     .agg(Start_min=("Start", "min"), End_max=("End", "max"))
                     .reset_index()
                 )
