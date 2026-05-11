@@ -317,6 +317,15 @@ To instead display one transcript per row, set the ``packed`` parameter as ``Fal
 
 .. image:: images/prp_rtd_09.png
 
+When ``packed=False``, rows are shown in the first-seen order of the input by default.
+This is useful when a PyRanges object was assembled by concatenating groups in a specific order,
+or when the order of rows already carries meaning. To instead let pyrangeyes order groups by
+its genomic sorting behavior, pass ``sort_ranges=True``:
+
+.. code-block::
+
+    pre.plot(p, packed=False, sort_ranges=True)
+
 
 Pyrangeyes offers the option to reduce horizontal space, occupied by introns or intergenic regions,
 by activating the ``shrink`` parameter.

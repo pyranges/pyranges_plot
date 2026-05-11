@@ -11,6 +11,7 @@ from plotly.utils import PlotlyJSONEncoder
 
 def normalize_plotly_json(obj):
     import numpy as np
+
     if isinstance(obj, dict):
         return {k: normalize_plotly_json(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -27,6 +28,7 @@ def normalize_plotly_json(obj):
     else:
         return obj
 
+
 data1 = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,
@@ -35,7 +37,7 @@ data1 = pr.PyRanges(
         "End": [i * 100 for i in [15, 37, 6, 17, 39, 47, 51, 57, 67]],
         "transcript_id": ["t1", "t1", "t2", "t2", "t2", "t3", "t3", "t3", "t4"],
         "second_id": ["a"] * 4 + ["b"] * 5,
-        "Feature": ["mRNA"]*9,
+        "Feature": ["mRNA"] * 9,
     }
 )
 
@@ -219,7 +221,7 @@ test_cases = [
             data1,
             color_col="transcript_id",
             exon_border="black",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -231,7 +233,7 @@ test_cases = [
             color_col="transcript_id",
             shrink=True,
             exon_border="black",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -242,7 +244,7 @@ test_cases = [
             id_col=["transcript_id", "second_id"],
             color_col="transcript_id",
             packed=False,
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -269,7 +271,7 @@ test_cases = [
         pre.plot(
             [data2, data3],
             color_col="transcript_id",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -280,7 +282,7 @@ test_cases = [
             id_col="Feature",
             color_col="transcript_id",
             text="{Feature}",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -292,7 +294,7 @@ test_cases = [
             color_col="Feature",
             y_labels=[1, 2, 3],
             shrink=True,
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -303,7 +305,7 @@ test_cases = [
             id_col="transcript_id",
             packed=False,
             thick_cds=True,
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -314,7 +316,7 @@ test_cases = [
             thick_cds=True,
             limits=(75, 125),
             text="{Feature}",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -335,7 +337,7 @@ test_cases = [
             limits=data3,
             arrow_size=0.1,
             arrow_color="red",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -347,7 +349,7 @@ test_cases = [
             color_col="Feature",
             legend=True,
             title_chr="TITLE {chrom}",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -391,7 +393,7 @@ test_cases = [
         pre.plot(
             [data1, vcf],
             id_col="transcript_id",
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -401,7 +403,7 @@ test_cases = [
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned],
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -411,7 +413,7 @@ test_cases = [
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned1],
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -421,7 +423,7 @@ test_cases = [
             [data1, vcf],
             id_col="transcript_id",
             add_aligned_plots=[aligned2],
-            sort=True,
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),
@@ -443,13 +445,19 @@ for test_name, fig in test_cases:
     with open(json_path, "w") as f:
         json.dump(fig.to_plotly_json(), f, indent=2, cls=PlotlyJSONEncoder)
 """
+
+
 @pytest.mark.parametrize("test_name, plot_func", test_cases)
 # test id_col
 def test_plot_comparison(test_name, plot_func):
-    fig = plot_func    # JSON actual generat
-    actual_json = normalize_plotly_json(fig.to_plotly_json())   # Ruta al baseline
-    baseline_path = os.path.join(BASELINE_DIR, f"{test_name}.json")    # Carreguem JSON del baseline
+    fig = plot_func  # JSON actual generat
+    actual_json = normalize_plotly_json(fig.to_plotly_json())  # Ruta al baseline
+    baseline_path = os.path.join(
+        BASELINE_DIR, f"{test_name}.json"
+    )  # Carreguem JSON del baseline
     with open(baseline_path, "r") as f:
-        expected_json = normalize_plotly_json(json.load(f))    # Compara
-    diff = DeepDiff(expected_json, actual_json, ignore_order=True, report_repetition=True)
+        expected_json = normalize_plotly_json(json.load(f))  # Compara
+    diff = DeepDiff(
+        expected_json, actual_json, ignore_order=True, report_repetition=True
+    )
     assert diff == {}, f"{test_name} does not match baseline:\n{diff.pretty()}"

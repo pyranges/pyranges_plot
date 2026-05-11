@@ -18,8 +18,8 @@ are "matplotlib" or "plt" for Matplotlib and "plotly" or "ply" for Plotly.
 
 Every other functionality can be defined during the `plot` function call. These 
 functionalities include the ID column to group the intervals belonging to the same item 
-(transcript, gene, protein...), items disposition, coloring criteria and palette, labels 
-and output form among others. The input for the `plot` fucntion is 1 or more PyRanges 
+(transcript, gene, protein...), items disposition, coloring criteria and palette, labels,
+row ordering (`sort_ranges=True` for genomic sorting), and output form among others. The input for the `plot` function is 1 or more PyRanges 
 objects, and the output is by default an interactive plot with zooming options and tooltip 
 information, but if desired the plot can be directly exported to a png or pdf file.
 

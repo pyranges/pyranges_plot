@@ -111,7 +111,7 @@ def plot(
     tooltip=None,
     to_file=None,
     theme=None,
-    sort=False,
+    sort_ranges=False,
     **kargs,
 ):
     """
@@ -211,10 +211,10 @@ def plot(
     theme: str, default "light"
         General color appearance of the plot. Available modes: "light", "dark", "pastel", "swimming_pool".
 
-    sort: bool, default False
-        Whether to automatically sort the input PyRanges.
-        If True, the data will be sorted before plotting.
-        If False, the data will retain its original order
+    sort_ranges: bool, default False
+        Whether to sort interval groups by genomic coordinates before plotting.
+        If False, the default, unpacked plots preserve the first-seen order of rows/groups in the input.
+        If True, interval groups are ordered by the internal genomic sorting behavior.
 
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
@@ -526,7 +526,7 @@ def plot(
         feat_dict["exon_height"],
         feat_dict["v_spacer"],
         order,
-        sort,
+        sort_ranges,
     )
 
     genesmd_df = assign_label_rows(
@@ -535,7 +535,7 @@ def plot(
         PR_INDEX_COL,
         text_pad=feat_dict["text_pad"],
         packed=packed,
-        sort=sort,
+        sort_ranges=sort_ranges,
         plot_limits=None,  # You can pass limits if needed
     )
 
@@ -586,7 +586,7 @@ def plot(
             feat_dict["exon_height"],
             feat_dict["v_spacer"],
             order,
-            sort,
+            sort_ranges,
         )
 
         genesmd_df = assign_label_rows(
@@ -595,7 +595,7 @@ def plot(
             PR_INDEX_COL,
             text_pad=feat_dict["text_pad"],
             packed=packed,
-            sort=sort,
+            sort_ranges=sort_ranges,
             plot_limits=None,  # You can pass limits if needed
         )
 
