@@ -30,6 +30,11 @@ from .names import (
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
+    OUTLINE_TAG_COL,
+    COLOR_LEGEND_KIND_COL,
+    OUTLINE_LEGEND_KIND_COL,
+    COLOR_LEGEND_TITLE_COL,
+    OUTLINE_LEGEND_TITLE_COL,
     PANEL_SEP,
 )
 from .core import cumdelting, get_engine, get_warnings, check4dependency
@@ -427,6 +432,18 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
     return subdf
 
 
+def _legend_kind(colormap):
+    if _is_quantitative_colormap(colormap):
+        return "quantitative"
+    return "categorical"
+
+
+def _legend_title(cols, fallback):
+    if cols is None:
+        return fallback
+    return ", ".join(cols)
+
+
 def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, warnings):
     """Add fill and outline color information to data."""
     _validate_colormap_spec(colormap)
@@ -453,21 +470,28 @@ def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, wa
     subdf = _assign_color_channel(
         subdf, COLOR_TAG_COL, COLOR_INFO, color_cmap, warnings
     )
+    subdf[COLOR_LEGEND_KIND_COL] = _legend_kind(color_cmap)
+    subdf[COLOR_LEGEND_TITLE_COL] = _legend_title(color_col, "color")
 
     if outline_color is not None:
         subdf[BORDER_COLOR_COL] = [outline_color] * len(subdf)
+        subdf[OUTLINE_LEGEND_KIND_COL] = "fixed"
+        subdf[OUTLINE_LEGEND_TITLE_COL] = "outline"
     elif outline_col is None:
         subdf[BORDER_COLOR_COL] = subdf[COLOR_INFO]
+        subdf[OUTLINE_LEGEND_KIND_COL] = "same"
+        subdf[OUTLINE_LEGEND_TITLE_COL] = subdf[COLOR_LEGEND_TITLE_COL]
     else:
-        outline_tag_col = "__outline_tag__"
         if len(outline_col) > 1:
-            subdf[outline_tag_col] = list(zip(*[subdf[c] for c in outline_col]))
+            subdf[OUTLINE_TAG_COL] = list(zip(*[subdf[c] for c in outline_col]))
         else:
-            subdf[outline_tag_col] = subdf[outline_col[0]]
+            subdf[OUTLINE_TAG_COL] = subdf[outline_col[0]]
         outline_cmap = _channel_colormap(colormap, "outline", fallback=color_cmap)
         subdf = _assign_color_channel(
-            subdf, outline_tag_col, BORDER_COLOR_COL, outline_cmap, warnings
+            subdf, OUTLINE_TAG_COL, BORDER_COLOR_COL, outline_cmap, warnings
         )
+        subdf[OUTLINE_LEGEND_KIND_COL] = _legend_kind(outline_cmap)
+        subdf[OUTLINE_LEGEND_TITLE_COL] = _legend_title(outline_col, "outline")
 
     return subdf
 

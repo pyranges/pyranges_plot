@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
@@ -9,7 +10,13 @@ from .data2plot import (
     apply_gene_bridge,
     plot_introns,
 )
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO, COLOR_TAG_COL
+from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
+from ..legend import (
+    categorical_fill_items,
+    categorical_outline_items,
+    quantitative_fill_info,
+    quantitative_outline_info,
+)
 
 arrow_style = "round"
 
@@ -70,10 +77,19 @@ def plot_exons_plt(
     # check for legend
     # Create legend items list
     if legend:
-        legend_item_d = (
-            subdf.groupby(COLOR_TAG_COL)[COLOR_INFO]
-            .apply(lambda x: Rectangle((0, 0), 1, 1, color=list(x)[0]))
-            .to_dict()
+        legend_item_d = {
+            f"color: {label}": Rectangle(
+                (0, 0), 1, 1, facecolor=fill, edgecolor=outline
+            )
+            for label, fill, outline in categorical_fill_items(subdf)
+        }
+        legend_item_d.update(
+            {
+                f"outline: {label}": Rectangle(
+                    (0, 0), 1, 1, facecolor="white", edgecolor=outline, linewidth=2
+                )
+                for label, outline in categorical_outline_items(subdf)
+            }
         )
     else:
         legend_item_d = {}
@@ -109,6 +125,18 @@ def plot_exons_plt(
         exon_height,
         add_aligned_plots,
     )
+
+    if legend:
+        for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]:
+            if qinfo is None:
+                continue
+            cmap = mcolors.LinearSegmentedColormap.from_list(
+                f"pyrangeyes_{qinfo['title']}", qinfo["colors"]
+            )
+            norm = mcolors.Normalize(vmin=qinfo["vmin"], vmax=qinfo["vmax"])
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+            sm.set_array([])
+            fig.colorbar(sm, ax=axes, label=qinfo["title"], shrink=0.75, pad=0.02)
 
     # Plot genes
     # pd.DataFrame.groupby(subdf,

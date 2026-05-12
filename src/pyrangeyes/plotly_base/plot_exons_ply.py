@@ -7,7 +7,100 @@ from pyranges1.core.names import CHROM_COL, START_COL, END_COL, STRAND_COL
 from .core import initialize_dash_app, coord2percent
 from .fig_axes import create_fig
 from .data2plot import plot_introns, apply_gene_bridge
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
+from ..names import (
+    PR_INDEX_COL,
+    BORDER_COLOR_COL,
+    COLOR_INFO,
+    COLOR_LEGEND_KIND_COL,
+    COLOR_LEGEND_TITLE_COL,
+    OUTLINE_LEGEND_KIND_COL,
+    OUTLINE_LEGEND_TITLE_COL,
+)
+from ..legend import (
+    categorical_outline_items,
+    quantitative_fill_info,
+    quantitative_outline_info,
+)
+
+
+def _as_plotly_colorscale(colors):
+    if len(colors) == 1:
+        colors = colors * 2
+    step = 1 / (len(colors) - 1)
+    return [[i * step, color] for i, color in enumerate(colors)]
+
+
+def _postprocess_legend(fig, subdf, legend):
+    """Deduplicate categorical legends and add quantitative colorbars."""
+    if not legend:
+        return
+
+    fill_kind = subdf[COLOR_LEGEND_KIND_COL].iloc[0]
+    fill_title = subdf[COLOR_LEGEND_TITLE_COL].iloc[0]
+    outline_kind = subdf[OUTLINE_LEGEND_KIND_COL].iloc[0]
+    outline_title = subdf[OUTLINE_LEGEND_TITLE_COL].iloc[0]
+
+    seen_fill = set()
+    first_fill = True
+    for trace in fig.data:
+        if getattr(trace, "fill", None) != "toself" or trace.fillcolor == "white":
+            continue
+        if fill_kind == "quantitative":
+            trace.showlegend = False
+            continue
+        key = str(trace.name)
+        trace.legendgroup = "color"
+        if first_fill:
+            trace.legendgrouptitle = dict(text=fill_title)
+            first_fill = False
+        if key in seen_fill:
+            trace.showlegend = False
+        else:
+            trace.showlegend = True
+            seen_fill.add(key)
+
+    if outline_kind == "categorical":
+        first_outline = True
+        for label, outline in categorical_outline_items(subdf):
+            fig.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode="lines",
+                    line=dict(color=outline, width=3),
+                    name=str(label),
+                    legendgroup="outline",
+                    legendgrouptitle=dict(text=outline_title)
+                    if first_outline
+                    else None,
+                    showlegend=True,
+                    hoverinfo="skip",
+                )
+            )
+            first_outline = False
+
+    colorbar_x = 1.02
+    for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]:
+        if qinfo is None:
+            continue
+        fig.add_trace(
+            go.Scatter(
+                x=[None],
+                y=[None],
+                mode="markers",
+                marker=dict(
+                    color=[qinfo["vmin"]],
+                    cmin=qinfo["vmin"],
+                    cmax=qinfo["vmax"],
+                    colorscale=_as_plotly_colorscale(qinfo["colors"]),
+                    showscale=True,
+                    colorbar=dict(title=qinfo["title"], x=colorbar_x),
+                ),
+                showlegend=False,
+                hoverinfo="skip",
+            )
+        )
+        colorbar_x += 0.08
 
 
 def plot_exons_ply(
@@ -104,6 +197,8 @@ def plot_exons_ply(
             arrow_size,
             depth_col,
         )
+
+    _postprocess_legend(fig, subdf, legend)
 
     # Adjust plot display
     fig.update_layout(

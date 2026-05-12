@@ -158,7 +158,11 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color",
+      "legendgrouptitle": {
+        "text": "Feature"
+      }
     },
     {
       "fill": "toself",
@@ -187,7 +191,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -353,7 +358,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (85, 100)<br>ID: T3",
       "x": [
         85,
@@ -371,7 +376,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -400,7 +406,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -429,7 +436,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -490,7 +498,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (140, 152)<br>ID: T4",
       "x": [
         140,
@@ -508,7 +516,8 @@
       ],
       "type": "scatter",
       "xaxis": "x3",
-      "yaxis": "y3"
+      "yaxis": "y3",
+      "legendgroup": "color"
     },
     {
       "hoverinfo": "skip",
@@ -716,7 +725,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[-] (5, 150)<br>ID: T5",
       "x": [
         5,
@@ -734,7 +743,8 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4"
+      "yaxis": "y4",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -763,7 +773,8 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4"
+      "yaxis": "y4",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -792,7 +803,8 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4"
+      "yaxis": "y4",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -853,7 +865,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (100, 200)<br>ID: T6",
       "x": [
         100,
@@ -871,7 +883,8 @@
       ],
       "type": "scatter",
       "xaxis": "x5",
-      "yaxis": "y5"
+      "yaxis": "y5",
+      "legendgroup": "color"
     },
     {
       "hoverinfo": "skip",
@@ -1142,7 +1155,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (61, 64)<br>ID: t1",
       "x": [
         61,
@@ -1160,7 +1173,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1171,7 +1185,7 @@
       },
       "mode": "lines",
       "name": "CDS",
-      "showlegend": false,
+      "showlegend": true,
       "text": "<br>[+] (90, 92)<br>ID: t1",
       "x": [
         90,
@@ -1189,7 +1203,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1218,7 +1233,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1247,7 +1263,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1350,7 +1367,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (1, 11)<br>ID: t1",
       "x": [
         1,
@@ -1368,7 +1385,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1397,7 +1415,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1626,7 +1645,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[-] (9, 12)<br>ID: t2",
       "x": [
         9,
@@ -1644,7 +1663,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1673,7 +1693,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1702,7 +1723,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1731,7 +1753,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1834,7 +1857,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (151, 153)<br>ID: t3",
       "x": [
         151,
@@ -1852,7 +1875,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -1881,7 +1905,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2110,7 +2135,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (5, 8)<br>ID: t4",
       "x": [
         5,
@@ -2128,7 +2153,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2157,7 +2183,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2186,7 +2213,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2215,7 +2243,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2444,7 +2473,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[-] (1, 5)<br>ID: t5",
       "x": [
         1,
@@ -2462,7 +2491,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2491,7 +2521,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2520,7 +2551,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2549,7 +2581,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2652,7 +2685,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (60, 70)<br>ID: t6",
       "x": [
         60,
@@ -2670,7 +2703,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2699,7 +2733,8 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2"
+      "yaxis": "y2",
+      "legendgroup": "color"
     },
     {
       "fill": "toself",
@@ -2760,7 +2795,7 @@
       },
       "mode": "lines",
       "name": "exon",
-      "showlegend": true,
+      "showlegend": false,
       "text": "<br>[+] (20, 50)<br>ID: t7",
       "x": [
         20,
@@ -2778,7 +2813,8 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4"
+      "yaxis": "y4",
+      "legendgroup": "color"
     },
     {
       "hoverinfo": "skip",

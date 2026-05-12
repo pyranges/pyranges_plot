@@ -99,6 +99,84 @@ def test_plotly_named_colors_work_in_mappings_and_direct_columns():
         assert [trace.line.color for trace in box_traces] == ["navy", "black"]
 
 
+def test_plotly_legend_entries_are_deduplicated():
+    pre.set_engine("plotly")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        colormap={"x": "skyblue", "y": "gold"},
+        legend=True,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    names = [trace.name for trace in fig.data if trace.showlegend]
+    assert names == ["x", "y"]
+
+
+def test_plotly_legend_shows_fill_and_outline_when_mapped():
+    pre.set_engine("plotly")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        outline_col="status",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "outline": {"ok": "navy", "warn": "black"},
+        },
+        legend=True,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    legend_items = [
+        (trace.name, trace.legendgroup) for trace in fig.data if trace.showlegend
+    ]
+    assert legend_items == [
+        ("x", "color"),
+        ("y", "color"),
+        ("ok", "outline"),
+        ("warn", "outline"),
+    ]
+
+
+def test_plotly_quantitative_legend_uses_colorbars():
+    pre.set_engine("plotly")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="score",
+        outline_col="outline_score",
+        colormap={
+            "color": {"type": "quantitative", "colors": ["blue", "red"]},
+            "outline": {"type": "quantitative", "colors": ["black", "white"]},
+        },
+        legend=True,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    colorbar_traces = [
+        trace
+        for trace in fig.data
+        if getattr(getattr(trace, "marker", None), "showscale", False)
+    ]
+    assert [trace.marker.colorbar.title.text for trace in colorbar_traces] == [
+        "score",
+        "outline_score",
+    ]
+    assert not any(
+        trace.showlegend
+        for trace in fig.data
+        if getattr(trace, "fill", None) == "toself" and trace.fillcolor != "white"
+    )
+
+
 def test_quantitative_colormap_accepts_named_color_gradients():
     pre.set_engine("matplotlib")
     mpl_fig = pre.plot(

@@ -394,7 +394,7 @@ def create_fig(
     plt.subplots_adjust(hspace=vertical_spacing)
 
     # Create legend
-    if legend:
+    if legend and legend_item_d:
         labels, handles = zip(*legend_item_d.items())
         fig.legend(handles, labels, loc="upper right", bbox_to_anchor=(1, 1))
 
