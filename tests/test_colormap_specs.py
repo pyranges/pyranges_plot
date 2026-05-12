@@ -16,6 +16,8 @@ def _style_data():
             "id": ["a", "b"],
             "kind": ["x", "y"],
             "status": ["ok", "warn"],
+            "fill_name": ["skyblue", "gold"],
+            "outline_name": ["navy", "black"],
             "score": [0.0, 1.0],
             "outline_score": [1.0, 0.0],
             "bad_score": ["low", "high"],
@@ -29,6 +31,102 @@ def _patches(fig):
 
 def _hex(color):
     return mcolors.to_hex(color)
+
+
+def test_matplotlib_named_colors_work_in_mappings_and_direct_columns():
+    pre.set_engine("matplotlib")
+
+    mapped = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        outline_col="status",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "outline": {"ok": "navy", "warn": "black"},
+        },
+        return_plot="fig",
+        warnings=False,
+    )
+    direct = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="fill_name",
+        outline_col="outline_name",
+        colormap="direct",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    for fig in [mapped, direct]:
+        patches = _patches(fig)
+        assert [_hex(p.get_facecolor()) for p in patches] == ["#87ceeb", "#ffd700"]
+        assert [_hex(p.get_edgecolor()) for p in patches] == ["#000080", "#000000"]
+
+
+def test_plotly_named_colors_work_in_mappings_and_direct_columns():
+    pre.set_engine("plotly")
+
+    mapped = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        outline_col="status",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "outline": {"ok": "navy", "warn": "black"},
+        },
+        return_plot="fig",
+        warnings=False,
+    )
+    direct = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="fill_name",
+        outline_col="outline_name",
+        colormap="direct",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    for fig in [mapped, direct]:
+        box_traces = [
+            trace
+            for trace in fig.data
+            if getattr(trace, "fill", None) == "toself" and trace.fillcolor != "white"
+        ]
+        assert [trace.fillcolor for trace in box_traces] == ["skyblue", "gold"]
+        assert [trace.line.color for trace in box_traces] == ["navy", "black"]
+
+
+def test_quantitative_colormap_accepts_named_color_gradients():
+    pre.set_engine("matplotlib")
+    mpl_fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="score",
+        colormap={"type": "quantitative", "colors": ["navy", "gold"]},
+        return_plot="fig",
+        warnings=False,
+    )
+    pre.set_engine("plotly")
+    ply_fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="score",
+        colormap={"type": "quantitative", "colors": ["navy", "gold"]},
+        return_plot="fig",
+        warnings=False,
+    )
+
+    patches = _patches(mpl_fig)
+    assert [_hex(p.get_facecolor()) for p in patches] == ["#000080", "#ffd700"]
+    box_traces = [
+        trace
+        for trace in ply_fig.data
+        if getattr(trace, "fill", None) == "toself" and trace.fillcolor != "white"
+    ]
+    assert [trace.fillcolor for trace in box_traces] == ["#000080", "#ffd700"]
 
 
 def test_matplotlib_quantitative_colormap_auto_range():

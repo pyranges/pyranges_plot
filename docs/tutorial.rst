@@ -154,7 +154,8 @@ Now the "+" strand transcripts are displayed in one color and the ones on the "-
 Note that pyrangeyes used its default color scheme, and mapped each value in the  ``color_col`` column to a color.
 
 The  **colormap** parameter of :func:`plot <pyrangeyes.plot>` centralizes coloring customization.
-It is a versatile parameter, accepting many different types of input.
+It is a versatile parameter, accepting many different types of input. Colors can be hex strings,
+rgb strings, or explicit color names such as ``"skyblue"`` and ``"black"``.
 Using a dictionary allows to exert full control over the coloring, explicitly setting each value-color pair:
 
     >>> pre.plot(p, color_col="Strand",
@@ -196,8 +197,8 @@ different value domains, provide a channel mapping with separate ``"color"`` and
     ...     color_col="Strand",
     ...     outline_col="feature1",
     ...     colormap={
-    ...         "color": {"+": "#8ecae6", "-": "#ffb703"},
-    ...         "outline": {"a": "#023047", "b": "#d00000", "c": "#6a4c93", "d": "#2d6a4f"},
+    ...         "color": {"+": "skyblue", "-": "gold"},
+    ...         "outline": {"a": "navy", "b": "black", "c": "purple", "d": "darkgreen"},
     ...     },
     ... )
 
