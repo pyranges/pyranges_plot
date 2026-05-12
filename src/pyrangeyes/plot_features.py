@@ -28,8 +28,9 @@ plot_features_dict = {
     "colormap": (
         "popart",
         "Colors to assign to intervals. Use 'direct' when color_col/outline_col already contain literal colors. "
-        "Otherwise provide a Matplotlib colormap, a Plotly color sequence, a list, a mapping "
-        "{color_column_value: color}, or a channel mapping {'color': color_map, 'outline': outline_map}.",
+        "Otherwise provide a Matplotlib/Plotly colormap name, color list, value-to-color mapping, "
+        "channel mapping {'color': color_map, 'outline': outline_map}, or quantitative spec "
+        "{'type': 'quantitative', 'colors': color_map, 'range': (min, max)}.",
         " ",
     ),
     "outline_color": (

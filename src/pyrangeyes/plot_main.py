@@ -138,13 +138,36 @@ def plot(
 
     color_col: str, default None
         Name of the column used to color the interval fill. If not specified, id_col will be used.
-        By default values are mapped through ``colormap``; use ``colormap="direct"`` when the column
-        already contains Matplotlib/Plotly colors.
+        Values are mapped through ``colormap`` unless ``colormap="direct"`` is used.
 
     outline_col: str, default None
         Name of the column used to color interval outlines. If not specified, interval outlines use the
-        resolved fill colors. To set one fixed outline color for all intervals, use the ``outline_color``
-        plot option through ``plot(..., outline_color="black")`` or ``set_options("outline_color", "black")``.
+        resolved fill colors. For one fixed outline color, use ``outline_color="black"``.
+
+    colormap: str, list, dict, or "direct", default "G10"
+        Colors used for interval fills and, optionally, mapped outlines.
+
+        If ``"direct"``, values in ``color_col`` and ``outline_col`` are interpreted as literal colors.
+        If a string, use the named Matplotlib/Plotly colormap or color sequence.
+        If a list, assign colors from the list to distinct values.
+        If a dict, map column values to colors; unmapped values are colored black with a warning.
+
+        For one fixed outline color, use ``outline_color="black"``. To map outlines from a column,
+        provide ``outline_col`` and a channel mapping with ``"color"`` and ``"outline"`` entries::
+
+            colormap={
+                "color": {"exon": "skyblue", "CDS": "orange"},
+                "outline": {"+": "green", "-": "red"},
+            }
+
+        For quantitative coloring, use ``type="quantitative"``. Values are normalized to the observed
+        min/max by default; set ``range=(min, max)`` to choose the normalization range manually::
+
+            colormap={"type": "quantitative", "colors": "viridis"}
+            colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (-1, 1)}
+
+        Quantitative ``colors`` may be a named continuous colormap, a list of gradient colors, or
+        normalized stops such as ``[(0, "blue"), (0.5, "white"), (1, "red")]``.
 
     thickness_col: str, default None
         Name of a numerical data column whose values specify the height (thickness)

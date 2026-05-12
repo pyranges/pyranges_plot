@@ -172,17 +172,185 @@ def get_plycolormap(colormap_string):
         return getattr(pc.qualitative, colormap_string)
 
 
+def _is_channel_colormap(colormap):
+    return isinstance(colormap, dict) and ("color" in colormap or "outline" in colormap)
+
+
+def _is_quantitative_colormap(colormap):
+    return isinstance(colormap, dict) and colormap.get("type") == "quantitative"
+
+
+def _validate_color_sequence(colors, context):
+    if not isinstance(colors, list) or len(colors) == 0:
+        raise ValueError(f"{context} must be a non-empty list of colors.")
+
+
+def _validate_colormap_spec(colormap, context="colormap"):
+    """Validate one colormap specification and fail with actionable errors."""
+    if colormap in ["direct", None, False]:
+        return
+
+    if isinstance(colormap, str):
+        if colormap == "popart" or is_pltcolormap(colormap) or is_plycolormap(colormap):
+            return
+        raise ValueError(
+            f"{context}={colormap!r} is not a known Matplotlib/Plotly colormap. "
+            "For a fixed outline color, use outline_color='black' instead of "
+            "colormap={'outline': 'black'}."
+        )
+
+    if isinstance(colormap, list):
+        _validate_color_sequence(colormap, context)
+        return
+
+    if not missing_plt_flag and isinstance(colormap, mcolors.Colormap):
+        return
+
+    if isinstance(colormap, dict):
+        if _is_channel_colormap(colormap):
+            allowed = {"color", "outline"}
+            extra = set(colormap) - allowed
+            if extra:
+                raise ValueError(
+                    f"{context} with channel-specific colors only accepts keys "
+                    f"'color' and 'outline'; found {sorted(extra)!r}."
+                )
+            if "color" in colormap:
+                _validate_colormap_spec(colormap["color"], f"{context}['color']")
+            if "outline" in colormap:
+                _validate_colormap_spec(colormap["outline"], f"{context}['outline']")
+            return
+
+        if "type" in colormap:
+            allowed = {"type", "colors", "range", "na_color"}
+            extra = set(colormap) - allowed
+            if extra:
+                raise ValueError(
+                    f"{context} with type='quantitative' only accepts keys "
+                    f"'type', 'colors', 'range', and 'na_color'; found {sorted(extra)!r}."
+                )
+            if colormap["type"] != "quantitative":
+                raise ValueError(
+                    f"{context} type must be 'quantitative'; found "
+                    f"{colormap['type']!r}."
+                )
+            if "colors" not in colormap:
+                raise ValueError(
+                    f"{context} with type='quantitative' requires a 'colors' entry."
+                )
+            colors = colormap["colors"]
+            if isinstance(colors, dict):
+                raise ValueError(
+                    f"{context} quantitative 'colors' must be a named colormap, "
+                    "a list of colors, or normalized color stops; dict mappings "
+                    "are only valid for categorical colors."
+                )
+            if isinstance(colors, str):
+                if not (is_pltcolormap(colors) or is_plycolormap(colors)):
+                    raise ValueError(
+                        f"{context} quantitative colors={colors!r} is not a "
+                        "known Matplotlib/Plotly colormap."
+                    )
+            elif isinstance(colors, list):
+                _validate_color_sequence(colors, f"{context}['colors']")
+                if all(isinstance(item, tuple) and len(item) == 2 for item in colors):
+                    stops = [item[0] for item in colors]
+                    if stops != sorted(stops) or stops[0] < 0 or stops[-1] > 1:
+                        raise ValueError(
+                            f"{context} quantitative color stops must be sorted "
+                            "and normalized between 0 and 1."
+                        )
+                elif any(isinstance(item, tuple) for item in colors):
+                    raise ValueError(
+                        f"{context} quantitative color stops must all be "
+                        "(position, color) tuples."
+                    )
+            else:
+                raise ValueError(
+                    f"{context} quantitative 'colors' must be a string or list."
+                )
+
+            value_range = colormap.get("range")
+            if value_range is not None:
+                if not isinstance(value_range, tuple) or len(value_range) != 2:
+                    raise ValueError(
+                        f"{context} quantitative range must be a (min, max) tuple."
+                    )
+                low, high = value_range
+                if low is not None and high is not None and low >= high:
+                    raise ValueError(
+                        f"{context} quantitative range min must be smaller than max."
+                    )
+            return
+
+        # Plain dictionaries are categorical value-to-color mappings.
+        return
+
+    raise ValueError(
+        f"{context} must be 'direct', a colormap name, a color list, a mapping, "
+        "or a quantitative colormap spec."
+    )
+
+
 def _channel_colormap(colormap, channel, fallback=None):
     """Return the colormap configuration for a style channel."""
-    if isinstance(colormap, dict) and (
-        "color" in colormap or "outline" in colormap
-    ):
+    if _is_channel_colormap(colormap):
         return colormap.get(channel, fallback)
     return colormap
 
 
+def _colors_to_quantitative_cmap(colors):
+    if missing_plt_flag:
+        raise ImportError("Quantitative colormaps require matplotlib.colors.")
+
+    if isinstance(colors, str):
+        if is_pltcolormap(colors):
+            return plt.get_cmap(colors)
+        return mcolors.LinearSegmentedColormap.from_list(
+            colors, get_plycolormap(colors)
+        )
+
+    if all(isinstance(item, tuple) and len(item) == 2 for item in colors):
+        return mcolors.LinearSegmentedColormap.from_list("pyrangeyes_quant", colors)
+
+    return mcolors.LinearSegmentedColormap.from_list("pyrangeyes_quant", colors)
+
+
+def _assign_quantitative_color_channel(subdf, tag_col, output_col, colormap):
+    values = pd.to_numeric(subdf[tag_col], errors="coerce")
+    invalid = subdf[tag_col].notna() & values.isna()
+    if invalid.any():
+        examples = subdf.loc[invalid, tag_col].drop_duplicates().head(3).tolist()
+        raise ValueError(
+            f"Quantitative colormap requires numeric values in {tag_col!r}; "
+            f"found non-numeric value(s): {examples!r}."
+        )
+
+    na_color = colormap.get("na_color", "black")
+    low, high = colormap.get("range", (None, None))
+    finite_values = values[np.isfinite(values)]
+    if low is None:
+        low = finite_values.min() if len(finite_values) else 0
+    if high is None:
+        high = finite_values.max() if len(finite_values) else 1
+    if low >= high:
+        raise ValueError("Quantitative colormap range min must be smaller than max.")
+
+    cmap = _colors_to_quantitative_cmap(colormap["colors"])
+    norm = mcolors.Normalize(vmin=low, vmax=high, clip=True)
+    subdf[output_col] = [
+        na_color if pd.isna(value) else mcolors.to_hex(cmap(norm(value)))
+        for value in values
+    ]
+    return subdf
+
+
 def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
     """Resolve a tag column into concrete colors."""
+    _validate_colormap_spec(colormap)
+    if _is_quantitative_colormap(colormap):
+        return _assign_quantitative_color_channel(subdf, tag_col, output_col, colormap)
+
     color_tags = subdf[tag_col].drop_duplicates()
     n_color_tags = len(color_tags)
 
@@ -207,9 +375,16 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
     if not missing_plt_flag and isinstance(colormap, mcolors.ListedColormap):
         colormap = list(colormap.colors)  # colors of plt object
         colormap = [
-            "rgb({}, {}, {})".format(int(r * 255), int(g * 255), int(b * 255))
-            for r, g, b in colormap
+            "rgb({}, {}, {})".format(
+                int(mcolors.to_rgb(color)[0] * 255),
+                int(mcolors.to_rgb(color)[1] * 255),
+                int(mcolors.to_rgb(color)[2] * 255),
+            )
+            for color in colormap
         ]  # compatible with plotly
+    elif not missing_plt_flag and isinstance(colormap, mcolors.Colormap):
+        positions = np.linspace(0, 1, max(n_color_tags, 1))
+        colormap = [mcolors.to_hex(colormap(position)) for position in positions]
 
     # 2-list to dict
     if isinstance(colormap, list):
@@ -254,6 +429,19 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
 
 def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, warnings):
     """Add fill and outline color information to data."""
+    _validate_colormap_spec(colormap)
+    if _is_channel_colormap(colormap) and "outline" in colormap:
+        if outline_color is not None:
+            raise ValueError(
+                "Do not provide both colormap['outline'] and outline_color. "
+                "Use outline_color for one fixed outline color, or outline_col "
+                "with colormap['outline'] for mapped outlines."
+            )
+        if outline_col is None:
+            raise ValueError(
+                "colormap['outline'] requires outline_col. For one fixed outline "
+                "color, use outline_color='black'."
+            )
 
     # Create COLOR_COL column
     if len(color_col) > 1:

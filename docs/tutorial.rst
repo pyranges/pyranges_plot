@@ -178,9 +178,14 @@ to use those values directly instead of mapping them as categories:
     >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
     >>> pre.plot(p, color_col="fill", colormap="direct")
 
-By default, interval outlines use the same resolved color as the fill. Use ``outline_col``
-to control outlines independently. When fill and outline columns use different value domains,
-provide a channel mapping with separate ``"color"`` and ``"outline"`` entries:
+By default, interval outlines use the same resolved color as the fill. For one fixed
+outline color, use the ``outline_color`` option:
+
+    >>> pre.plot(p, color_col="Strand", outline_color="black")
+
+Use ``outline_col`` to map outlines from a column. When fill and outline columns use
+different value domains, provide a channel mapping with separate ``"color"`` and
+``"outline"`` entries:
 
     >>> pre.plot(
     ...     p,
@@ -192,9 +197,20 @@ provide a channel mapping with separate ``"color"`` and ``"outline"`` entries:
     ...     },
     ... )
 
-For one fixed outline color, use the ``outline_color`` option:
+Numeric columns can be colored as a continuous gradient with ``type="quantitative"``.
+Values are normalized to the observed minimum and maximum by default:
 
-    >>> pre.plot(p, color_col="Strand", outline_color="black")
+    >>> p["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
+    >>> pre.plot(p, color_col="score", colormap={"type": "quantitative", "colors": "viridis"})
+
+Set ``range=(min, max)`` to choose the normalization range manually. The gradient
+can be a named continuous colormap, a list of colors, or normalized color stops:
+
+    >>> pre.plot(
+    ...     p,
+    ...     color_col="score",
+    ...     colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (0, 1)},
+    ... )
 
 To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
 to interpret the intervals based on their assigned colors. This can be done by setting the 
