@@ -178,10 +178,14 @@ to use those values directly instead of mapping them as categories:
     >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
     >>> pre.plot(p, color_col="fill", colormap="direct")
 
+.. image:: images/prp_rtd_30.png
+
 By default, interval outlines use the same resolved color as the fill. For one fixed
 outline color, use the ``outline_color`` option:
 
     >>> pre.plot(p, color_col="Strand", outline_color="black")
+
+.. image:: images/prp_rtd_31.png
 
 Use ``outline_col`` to map outlines from a column. When fill and outline columns use
 different value domains, provide a channel mapping with separate ``"color"`` and
@@ -197,11 +201,15 @@ different value domains, provide a channel mapping with separate ``"color"`` and
     ...     },
     ... )
 
+.. image:: images/prp_rtd_32.png
+
 Numeric columns can be colored as a continuous gradient with ``type="quantitative"``.
 Values are normalized to the observed minimum and maximum by default:
 
     >>> p["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
     >>> pre.plot(p, color_col="score", colormap={"type": "quantitative", "colors": "viridis"})
+
+.. image:: images/prp_rtd_33.png
 
 Set ``range=(min, max)`` to choose the normalization range manually. The gradient
 can be a named continuous colormap, a list of colors, or normalized color stops:
@@ -211,6 +219,8 @@ can be a named continuous colormap, a list of colors, or normalized color stops:
     ...     color_col="score",
     ...     colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (0, 1)},
     ... )
+
+.. image:: images/prp_rtd_34.png
 
 To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
 to interpret the intervals based on their assigned colors. This can be done by setting the 
