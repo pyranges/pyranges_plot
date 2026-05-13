@@ -6,11 +6,9 @@ import plotly.graph_objects as go
 import json
 from deepdiff import DeepDiff
 import numpy as np
-from plotly.utils import PlotlyJSONEncoder
 
 
 def normalize_plotly_json(obj):
-    import numpy as np
 
     if isinstance(obj, dict):
         return {k: normalize_plotly_json(v) for k, v in obj.items()}

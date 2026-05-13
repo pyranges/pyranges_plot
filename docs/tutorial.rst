@@ -295,7 +295,7 @@ Note that any modified values from the built-in defaults will be marked with an 
     |    arrow_size    |       0.006        |         | Float corresponding to the fraction of the plot or int       |
     |                  |                    |         | corresponding to the number of positions occupied by a       |
     |                  |                    |         | direction arrow.                                             |
-    |   exon_height    |        0.6         |         | Height of the exon rectangle in the plot.                    |
+    | interval_height  |        0.6         |         | Default (and maximum) height of rendered interval blocks.    |
     |   intron_color   |         |         | Color of the intron lines, the color of the       |
     |                  |                    |         | first interval will be used.                                 |
     |     text_pad     |       0.005        |         | Space where the id annotation is placed beside the           |
@@ -464,7 +464,7 @@ Displaying multiple PyRanges objects
 
 In some cases, the data intervals might overlap. An example could be when some intervals in
 the PyRanges object correspond to exons and others correspond to "GCA" appearances. For such
-cases, the ``thickness_col`` and ``depth_col`` parameters are implemented.
+cases, the ``height_col`` and ``depth_col`` parameters are implemented.
 
 The :func:`plot <pyrangeyes.plot>` function can accept more than one PyRanges object, provided as a list.
 In this case, pyrangeyes will display them in the same plot, one on top of the other, for each common chromosome.
@@ -531,14 +531,14 @@ allows to provide a list of strings, one for each PyRanges object, to be display
 
 .. image:: images/prp_rtd_18.png
 
-Customizing depth and thickness
--------------------------------
+Customizing depth and height
+----------------------------
 
 When dealing with overlapping intervals (e.g. see data above), the default visualization may fail to show
 relevant information, because some intervals are hidden behind others. To address this, the
-``depth_col`` parameter can be used to highlight overlapping intervals. This parameter accepts a
-column name from the PyRanges object, which must contain integer values. The higher the value, the
-closer the interval will be to the top of the plot, ensuring its visibility:
+``depth_col`` parameter can be used to control the drawing order of overlapping intervals. This parameter
+accepts a numeric column name from the PyRanges object. Lower values are drawn first; higher values are
+drawn later, so they appear on top when intervals overlap. No range constraint is applied:
 
 .. code-block::
 
@@ -551,9 +551,10 @@ closer the interval will be to the top of the plot, ensuring its visibility:
 
 .. image:: images/prp_rtd_19.png
 
-Another way to highlight overlapping regions is by playing with the height (or thickness) of the blocks representing
-intervals. This is achieved by using the ``thickness_col`` parameter, which defines a data column name whose values
-determine thickness of the corresponding intervals:
+Another way to highlight overlapping regions is by varying the height of the rendered interval blocks.
+This is achieved by using the ``height_col`` parameter, which defines a numeric data column whose values
+set relative interval heights. Values must range from 0 to 1, where 1 renders the block at the full
+``interval_height`` (see ``pre.print_options()``) and smaller values render proportionally shorter blocks:
 
 .. code-block::
 
@@ -562,7 +563,7 @@ determine thickness of the corresponding intervals:
         id_col="id",
         color_col="trait1",
         y_labels=["pr Alanine", "pr Cysteine"],
-        thickness_col="thick",
+        height_col="thick",
     )
 
 .. image:: images/prp_rtd_11.png

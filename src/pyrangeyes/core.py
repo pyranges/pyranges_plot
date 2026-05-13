@@ -9,6 +9,12 @@ from .plot_features import (
     builtin_themes,
 )
 
+OPTION_ALIASES = {"exon_height": "interval_height"}
+
+
+def _canonical_option_name(name):
+    return OPTION_ALIASES.get(name, name)
+
 
 def check4dependency(name):
     """Check if a module is installed"""
@@ -133,7 +139,7 @@ def set_theme(name):
     >>> import pyrangeyes as pre
 
     >>> pre.set_theme("dark")
-    >>> pre.set_theme({"title_color": "goldenrod", "exon_height": 0.8})
+    >>> pre.set_theme({"title_color": "goldenrod", "interval_height": 0.8})
 
     """
 
@@ -153,9 +159,10 @@ def set_theme(name):
 
     if isinstance(name, dict):
         for key, value in name.items():
+            key = _canonical_option_name(key)
             # is it different from default?
             mod_tag = " "
-            if name[key] != plot_features_dict[key][0]:
+            if value != plot_features_dict[key][0]:
                 mod_tag = "*"
 
             plot_features_dict_in_use[key] = (
@@ -202,7 +209,9 @@ def set_options(varname, value=None):
     """
 
     if isinstance(varname, str):
-        varname = {varname: value}
+        varname = {_canonical_option_name(varname): value}
+    else:
+        varname = {_canonical_option_name(key): val for key, val in varname.items()}
 
     for key, val in varname.items():
         mod_tag = " "
@@ -232,6 +241,7 @@ def get_options(varname="all"):
     if isinstance(varname, list):
         vars_list = []
         for var in varname:
+            var = _canonical_option_name(var)
             vars_list.append(plot_features_dict_in_use[var][0])
         return vars_list
 
@@ -246,6 +256,7 @@ def get_options(varname="all"):
 
     # one variable
     else:
+        varname = _canonical_option_name(varname)
         if varname in plot_features_dict_in_use:
             return plot_features_dict_in_use[varname][0]
         else:
@@ -290,6 +301,7 @@ def reset_options(varname="all"):
     # list of variables
     if isinstance(varname, list):
         for var in varname:
+            var = _canonical_option_name(var)
             plot_features_dict_in_use[var] = plot_features_dict[var]
 
     # all variables
@@ -300,6 +312,7 @@ def reset_options(varname="all"):
     # one variable
     else:
         try:
+            varname = _canonical_option_name(varname)
             if varname in plot_features_dict_in_use.keys():
                 plot_features_dict_in_use[varname] = plot_features_dict[varname]
             else:
@@ -389,7 +402,7 @@ def print_options(return_keys=False):
         intragen_feat_df = feat_df[
             feat_df.index.isin(
                 [
-                    "exon_height",
+                    "interval_height",
                     "v_spacer",
                     "text_size",
                     "text_pad",
