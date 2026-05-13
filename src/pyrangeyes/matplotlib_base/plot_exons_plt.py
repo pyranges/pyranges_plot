@@ -10,7 +10,13 @@ from .data2plot import (
     apply_gene_bridge,
     plot_introns,
 )
-from ..names import PR_INDEX_COL, BORDER_COLOR_COL, COLOR_INFO
+from ..names import (
+    PR_INDEX_COL,
+    BORDER_COLOR_COL,
+    COLOR_INFO,
+    COLOR_LEGEND_TITLE_COL,
+    OUTLINE_LEGEND_TITLE_COL,
+)
 from ..legend import (
     categorical_fill_items,
     categorical_outline_items,
@@ -19,6 +25,94 @@ from ..legend import (
 )
 
 arrow_style = "round"
+
+
+def _legend_title(subdf, title_col, fallback):
+    if title_col in subdf.columns and not subdf.empty:
+        title = subdf[title_col].iloc[0]
+        if title:
+            return str(title)
+    return fallback
+
+
+def _categorical_legend_entries(subdf):
+    """Return ``[(label, artist), ...]`` for Matplotlib categorical legends."""
+    fill_title = _legend_title(subdf, COLOR_LEGEND_TITLE_COL, "color")
+    outline_title = _legend_title(subdf, OUTLINE_LEGEND_TITLE_COL, "outline")
+
+    entries = [
+        (
+            f"{fill_title}: {label}",
+            Rectangle((0, 0), 1, 1, facecolor=fill, edgecolor=outline),
+        )
+        for label, fill, outline in categorical_fill_items(subdf)
+    ]
+    entries.extend(
+        (
+            f"{outline_title}: {label}",
+            Rectangle((0, 0), 1, 1, facecolor="white", edgecolor=outline, linewidth=2),
+        )
+        for label, outline in categorical_outline_items(subdf)
+    )
+    return entries
+
+
+def _legend_ncol(fig, n_items):
+    if n_items <= 0:
+        return 1
+    # Keep labels in compact rows while avoiding very wide single-line legends.
+    return max(1, min(n_items, int(fig.get_figwidth() // 1.5) or 1))
+
+
+def _reserve_bottom_space(fig, categorical_entries, quantitative_infos):
+    ncol = _legend_ncol(fig, len(categorical_entries))
+    categorical_rows = 0
+    if categorical_entries:
+        categorical_rows = (len(categorical_entries) + ncol - 1) // ncol
+    bottom = 0.035 + 0.045 * categorical_rows + 0.06 * len(quantitative_infos)
+    bottom = min(0.45, bottom)
+    fig.subplots_adjust(bottom=bottom)
+    return ncol
+
+
+def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
+    """Place all Matplotlib legends in a reserved bottom band.
+
+    Figure-level legends and colorbars do not participate in Matplotlib's normal
+    axes layout, so placing them inside the plotting area can overlap data,
+    titles, or each other.  We reserve a bottom strip, then stack the categorical
+    legend and any quantitative colorbars there in figure coordinates.
+    """
+    if not categorical_entries and not quantitative_infos:
+        return
+
+    ncol = _reserve_bottom_space(fig, categorical_entries, quantitative_infos)
+    y = 0.015
+
+    if categorical_entries:
+        labels, handles = zip(*categorical_entries)
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, y),
+            ncol=ncol,
+            frameon=True,
+        )
+        categorical_rows = (len(categorical_entries) + ncol - 1) // ncol
+        y += 0.045 * categorical_rows
+
+    for qinfo in quantitative_infos:
+        cmap = mcolors.LinearSegmentedColormap.from_list(
+            f"pyrangeyes_{qinfo['title']}", qinfo["colors"]
+        )
+        norm = mcolors.Normalize(vmin=qinfo["vmin"], vmax=qinfo["vmax"])
+        sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([])
+        cax = fig.add_axes([0.15, y, 0.7, 0.018])
+        cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
+        cbar.set_label(qinfo["title"])
+        y += 0.06
 
 
 def plot_exons_plt(
@@ -74,25 +168,17 @@ def plot_exons_plt(
     x_ticks = feat_dict["x_ticks"]
 
     # Create figure and axes
-    # check for legend
-    # Create legend items list
     if legend:
-        legend_item_d = {
-            f"color: {label}": Rectangle(
-                (0, 0), 1, 1, facecolor=fill, edgecolor=outline
-            )
-            for label, fill, outline in categorical_fill_items(subdf)
-        }
-        legend_item_d.update(
-            {
-                f"outline: {label}": Rectangle(
-                    (0, 0), 1, 1, facecolor="white", edgecolor=outline, linewidth=2
-                )
-                for label, outline in categorical_outline_items(subdf)
-            }
-        )
+        categorical_legend_entries = _categorical_legend_entries(subdf)
+        quantitative_legend_infos = [
+            qinfo
+            for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]
+            if qinfo is not None
+        ]
     else:
-        legend_item_d = {}
+        categorical_legend_entries = []
+        quantitative_legend_infos = []
+    legend_item_d = {}
     # pixel in inches
     px = 1 / plt.rcParams["figure.dpi"]
     x = file_size[0] * px
@@ -127,16 +213,7 @@ def plot_exons_plt(
     )
 
     if legend:
-        for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]:
-            if qinfo is None:
-                continue
-            cmap = mcolors.LinearSegmentedColormap.from_list(
-                f"pyrangeyes_{qinfo['title']}", qinfo["colors"]
-            )
-            norm = mcolors.Normalize(vmin=qinfo["vmin"], vmax=qinfo["vmax"])
-            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-            sm.set_array([])
-            fig.colorbar(sm, ax=axes, label=qinfo["title"], shrink=0.75, pad=0.02)
+        _add_bottom_legends(fig, categorical_legend_entries, quantitative_legend_infos)
 
     # Plot genes
     # pd.DataFrame.groupby(subdf,

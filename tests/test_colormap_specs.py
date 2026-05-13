@@ -264,6 +264,51 @@ def test_matplotlib_quantitative_colormap_for_fill_and_outline():
     assert [_hex(p.get_edgecolor()) for p in patches] == ["#ffffff", "#000000"]
 
 
+def test_matplotlib_legend_labels_use_mapping_column_names():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        outline_col="status",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "outline": {"ok": "navy", "warn": "black"},
+        },
+        legend=True,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    labels = [text.get_text() for legend in fig.legends for text in legend.texts]
+    assert labels == ["kind: x", "kind: y", "status: ok", "status: warn"]
+    assert not any(label.startswith(("color: ", "outline: ")) for label in labels)
+
+
+def test_matplotlib_bottom_legend_space_separates_multiple_legends():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="score",
+        outline_col="outline_score",
+        colormap={
+            "color": {"type": "quantitative", "colors": ["blue", "red"]},
+            "outline": {"type": "quantitative", "colors": ["black", "white"]},
+        },
+        legend=True,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    data_ax = fig.axes[0]
+    legend_axes = fig.axes[1:]
+    assert len(legend_axes) == 2
+    assert max(ax.get_position().y1 for ax in legend_axes) < data_ax.get_position().y0
+
+
 def test_plotly_quantitative_colormap_auto_range():
     pre.set_engine("plotly")
 
