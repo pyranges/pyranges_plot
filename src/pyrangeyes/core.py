@@ -133,7 +133,7 @@ def set_theme(name):
     >>> import pyrangeyes as pre
 
     >>> pre.set_theme("dark")
-    >>> pre.set_theme({"title_color": "goldenrod", "exon_height": 0.8})
+    >>> pre.set_theme({"title_color": "goldenrod", "interval_height": 0.8})
 
     """
 
@@ -155,7 +155,7 @@ def set_theme(name):
         for key, value in name.items():
             # is it different from default?
             mod_tag = " "
-            if name[key] != plot_features_dict[key][0]:
+            if value != plot_features_dict[key][0]:
                 mod_tag = "*"
 
             plot_features_dict_in_use[key] = (
@@ -389,7 +389,7 @@ def print_options(return_keys=False):
         intragen_feat_df = feat_df[
             feat_df.index.isin(
                 [
-                    "exon_height",
+                    "interval_height",
                     "v_spacer",
                     "text_size",
                     "text_pad",

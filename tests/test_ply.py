@@ -6,11 +6,9 @@ import plotly.graph_objects as go
 import json
 from deepdiff import DeepDiff
 import numpy as np
-from plotly.utils import PlotlyJSONEncoder
 
 
 def normalize_plotly_json(obj):
-    import numpy as np
 
     if isinstance(obj, dict):
         return {k: normalize_plotly_json(v) for k, v in obj.items()}
@@ -108,6 +106,22 @@ data4 = pr.PyRanges(
 
 data5 = data4.copy()
 data5["depth"] = [1, 0]
+
+data6 = data4.copy()
+data6["height"] = [0.4, 1.0]
+
+data7 = pr.PyRanges(
+    {
+        "Start": [10, 30, 50],
+        "End": [25, 45, 65],
+        "Chromosome": [1, 1, 1],
+        "id": ["a", "b", "c"],
+        "fill": ["#ff0000", "#00aa00", "#0000ff"],
+        "outline": ["black", "gold", "navy"],
+        "score": [0.0, 0.5, 1.0],
+        "outline_score": [1.0, 0.5, 0.0],
+    }
+)
 
 vcf = pr.PyRanges(
     {
@@ -434,6 +448,49 @@ test_cases = [
             id_col=["transcript_id", "second_id"],
             color_col="transcript_id",
             packed=False,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test22",
+        pre.plot(
+            data6,
+            id_col="id",
+            color_col="height",
+            height_col="height",
+            interval_height=0.8,
+            theme="pastel",
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test23",
+        pre.plot(
+            data7,
+            id_col="id",
+            color_col="fill",
+            outline_col="outline",
+            colormap="direct",
+            legend=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test24",
+        pre.plot(
+            data7,
+            id_col="id",
+            color_col="score",
+            outline_col="outline_score",
+            colormap={
+                "color": {
+                    "type": "quantitative",
+                    "colors": ["blue", "white", "red"],
+                    "range": (0, 1),
+                },
+                "outline": {"type": "quantitative", "colors": ["black", "gold"]},
+            },
+            legend=True,
             return_plot="fig",
         ),
     ),

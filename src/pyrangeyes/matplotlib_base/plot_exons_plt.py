@@ -159,7 +159,7 @@ def plot_exons_plt(
     title_dict_plt = feat_dict["title_dict_plt"]
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["outline_color"]
-    exon_height = feat_dict["exon_height"]
+    exon_height = feat_dict["interval_height"]
     v_spacer = feat_dict["v_spacer"]
     text_size = feat_dict["text_size"]
     arrow_line_width = feat_dict["arrow_line_width"]

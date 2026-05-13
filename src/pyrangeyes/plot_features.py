@@ -38,7 +38,11 @@ plot_features_dict = {
         "Fixed color for interval outlines. When None, outlines use the resolved interval fill colors.",
         " ",
     ),
-    "exon_height": (0.6, "Height of the exon rectangle in the plot.", " "),
+    "interval_height": (
+        0.6,
+        "Default (and maximum) height of rendered interval blocks.",
+        " ",
+    ),
     "fig_bkg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),
     "intron_color": (

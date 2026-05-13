@@ -87,6 +87,22 @@ data4 = pr.PyRanges(
 data5 = data4.copy()
 data5["depth"] = [1, 0]
 
+data6 = data4.copy()
+data6["height"] = [0.4, 1.0]
+
+data7 = pr.PyRanges(
+    {
+        "Start": [10, 30, 50],
+        "End": [25, 45, 65],
+        "Chromosome": [1, 1, 1],
+        "id": ["a", "b", "c"],
+        "fill": ["#ff0000", "#00aa00", "#0000ff"],
+        "outline": ["black", "gold", "navy"],
+        "score": [0.0, 0.5, 1.0],
+        "outline_score": [1.0, 0.5, 0.0],
+    }
+)
+
 
 pre.set_engine("plt")
 pre.set_id_col("transcript_id")
@@ -313,6 +329,55 @@ def test18():
         packed=False,
         thick_cds=True,
         # to_file="tests/baseline_mpl/test18.png",
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test19():
+    pre.plot(
+        data6,
+        id_col="id",
+        color_col="height",
+        height_col="height",
+        interval_height=0.8,
+        theme="pastel",
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test20():
+    pre.plot(
+        data7,
+        id_col="id",
+        color_col="fill",
+        outline_col="outline",
+        colormap="direct",
+        legend=True,
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test21():
+    pre.plot(
+        data7,
+        id_col="id",
+        color_col="score",
+        outline_col="outline_score",
+        colormap={
+            "color": {
+                "type": "quantitative",
+                "colors": ["blue", "white", "red"],
+                "range": (0, 1),
+            },
+            "outline": {"type": "quantitative", "colors": ["black", "gold"]},
+        },
+        legend=True,
     )
     fig = plt.gcf()
     return fig

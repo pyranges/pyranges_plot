@@ -99,7 +99,7 @@ def plot(
     add_aligned_plots=None,
     color_col=None,
     outline_col=None,
-    thickness_col=None,
+    height_col=None,
     depth_col=None,
     shrink=False,
     limits=None,
@@ -169,18 +169,17 @@ def plot(
         Quantitative ``colors`` may be a named continuous colormap, a list of gradient colors, or
         normalized stops such as ``[(0, "blue"), (0.5, "white"), (1, "red")]``.
 
-    thickness_col: str, default None
-        Name of a numerical data column whose values specify the height (thickness)
-        of the rectangles representing intervals. Heights are interpreted directly
-        as absolute values in the same units as 'exon_height'.
-        If provided, this parameter overrides the default uniform thickness.
+    height_col: str, default None
+        Numeric column defining interval heights. Values must range from 0 to 1,
+        where 1 uses the full ``interval_height`` and smaller values are rendered
+        proportionally shorter. If provided, this parameter overrides the default
+        uniform interval height.
         Note that if 'thick_cds' is set to True, this parameter will be ignored
-        and thickness will be determined from transcript structure instead.
+        and height will be determined from transcript structure instead.
 
     depth_col: str, default None
-        Name of the data column to be used for setting the order to plot the intervals. The intervals with
-        the lowest value in this column will be plotted first and the ones with higher values will plotted
-        on top of them.
+        Numeric column defining interval draw order for overlapping intervals. Lower values are drawn first;
+        higher values are drawn later, on top of lower-depth intervals. No range constraint is applied.
 
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
@@ -406,8 +405,8 @@ def plot(
         },
         "grid_color": getvalue("grid_color"),
         "outline_color": getvalue("outline_color"),
-        "exon_height": float(getvalue("exon_height")),
-        "transcript_utr_width": 0.3 * float(getvalue("exon_height")),
+        "interval_height": float(getvalue("interval_height")),
+        "transcript_utr_width": 0.3 * float(getvalue("interval_height")),
         "v_spacer": getvalue("v_spacer"),
         "text_size": float(getvalue("text_size")),
         "text_pad": getvalue("text_pad"),
@@ -489,7 +488,21 @@ def plot(
         zip(*[subdf[c] for c in [CHROM_COL] + [PR_INDEX_COL] + ID_COL])
     )
 
-    # Deal with thickness_col
+    # Validate depth_col before rendering. Higher depth values are drawn later,
+    # so they appear on top of lower-depth intervals when intervals overlap.
+    if depth_col is not None:
+        if depth_col not in subdf.columns:
+            raise ValueError(
+                f"The provided depth_col {depth_col!r} is not present in the given data."
+            )
+        depth_values = pd.to_numeric(subdf[depth_col], errors="coerce")
+        if depth_values.isna().any():
+            raise ValueError(
+                f"depth_col {depth_col!r} must contain only numeric, non-missing values."
+            )
+        subdf[depth_col] = depth_values
+
+    # Deal with height_col
     # prioritize transcript structure
     if thick_cds:
         # keep only the "exon" and "CDS"
@@ -498,41 +511,46 @@ def plot(
             raise Exception(
                 "The provided data does not contain any interval containing 'exon' or 'CDS' in the Feature column, no data wil be plotted using 'thick_cds'."
             )
-        # set proper thickness column
-        thickness_col = "Feature"
+        # set proper height column
+        height_col = "Feature"
 
     # set proper height values
-    if thickness_col:
+    if height_col:
         # Is it present in data?
-        if thickness_col not in subdf.columns:
-            raise Exception(
-                f"The provided thickness_col {thickness_col} is not present in the given data."
+        if height_col not in subdf.columns:
+            raise ValueError(
+                f"The provided height_col {height_col!r} is not present in the given data."
             )
 
         # If using thick_cds (categorical mode)
         if thick_cds:
             # keep existing categorical mapping logic
             thick_tags_l = sorted(
-                list(subdf[thickness_col].drop_duplicates()), reverse=True
+                list(subdf[height_col].drop_duplicates()), reverse=True
             )
             if len(thick_tags_l) == 1:
                 thick_tags_l = 2 * thick_tags_l
             thick_tags_d = {
                 thick_tags_l[0]: feat_dict["transcript_utr_width"],
-                thick_tags_l[1]: feat_dict["exon_height"],
+                thick_tags_l[1]: feat_dict["interval_height"],
             }
-            subdf[THICK_COL] = subdf[thickness_col].map(thick_tags_d)
+            subdf[THICK_COL] = subdf[height_col].map(thick_tags_d)
 
         else:
-            # New behaviour: must be numeric
-            if not np.issubdtype(subdf[thickness_col].dtype, np.number):
-                raise Exception(
-                    "thickness_col must be numeric when not using 'thick_cds'."
+            height_values = pd.to_numeric(subdf[height_col], errors="coerce")
+            if height_values.isna().any():
+                raise ValueError(
+                    f"height_col {height_col!r} must contain only numeric, non-missing values."
                 )
-            subdf[THICK_COL] = subdf[thickness_col]
+            if ((height_values < 0) | (height_values > 1)).any():
+                raise ValueError(
+                    f"height_col {height_col!r} values must range from 0 to 1; "
+                    "1 is rendered at the full interval_height."
+                )
+            subdf[THICK_COL] = height_values * feat_dict["interval_height"]
 
     else:
-        subdf[THICK_COL] = [feat_dict["exon_height"]] * len(subdf)
+        subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
 
     # Store color information in data
     # color_col as list
@@ -573,7 +591,7 @@ def plot(
         ID_COL,
         color_col,
         packed,
-        feat_dict["exon_height"],
+        feat_dict["interval_height"],
         feat_dict["v_spacer"],
         order,
         sort_ranges,
@@ -596,7 +614,7 @@ def plot(
         genesmd_df,
         packed,
         feat_dict["v_spacer"],
-        feat_dict["exon_height"],
+        feat_dict["interval_height"],
     )
     _attach_panel_display(chrmd_df_grouped, panel_display)
 
@@ -633,7 +651,7 @@ def plot(
             ID_COL,
             color_col,
             packed,
-            feat_dict["exon_height"],
+            feat_dict["interval_height"],
             feat_dict["v_spacer"],
             order,
             sort_ranges,
@@ -656,7 +674,7 @@ def plot(
             genesmd_df,
             packed,
             feat_dict["v_spacer"],
-            feat_dict["exon_height"],
+            feat_dict["interval_height"],
             ts_data=ts_data,
         )
         _attach_panel_display(chrmd_df_grouped, panel_display)

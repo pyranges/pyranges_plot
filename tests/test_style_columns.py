@@ -1,5 +1,6 @@
 import matplotlib
 import matplotlib.colors as mcolors
+import pytest
 import pyranges1 as pr
 import pyrangeyes as pre
 
@@ -17,6 +18,11 @@ def _style_data():
             "outline": ["#00ff00", "#ffff00"],
             "kind": ["x", "y"],
             "status": ["ok", "warn"],
+            "height": [0.5, 1.0],
+            "bad_height": [0.5, 1.2],
+            "text_height": ["short", "tall"],
+            "depth": [2, 1],
+            "bad_depth": ["front", "back"],
         }
     )
 
@@ -85,6 +91,116 @@ def test_matplotlib_outline_color_option_overrides_outline_col():
     patches = _patches(fig)
     assert [_hex(p.get_facecolor()) for p in patches] == ["#ff0000", "#0000ff"]
     assert [_hex(p.get_edgecolor()) for p in patches] == ["#000000", "#000000"]
+
+
+def test_matplotlib_height_col_scales_interval_height():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="fill",
+        colormap="direct",
+        height_col="height",
+        interval_height=0.8,
+        return_plot="fig",
+        warnings=False,
+    )
+
+    patches = _patches(fig)
+    assert [round(p.get_height(), 3) for p in patches] == [0.4, 0.8]
+
+
+def test_matplotlib_height_col_validates_presence():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="height_col .* not present"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            height_col="missing_height",
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_matplotlib_height_col_validates_numeric_values():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="height_col .* numeric"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            height_col="text_height",
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_matplotlib_height_col_validates_unit_range():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="height_col .* range from 0 to 1"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            height_col="bad_height",
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_matplotlib_depth_col_validates_presence():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="depth_col .* not present"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            depth_col="missing_depth",
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_matplotlib_depth_col_validates_numeric_values():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="depth_col .* numeric"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            depth_col="bad_depth",
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_matplotlib_depth_col_draws_larger_values_on_top():
+    pre.set_engine("matplotlib")
+    data = pr.PyRanges(
+        {
+            "Chromosome": ["1", "1"],
+            "Start": [10, 10],
+            "End": [30, 30],
+            "id": ["same", "same"],
+            "fill": ["#ff0000", "#0000ff"],
+            "depth": [2, 1],
+        }
+    )
+
+    fig = pre.plot(
+        data,
+        id_col="id",
+        color_col="fill",
+        colormap="direct",
+        depth_col="depth",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    patches = _patches(fig)
+    assert [_hex(p.get_facecolor()) for p in patches] == ["#0000ff", "#ff0000"]
 
 
 def test_plotly_direct_color_and_outline_columns():
