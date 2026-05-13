@@ -92,7 +92,7 @@ def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
     ncol = _reserve_bottom_space(fig, categorical_entries, quantitative_infos)
     y = 0.06
 
-    for qinfo in quantitative_infos:
+    for qinfo in reversed(quantitative_infos):
         cmap = mcolors.LinearSegmentedColormap.from_list(
             f"pyrangeyes_{qinfo['title']}", qinfo["colors"]
         )

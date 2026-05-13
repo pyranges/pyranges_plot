@@ -139,7 +139,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": true,
       "text": "<br>[-] (10, 25)<br>ID: T2",
       "x": [
@@ -158,11 +158,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color",
-      "legendgrouptitle": {
-        "text": "Feature"
-      }
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -172,7 +168,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (70, 80)<br>ID: T2",
       "x": [
@@ -191,8 +187,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -357,7 +352,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (85, 100)<br>ID: T3",
       "x": [
@@ -376,8 +371,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -387,7 +381,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (110, 115)<br>ID: T3",
       "x": [
@@ -406,8 +400,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -417,7 +410,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (150, 180)<br>ID: T3",
       "x": [
@@ -436,8 +429,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -497,7 +489,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (140, 152)<br>ID: T4",
       "x": [
@@ -516,8 +508,7 @@
       ],
       "type": "scatter",
       "xaxis": "x3",
-      "yaxis": "y3",
-      "legendgroup": "color"
+      "yaxis": "y3"
     },
     {
       "hoverinfo": "skip",
@@ -724,7 +715,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (5, 150)<br>ID: T5",
       "x": [
@@ -743,8 +734,7 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4",
-      "legendgroup": "color"
+      "yaxis": "y4"
     },
     {
       "fill": "toself",
@@ -754,7 +744,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (170, 200)<br>ID: T5",
       "x": [
@@ -773,8 +763,7 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4",
-      "legendgroup": "color"
+      "yaxis": "y4"
     },
     {
       "fill": "toself",
@@ -784,7 +773,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (240, 260)<br>ID: T5",
       "x": [
@@ -803,8 +792,7 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4",
-      "legendgroup": "color"
+      "yaxis": "y4"
     },
     {
       "fill": "toself",
@@ -864,7 +852,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (100, 200)<br>ID: T6",
       "x": [
@@ -883,8 +871,7 @@
       ],
       "type": "scatter",
       "xaxis": "x5",
-      "yaxis": "y5",
-      "legendgroup": "color"
+      "yaxis": "y5"
     },
     {
       "hoverinfo": "skip",
@@ -1154,7 +1141,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (61, 64)<br>ID: t1",
       "x": [
@@ -1173,8 +1160,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1184,7 +1170,7 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "CDS",
+      "name": "Feature: CDS",
       "showlegend": true,
       "text": "<br>[+] (90, 92)<br>ID: t1",
       "x": [
@@ -1203,8 +1189,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1214,7 +1199,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (104, 113)<br>ID: t1",
       "x": [
@@ -1233,8 +1218,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1244,7 +1228,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (228, 229)<br>ID: t1",
       "x": [
@@ -1263,8 +1247,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1366,7 +1349,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (1, 11)<br>ID: t1",
       "x": [
@@ -1385,8 +1368,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1396,7 +1378,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (40, 60)<br>ID: t1",
       "x": [
@@ -1415,8 +1397,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1644,7 +1625,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (9, 12)<br>ID: t2",
       "x": [
@@ -1663,8 +1644,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1674,7 +1654,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (52, 57)<br>ID: t2",
       "x": [
@@ -1693,8 +1673,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1704,7 +1683,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (142, 147)<br>ID: t2",
       "x": [
@@ -1723,8 +1702,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1734,7 +1712,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (149, 155)<br>ID: t2",
       "x": [
@@ -1753,8 +1731,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1856,7 +1833,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (151, 153)<br>ID: t3",
       "x": [
@@ -1875,8 +1852,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -1886,7 +1862,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (218, 224)<br>ID: t3",
       "x": [
@@ -1905,8 +1881,7 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y",
-      "legendgroup": "color"
+      "yaxis": "y"
     },
     {
       "fill": "toself",
@@ -2134,7 +2109,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (5, 8)<br>ID: t4",
       "x": [
@@ -2153,8 +2128,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2164,7 +2138,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (27, 32)<br>ID: t4",
       "x": [
@@ -2183,8 +2157,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2194,7 +2167,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (37, 40)<br>ID: t4",
       "x": [
@@ -2213,8 +2186,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2224,7 +2196,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (47, 50)<br>ID: t4",
       "x": [
@@ -2243,8 +2215,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2472,7 +2443,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (1, 5)<br>ID: t5",
       "x": [
@@ -2491,8 +2462,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2502,7 +2472,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (7, 10)<br>ID: t5",
       "x": [
@@ -2521,8 +2491,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2532,7 +2501,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (37, 40)<br>ID: t5",
       "x": [
@@ -2551,8 +2520,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2562,7 +2530,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (42, 46)<br>ID: t5",
       "x": [
@@ -2581,8 +2549,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2684,7 +2651,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (60, 70)<br>ID: t6",
       "x": [
@@ -2703,8 +2670,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2714,7 +2680,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (80, 90)<br>ID: t6",
       "x": [
@@ -2733,8 +2699,7 @@
       ],
       "type": "scatter",
       "xaxis": "x2",
-      "yaxis": "y2",
-      "legendgroup": "color"
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -2794,7 +2759,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (20, 50)<br>ID: t7",
       "x": [
@@ -2813,8 +2778,7 @@
       ],
       "type": "scatter",
       "xaxis": "x4",
-      "yaxis": "y4",
-      "legendgroup": "color"
+      "yaxis": "y4"
     },
     {
       "hoverinfo": "skip",
@@ -4341,15 +4305,17 @@
       }
     ],
     "margin": {
-      "b": 135
+      "l": 60,
+      "r": 30,
+      "t": 35,
+      "b": 105
     },
     "legend": {
       "orientation": "h",
       "x": 0.5,
       "xanchor": "center",
-      "y": -0.12,
-      "yanchor": "top",
-      "tracegroupgap": 8
+      "y": -0.1,
+      "yanchor": "top"
     },
     "font": {
       "color": "black"

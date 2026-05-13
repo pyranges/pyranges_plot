@@ -113,7 +113,7 @@ def test_plotly_legend_entries_are_deduplicated():
     )
 
     names = [trace.name for trace in fig.data if trace.showlegend]
-    assert names == ["x", "y"]
+    assert names == ["kind: x", "kind: y"]
     assert fig.layout.legend.orientation == "h"
     assert fig.layout.legend.y < 0
 
@@ -135,14 +135,12 @@ def test_plotly_legend_shows_fill_and_outline_when_mapped():
         warnings=False,
     )
 
-    legend_items = [
-        (trace.name, trace.legendgroup) for trace in fig.data if trace.showlegend
-    ]
+    legend_items = [trace.name for trace in fig.data if trace.showlegend]
     assert legend_items == [
-        ("x", "color"),
-        ("y", "color"),
-        ("ok", "outline"),
-        ("warn", "outline"),
+        "kind: x",
+        "kind: y",
+        "status: ok",
+        "status: warn",
     ]
 
 
@@ -177,7 +175,7 @@ def test_plotly_quantitative_legend_uses_colorbars():
         "h",
     ]
     assert all(trace.marker.colorbar.y < 0 for trace in colorbar_traces)
-    assert fig.layout.margin.b >= 200
+    assert fig.layout.margin.b >= 170
     assert not any(
         trace.showlegend
         for trace in fig.data

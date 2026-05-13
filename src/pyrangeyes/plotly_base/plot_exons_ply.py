@@ -31,16 +31,15 @@ def _as_plotly_colorscale(colors):
 
 
 def _bottom_legend_layout(categorical_count, quantitative_count):
-    bottom_margin = 80 + (55 if categorical_count else 0) + 65 * quantitative_count
+    bottom_margin = 60 + (45 if categorical_count else 0) + 55 * quantitative_count
     return {
-        "margin": {"b": bottom_margin},
+        "margin": {"l": 60, "r": 30, "t": 35, "b": bottom_margin},
         "legend": {
             "orientation": "h",
             "x": 0.5,
             "xanchor": "center",
-            "y": -0.12,
+            "y": -0.10,
             "yanchor": "top",
-            "tracegroupgap": 8,
         },
     }
 
@@ -61,7 +60,6 @@ def _postprocess_legend(fig, subdf, legend):
     ]
 
     seen_fill = set()
-    first_fill = True
     for trace in fig.data:
         if getattr(trace, "fill", None) != "toself" or trace.fillcolor == "white":
             continue
@@ -69,10 +67,9 @@ def _postprocess_legend(fig, subdf, legend):
             trace.showlegend = False
             continue
         key = str(trace.name)
-        trace.legendgroup = "color"
-        if first_fill:
-            trace.legendgrouptitle = dict(text=fill_title)
-            first_fill = False
+        trace.legendgroup = None
+        trace.name = f"{fill_title}: {key}"
+        trace.legendgrouptitle = None
         if key in seen_fill:
             trace.showlegend = False
         else:
@@ -80,7 +77,6 @@ def _postprocess_legend(fig, subdf, legend):
             seen_fill.add(key)
 
     if outline_kind == "categorical":
-        first_outline = True
         for label, outline in categorical_outline_items(subdf):
             fig.add_trace(
                 go.Scatter(
@@ -88,16 +84,13 @@ def _postprocess_legend(fig, subdf, legend):
                     y=[None],
                     mode="lines",
                     line=dict(color=outline, width=3),
-                    name=str(label),
-                    legendgroup="outline",
-                    legendgrouptitle=dict(text=outline_title)
-                    if first_outline
-                    else None,
+                    name=f"{outline_title}: {label}",
+                    legendgroup=None,
+                    legendgrouptitle=None,
                     showlegend=True,
                     hoverinfo="skip",
                 )
             )
-            first_outline = False
 
     colorbar_y = -0.22
     for qinfo in quantitative_infos:
