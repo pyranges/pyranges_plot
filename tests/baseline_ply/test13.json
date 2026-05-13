@@ -4340,6 +4340,17 @@
         "yref": "y5"
       }
     ],
+    "margin": {
+      "b": 135
+    },
+    "legend": {
+      "orientation": "h",
+      "x": 0.5,
+      "xanchor": "center",
+      "y": -0.12,
+      "yanchor": "top",
+      "tracegroupgap": 8
+    },
     "font": {
       "color": "black"
     },

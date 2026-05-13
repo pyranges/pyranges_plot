@@ -72,8 +72,8 @@ def _reserve_bottom_space(fig, categorical_entries, quantitative_infos):
     # Reserve a conservative bottom strip. Figure legends are sized in display
     # units after drawing, so use row slots large enough for labels, frame, and
     # padding rather than the colorbar axes height alone.
-    bottom = 0.04 + 0.075 * categorical_rows + 0.08 * len(quantitative_infos)
-    bottom = min(0.5, bottom)
+    bottom = 0.08 + 0.075 * categorical_rows + 0.10 * len(quantitative_infos)
+    bottom = min(0.55, bottom)
     fig.subplots_adjust(bottom=bottom)
     return ncol
 
@@ -90,20 +90,7 @@ def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
         return
 
     ncol = _reserve_bottom_space(fig, categorical_entries, quantitative_infos)
-    y = 0.015
-
-    if categorical_entries:
-        labels, handles = zip(*categorical_entries)
-        fig.legend(
-            handles,
-            labels,
-            loc="lower center",
-            bbox_to_anchor=(0.5, y),
-            ncol=ncol,
-            frameon=True,
-        )
-        categorical_rows = (len(categorical_entries) + ncol - 1) // ncol
-        y += 0.075 * categorical_rows
+    y = 0.06
 
     for qinfo in quantitative_infos:
         cmap = mcolors.LinearSegmentedColormap.from_list(
@@ -115,7 +102,18 @@ def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
         cax = fig.add_axes([0.15, y, 0.7, 0.02])
         cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
         cbar.set_label(qinfo["title"])
-        y += 0.08
+        y += 0.10
+
+    if categorical_entries:
+        labels, handles = zip(*categorical_entries)
+        fig.legend(
+            handles,
+            labels,
+            loc="lower center",
+            bbox_to_anchor=(0.5, y),
+            ncol=ncol,
+            frameon=True,
+        )
 
 
 def plot_exons_plt(

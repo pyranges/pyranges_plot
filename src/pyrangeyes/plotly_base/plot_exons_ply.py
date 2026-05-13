@@ -30,8 +30,23 @@ def _as_plotly_colorscale(colors):
     return [[i * step, color] for i, color in enumerate(colors)]
 
 
+def _bottom_legend_layout(categorical_count, quantitative_count):
+    bottom_margin = 80 + (55 if categorical_count else 0) + 65 * quantitative_count
+    return {
+        "margin": {"b": bottom_margin},
+        "legend": {
+            "orientation": "h",
+            "x": 0.5,
+            "xanchor": "center",
+            "y": -0.12,
+            "yanchor": "top",
+            "tracegroupgap": 8,
+        },
+    }
+
+
 def _postprocess_legend(fig, subdf, legend):
-    """Deduplicate categorical legends and add quantitative colorbars."""
+    """Deduplicate categorical legends and add quantitative bottom colorbars."""
     if not legend:
         return
 
@@ -39,6 +54,11 @@ def _postprocess_legend(fig, subdf, legend):
     fill_title = subdf[COLOR_LEGEND_TITLE_COL].iloc[0]
     outline_kind = subdf[OUTLINE_LEGEND_KIND_COL].iloc[0]
     outline_title = subdf[OUTLINE_LEGEND_TITLE_COL].iloc[0]
+    quantitative_infos = [
+        qinfo
+        for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]
+        if qinfo is not None
+    ]
 
     seen_fill = set()
     first_fill = True
@@ -79,10 +99,8 @@ def _postprocess_legend(fig, subdf, legend):
             )
             first_outline = False
 
-    colorbar_x = 1.02
-    for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]:
-        if qinfo is None:
-            continue
+    colorbar_y = -0.22
+    for qinfo in quantitative_infos:
         fig.add_trace(
             go.Scatter(
                 x=[None],
@@ -94,13 +112,29 @@ def _postprocess_legend(fig, subdf, legend):
                     cmax=qinfo["vmax"],
                     colorscale=_as_plotly_colorscale(qinfo["colors"]),
                     showscale=True,
-                    colorbar=dict(title=qinfo["title"], x=colorbar_x),
+                    colorbar=dict(
+                        title=qinfo["title"],
+                        orientation="h",
+                        x=0.5,
+                        xanchor="center",
+                        y=colorbar_y,
+                        yanchor="top",
+                        len=0.7,
+                        thickness=14,
+                    ),
                 ),
                 showlegend=False,
                 hoverinfo="skip",
             )
         )
-        colorbar_x += 0.08
+        colorbar_y -= 0.13
+
+    fig.update_layout(
+        **_bottom_legend_layout(
+            len(seen_fill) + len(categorical_outline_items(subdf)),
+            len(quantitative_infos),
+        )
+    )
 
 
 def plot_exons_ply(
