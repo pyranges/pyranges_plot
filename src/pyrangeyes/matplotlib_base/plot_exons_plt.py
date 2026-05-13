@@ -173,7 +173,10 @@ def plot_exons_plt(
         categorical_legend_entries = _categorical_legend_entries(subdf)
         quantitative_legend_infos = [
             qinfo
-            for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]
+            for qinfo in [
+                quantitative_fill_info(subdf),
+                quantitative_outline_info(subdf),
+            ]
             if qinfo is not None
         ]
     else:
