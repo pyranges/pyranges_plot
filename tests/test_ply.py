@@ -107,6 +107,9 @@ data4 = pr.PyRanges(
 data5 = data4.copy()
 data5["depth"] = [1, 0]
 
+data6 = data4.copy()
+data6["height"] = [0.4, 1.0]
+
 vcf = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,  # CHROM renamed to Chromosome
@@ -432,6 +435,18 @@ test_cases = [
             id_col=["transcript_id", "second_id"],
             color_col="transcript_id",
             packed=False,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test22",
+        pre.plot(
+            data6,
+            id_col="id",
+            color_col="height",
+            height_col="height",
+            interval_height=0.8,
+            theme="pastel",
             return_plot="fig",
         ),
     ),

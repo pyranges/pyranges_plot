@@ -57,9 +57,6 @@ except ImportError:
     missing_ply_flag = 1
 
 
-OPTION_ALIASES = {"exon_height": "interval_height"}
-
-
 def _attach_panel_display(chrmd_df_grouped, panel_display):
     """Attach per-panel display info (real chromosome + window) to
     chrmd_df_grouped as columns the rendering layer can read.
@@ -116,7 +113,6 @@ def plot(
     to_file=None,
     theme=None,
     sort_ranges=False,
-    thickness_col=None,
     **kargs,
 ):
     """
@@ -366,21 +362,6 @@ def plot(
     engine = get_engine()
 
     # PREPARE DATA for plot
-    if thickness_col is not None:
-        if height_col is not None:
-            raise ValueError(
-                "Provide only one of height_col or deprecated thickness_col."
-            )
-        height_col = thickness_col
-
-    for old_key, new_key in OPTION_ALIASES.items():
-        if old_key in kargs:
-            if new_key in kargs:
-                raise ValueError(
-                    f"Provide only one of {new_key!r} or deprecated {old_key!r}."
-                )
-            kargs[new_key] = kargs.pop(old_key)
-
     # Deal with plot features as kargs
     wrong_keys = [k for k in kargs if k not in print_options(return_keys=True)]
     if wrong_keys:

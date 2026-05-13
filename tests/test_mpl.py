@@ -87,6 +87,9 @@ data4 = pr.PyRanges(
 data5 = data4.copy()
 data5["depth"] = [1, 0]
 
+data6 = data4.copy()
+data6["height"] = [0.4, 1.0]
+
 
 pre.set_engine("plt")
 pre.set_id_col("transcript_id")
@@ -313,6 +316,20 @@ def test18():
         packed=False,
         thick_cds=True,
         # to_file="tests/baseline_mpl/test18.png",
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test19():
+    pre.plot(
+        data6,
+        id_col="id",
+        color_col="height",
+        height_col="height",
+        interval_height=0.8,
+        theme="pastel",
     )
     fig = plt.gcf()
     return fig
