@@ -12,6 +12,7 @@ from .core import (
     reset_options,  # noqa: F401
 )
 from .plot_main import plot  # noqa: F401
+from .adapters import prepare_mrna_intervals, plot_mrna_annotation  # noqa: F401
 from .pr_register_plot import register_plot  # noqa: F401
 from .example_data import p1, p2, p3, p_ala, p_cys, ncbi_gff, ncbi_vcf  # noqa: F401
 from . import vcf  # noqa: F401
