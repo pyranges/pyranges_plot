@@ -139,7 +139,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": true,
       "text": "<br>[-] (10, 25)<br>ID: T2",
       "x": [
@@ -168,7 +168,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (70, 80)<br>ID: T2",
       "x": [
@@ -352,8 +352,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (85, 100)<br>ID: T3",
       "x": [
         85,
@@ -381,7 +381,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (110, 115)<br>ID: T3",
       "x": [
@@ -410,7 +410,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (150, 180)<br>ID: T3",
       "x": [
@@ -489,8 +489,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (140, 152)<br>ID: T4",
       "x": [
         140,
@@ -715,8 +715,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[-] (5, 150)<br>ID: T5",
       "x": [
         5,
@@ -744,7 +744,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (170, 200)<br>ID: T5",
       "x": [
@@ -773,7 +773,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (240, 260)<br>ID: T5",
       "x": [
@@ -852,8 +852,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (100, 200)<br>ID: T6",
       "x": [
         100,
@@ -1141,8 +1141,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (61, 64)<br>ID: t1",
       "x": [
         61,
@@ -1170,8 +1170,8 @@
         "color": "#f05f89"
       },
       "mode": "lines",
-      "name": "CDS",
-      "showlegend": false,
+      "name": "Feature: CDS",
+      "showlegend": true,
       "text": "<br>[+] (90, 92)<br>ID: t1",
       "x": [
         90,
@@ -1199,7 +1199,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (104, 113)<br>ID: t1",
       "x": [
@@ -1228,7 +1228,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (228, 229)<br>ID: t1",
       "x": [
@@ -1349,8 +1349,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (1, 11)<br>ID: t1",
       "x": [
         1,
@@ -1378,7 +1378,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (40, 60)<br>ID: t1",
       "x": [
@@ -1625,8 +1625,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[-] (9, 12)<br>ID: t2",
       "x": [
         9,
@@ -1654,7 +1654,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (52, 57)<br>ID: t2",
       "x": [
@@ -1683,7 +1683,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (142, 147)<br>ID: t2",
       "x": [
@@ -1712,7 +1712,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (149, 155)<br>ID: t2",
       "x": [
@@ -1833,8 +1833,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (151, 153)<br>ID: t3",
       "x": [
         151,
@@ -1862,7 +1862,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (218, 224)<br>ID: t3",
       "x": [
@@ -2109,8 +2109,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (5, 8)<br>ID: t4",
       "x": [
         5,
@@ -2138,7 +2138,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (27, 32)<br>ID: t4",
       "x": [
@@ -2167,7 +2167,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (37, 40)<br>ID: t4",
       "x": [
@@ -2196,7 +2196,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (47, 50)<br>ID: t4",
       "x": [
@@ -2443,8 +2443,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[-] (1, 5)<br>ID: t5",
       "x": [
         1,
@@ -2472,7 +2472,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (7, 10)<br>ID: t5",
       "x": [
@@ -2501,7 +2501,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (37, 40)<br>ID: t5",
       "x": [
@@ -2530,7 +2530,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[-] (42, 46)<br>ID: t5",
       "x": [
@@ -2570,11 +2570,11 @@
         60
       ],
       "y": [
-        4.0962499999999995,
-        4.0962499999999995,
-        4.10375,
-        4.10375,
-        4.0962499999999995
+        5.0962499999999995,
+        5.0962499999999995,
+        5.10375,
+        5.10375,
+        5.0962499999999995
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2594,8 +2594,8 @@
         80
       ],
       "y": [
-        4.1,
-        4.1
+        5.1,
+        5.1
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2615,8 +2615,8 @@
         75.5907
       ],
       "y": [
-        3.8099999999999996,
-        4.1
+        4.81,
+        5.1
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2636,8 +2636,8 @@
         74.4093
       ],
       "y": [
-        4.1,
-        4.39
+        5.1,
+        5.39
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2651,8 +2651,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (60, 70)<br>ID: t6",
       "x": [
         60,
@@ -2662,11 +2662,11 @@
         60
       ],
       "y": [
-        3.8,
-        3.8,
-        4.3999999999999995,
-        4.3999999999999995,
-        3.8
+        4.8,
+        4.8,
+        5.3999999999999995,
+        5.3999999999999995,
+        4.8
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2680,7 +2680,7 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
+      "name": "Feature: exon",
       "showlegend": false,
       "text": "<br>[+] (80, 90)<br>ID: t6",
       "x": [
@@ -2691,11 +2691,11 @@
         80
       ],
       "y": [
-        3.8,
-        3.8,
-        4.3999999999999995,
-        4.3999999999999995,
-        3.8
+        4.8,
+        4.8,
+        5.3999999999999995,
+        5.3999999999999995,
+        4.8
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2759,8 +2759,8 @@
         "color": "#f0db36"
       },
       "mode": "lines",
-      "name": "exon",
-      "showlegend": true,
+      "name": "Feature: exon",
+      "showlegend": false,
       "text": "<br>[+] (20, 50)<br>ID: t7",
       "x": [
         20,
@@ -3650,7 +3650,7 @@
     "yaxis": {
       "anchor": "x",
       "domain": [
-        0.79375,
+        0.808695652173913,
         1.0
       ],
       "range": [
@@ -3718,12 +3718,12 @@
     "yaxis2": {
       "anchor": "x2",
       "domain": [
-        0.48750000000000004,
-        0.6937500000000001
+        0.4739130434782609,
+        0.7086956521739131
       ],
       "range": [
         -0.3,
-        4.9
+        5.8999999999999995
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -3790,8 +3790,8 @@
     "yaxis3": {
       "anchor": "x3",
       "domain": [
-        0.35000000000000003,
-        0.3875
+        0.33913043478260874,
+        0.37391304347826093
       ],
       "range": [
         -0.3,
@@ -3858,8 +3858,8 @@
     "yaxis4": {
       "anchor": "x4",
       "domain": [
-        0.1375,
-        0.25
+        0.13478260869565217,
+        0.2391304347826087
       ],
       "range": [
         -0.3,
@@ -3927,7 +3927,7 @@
       "anchor": "x5",
       "domain": [
         0.0,
-        0.0375
+        0.034782608695652174
       ],
       "range": [
         -0.3,
@@ -3971,7 +3971,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.6937500000000001,
+        "y": 0.7086956521739131,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -3986,7 +3986,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.3875,
+        "y": 0.37391304347826093,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -4001,7 +4001,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.25,
+        "y": 0.2391304347826087,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -4016,7 +4016,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.0375,
+        "y": 0.034782608695652174,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -4027,7 +4027,7 @@
         "showarrow": false,
         "text": "T2",
         "textangle": 0,
-        "x": 10,
+        "x": 9,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
@@ -4040,7 +4040,7 @@
         "showarrow": false,
         "text": "T3",
         "textangle": 0,
-        "x": 85,
+        "x": 84,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
@@ -4066,7 +4066,7 @@
         "showarrow": false,
         "text": "T5",
         "textangle": 0,
-        "x": 4,
+        "x": 3,
         "xanchor": "right",
         "xref": "x4",
         "y": 0.5,
@@ -4144,7 +4144,7 @@
         "showarrow": false,
         "text": "t4",
         "textangle": 0,
-        "x": 5,
+        "x": 4,
         "xanchor": "right",
         "xref": "x2",
         "y": 3.1,
@@ -4157,7 +4157,7 @@
         "showarrow": false,
         "text": "t5",
         "textangle": 0,
-        "x": 1,
+        "x": 0,
         "xanchor": "right",
         "xref": "x2",
         "y": 4.1,
@@ -4170,10 +4170,10 @@
         "showarrow": false,
         "text": "t6",
         "textangle": 0,
-        "x": 60,
+        "x": 59,
         "xanchor": "right",
         "xref": "x2",
-        "y": 4.1,
+        "y": 5.1,
         "yref": "y2"
       },
       {
@@ -4183,7 +4183,7 @@
         "showarrow": false,
         "text": "t7",
         "textangle": 0,
-        "x": 19,
+        "x": 18,
         "xanchor": "right",
         "xref": "x4",
         "y": 2.1,
@@ -4229,8 +4229,8 @@
         "x0": 0,
         "x1": 1,
         "xref": "x2 domain",
-        "y0": 4.9,
-        "y1": 4.9,
+        "y0": 5.8999999999999995,
+        "y1": 5.8999999999999995,
         "yref": "y2"
       },
       {
@@ -4304,6 +4304,19 @@
         "yref": "y5"
       }
     ],
+    "margin": {
+      "l": 60,
+      "r": 30,
+      "t": 35,
+      "b": 105
+    },
+    "legend": {
+      "orientation": "h",
+      "x": 0.5,
+      "xanchor": "center",
+      "y": -0.1,
+      "yanchor": "top"
+    },
     "font": {
       "color": "black"
     },

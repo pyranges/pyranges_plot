@@ -220,7 +220,7 @@ test_cases = [
         pre.plot(
             data1,
             color_col="transcript_id",
-            exon_border="black",
+            outline_color="black",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -232,7 +232,7 @@ test_cases = [
             id_col="second_id",
             color_col="transcript_id",
             shrink=True,
-            exon_border="black",
+            outline_color="black",
             sort_ranges=True,
             return_plot="fig",
         ),

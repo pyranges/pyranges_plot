@@ -98,7 +98,7 @@ for ext in ["png"]:  # , 'pdf']:
         to_file=(f"cheatsheet_mapping.{ext}", (700, 450)),
         arrow_line_width=1,
         arrow_color="#4A4A4A",
-        exon_border="#4A4A4A",
+        outline_color="#4A4A4A",
         colormap=color_list,
     )
 

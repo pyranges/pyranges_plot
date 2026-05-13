@@ -154,7 +154,8 @@ Now the "+" strand transcripts are displayed in one color and the ones on the "-
 Note that pyrangeyes used its default color scheme, and mapped each value in the  ``color_col`` column to a color.
 
 The  **colormap** parameter of :func:`plot <pyrangeyes.plot>` centralizes coloring customization.
-It is a versatile parameter, accepting many different types of input.
+It is a versatile parameter, accepting many different types of input. Colors can be hex strings,
+rgb strings, or explicit color names such as ``"skyblue"`` and ``"black"``.
 Using a dictionary allows to exert full control over the coloring, explicitly setting each value-color pair:
 
     >>> pre.plot(p, color_col="Strand",
@@ -171,6 +172,56 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
     >>> pre.plot(p, colormap="Dark2")
 
 .. image:: images/prp_rtd_08.png
+
+If a column already stores literal colors (for example hex strings), set ``colormap="direct"``
+to use those values directly instead of mapping them as categories:
+
+    >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
+    >>> pre.plot(p, color_col="fill", colormap="direct")
+
+.. image:: images/prp_rtd_30.png
+
+By default, interval outlines use the same resolved color as the fill. For one fixed
+outline color, use the ``outline_color`` option:
+
+    >>> pre.plot(p, color_col="Strand", outline_color="black")
+
+.. image:: images/prp_rtd_31.png
+
+Use ``outline_col`` to map outlines from a column. When fill and outline columns use
+different value domains, provide a channel mapping with separate ``"color"`` and
+``"outline"`` entries:
+
+    >>> pre.plot(
+    ...     p,
+    ...     color_col="Strand",
+    ...     outline_col="feature1",
+    ...     colormap={
+    ...         "color": {"+": "skyblue", "-": "gold"},
+    ...         "outline": {"a": "navy", "b": "black", "c": "purple", "d": "darkgreen"},
+    ...     },
+    ... )
+
+.. image:: images/prp_rtd_32.png
+
+Numeric columns can be colored as a continuous gradient with ``type="quantitative"``.
+Values are normalized to the observed minimum and maximum by default:
+
+    >>> p["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
+    >>> pre.plot(p, color_col="score", colormap={"type": "quantitative", "colors": "viridis"})
+
+.. image:: images/prp_rtd_33.png
+
+Set ``range=(min, max)`` to choose the normalization range manually. The gradient
+can be a named continuous colormap, a list of colors, or normalized color stops:
+
+    >>> pre.plot(
+    ...     p,
+    ...     color_col="score",
+    ...     colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (0, 1)},
+    ... )
+
+.. image:: images/prp_rtd_34.png
 
 To improve the clarity of the plot, we can enable a legend that labels each color, making it easier 
 to interpret the intervals based on their assigned colors. This can be done by setting the 
@@ -213,16 +264,13 @@ Note that any modified values from the built-in defaults will be marked with an 
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     Feature      |       Value        | Edited? |                         Description                          |
     +------------------+--------------------+---------+--------------------------------------------------------------+
-    |     colormap     |       popart       |         | Sequence of colors to assign to every group of intervals     |
-    |                  |                    |         | sharing the same “color_col” value. It can be provided as a  |
-    |                  |                    |         | Matplotlib colormap, a Plotly color sequence (built as       |
-    |                  |                    |         | lists), a string naming the previously mentioned color       |
-    |                  |                    |         | objects from Matplotlib and Plotly, or a dictionary with     |
-    |                  |                    |         | the following structure {color_column_value1: color1,        |
-    |                  |                    |         | color_column_value2: color2, ...}. When a specific           |
-    |                  |                    |         | color_col value is not specified in the dictionary it will   |
-    |                  |                    |         | be colored in black.                                         |
-    |   exon_border    |         |         | Color of the interval's rectangle border.                    |
+    |     colormap     |       popart       |         | Colors to assign to intervals. Use 'direct' when color_col   |
+    |                  |                    |         | and outline_col already contain literal colors. Otherwise    |
+    |                  |                    |         | provide a Matplotlib colormap, Plotly color sequence, list,  |
+    |                  |                    |         | mapping {value: color}, or channel mapping {'color': ...,    |
+    |                  |                    |         | 'outline': ...}. Missing mapped values are colored black.    |
+    | outline_color    |         |         | Fixed color for interval outlines. When empty, outlines use  |
+    |                  |                    |         | the resolved interval fill colors unless outline_col is set. |
     |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
     |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
     |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |

@@ -23,6 +23,6 @@ pre.plot(
     text=True,
     text_pad=100,
     title_size=25,
-    exon_border="black",
+    outline_color="black",
     text_size=15,
 )

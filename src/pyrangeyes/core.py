@@ -379,7 +379,7 @@ def print_options(return_keys=False):
                     "title_color",
                     "title_font",
                     "grid_color",
-                    "exon_border",
+                    "outline_color",
                     "shrunk_bkg",
                     "x_ticks",
                 ]
