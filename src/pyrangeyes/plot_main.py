@@ -144,7 +144,7 @@ def plot(
         Name of the column used to color interval outlines. If not specified, interval outlines use the
         resolved fill colors. For one fixed outline color, use ``outline_color="black"``.
 
-    colormap: str, list, dict, or "direct", default "G10"
+    colormap: str, list, dict, or "direct", default "popart"
         Colors used for interval fills and, optionally, mapped outlines.
 
         If ``"direct"``, values in ``color_col`` and ``outline_col`` are interpreted as literal colors.
