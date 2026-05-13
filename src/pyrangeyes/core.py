@@ -8,6 +8,7 @@ from .plot_features import (
     plot_features_dict_in_use,
     builtin_themes,
 )
+from . import adapters
 
 
 def check4dependency(name):
@@ -174,7 +175,7 @@ def get_theme():
 # Related to default features (options)
 
 
-def set_options(varname, value=None):
+def set_options(varname=None, value=None, *, adapter=None, variable=None):
     """
     Define some feature options of the plot layout.
 
@@ -201,6 +202,14 @@ def set_options(varname, value=None):
 
     """
 
+    if adapter is not None:
+        if variable is not None:
+            varname = variable
+        if varname is None:
+            raise ValueError("Please provide variable when setting adapter options.")
+        adapters.set_options(adapter, varname, value)
+        return
+
     if isinstance(varname, str):
         varname = {varname: value}
 
@@ -215,7 +224,7 @@ def set_options(varname, value=None):
         )  # (value, description, modified tag)
 
 
-def get_options(varname="all"):
+def get_options(varname="all", *, adapter=None):
     """
     Obtain the deafault value for a plot layout variable/s and its description.
 
@@ -227,6 +236,9 @@ def get_options(varname="all"):
         only the variables values excluding the description and modified tag.
 
     """
+
+    if adapter is not None:
+        return adapters.get_options(adapter, varname)
 
     # list of variables
     if isinstance(varname, list):
@@ -260,7 +272,7 @@ def get_original_options():
     return plot_features_dict
 
 
-def reset_options(varname="all"):
+def reset_options(varname="all", *, adapter=None):
     """
     Reset the deafault value for one, some or all plot layout variables to their original vlaue.
 
@@ -283,6 +295,10 @@ def reset_options(varname="all"):
     >>> pre.reset_options(['title_size', 'tag_background'])
 
     """
+
+    if adapter is not None:
+        adapters.reset_options(adapter, varname)
+        return
 
     plot_features_dict_in_use = get_options()
     plot_features_dict = get_original_options()
@@ -325,8 +341,54 @@ def divide_desc(desc, cutoff):
     return lines_l
 
 
-def print_options(return_keys=False):
+def _format_options_table(options_dict, *, feature_label="Feature"):
+    feat_df = pd.DataFrame.from_dict(
+        options_dict,
+        orient="index",
+        columns=["Value", "Description", "Modified"],
+    )
+    feat_df["Value"] = feat_df["Value"].map(
+        lambda value: "<infer>" if value is None else value
+    )
+
+    name_sz = max([len(val) for val in options_dict] + [len(feature_label)])
+    value_sz = max([len(str(val)) for val in feat_df["Value"]])
+    if value_sz < 5:
+        value_sz = 5
+    mod_sz = 7
+    desc_sz = 60
+
+    def format_row(key, value):
+        if len(value.iloc[1]) <= 60:
+            return f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {value.iloc[1]:<{desc_sz}} |"
+
+        lines_l = divide_desc(value.iloc[1], cutoff=desc_sz)
+        fstr = f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {lines_l[0]:<{desc_sz}} |"
+        empty = " "
+        for i in range(1, len(lines_l)):
+            fstr += f"\n| {empty:^{name_sz}} | {empty:^{value_sz}} | {empty:^{mod_sz}} | {lines_l[i]:<{desc_sz}} |"
+        return fstr
+
+    header = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+\n"
+    header += f"| {feature_label:^{name_sz}} | {'Value':^{value_sz}} | {'Edited?':^{mod_sz}} | {'Description':^{desc_sz}} |\n"
+    header += f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
+    rows = "\n".join([format_row(key, value) for key, value in feat_df.iterrows()])
+    footer = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
+    print(header)
+    print(rows)
+    print(footer)
+
+
+def print_options(return_keys=False, *, adapter=None):
     """Prints the customizable features default values and description."""
+
+    if adapter is not None:
+        adapter_options = get_options(adapter=adapter)
+        if not return_keys:
+            _format_options_table(adapter_options, feature_label="Adapter option")
+        else:
+            return set(adapter_options.keys())
+        return
 
     # store data
     plot_features_dict_in_use = get_options()

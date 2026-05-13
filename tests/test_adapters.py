@@ -37,8 +37,8 @@ def _patches(fig):
     return [patch for patch in fig.axes[0].patches if patch.get_width() > 0]
 
 
-def test_prepare_mrna_intervals_adds_height_and_depth_columns_for_gtf():
-    prepared = pre.prepare_mrna_intervals(_gtf_like_annotation())
+def test_mrna_adapter_adds_height_and_depth_columns_for_gtf():
+    prepared = pre.adapters.mRNA(_gtf_like_annotation())
     df = prepared.sort_values(["Start", "End"]).reset_index(drop=True)
 
     assert df["__mrna_height__"].tolist() == [0.3, 1.0, 1.0, 0.3]
@@ -46,18 +46,19 @@ def test_prepare_mrna_intervals_adds_height_and_depth_columns_for_gtf():
     assert df["transcript_id"].tolist() == ["tx1"] * 4
 
 
-def test_prepare_mrna_intervals_derives_transcript_id_from_gff_parent():
-    prepared = pre.prepare_mrna_intervals(_gff_like_annotation())
+def test_mrna_adapter_derives_transcript_id_from_gff_parent():
+    prepared = pre.adapters.mRNA(_gff_like_annotation())
 
     assert "transcript_id" in prepared.columns
     assert prepared["transcript_id"].tolist() == ["tx1", "tx1", "tx1"]
 
 
-def test_plot_mrna_annotation_uses_height_and_depth_columns_matplotlib():
+def test_plot_calls_mrna_adapter_before_rendering():
     pre.set_engine("matplotlib")
 
-    fig = pre.plot_mrna_annotation(
+    fig = pre.plot(
         _gtf_like_annotation(),
+        adapter="mRNA",
         color_col="Feature",
         colormap={"exon": "lightgrey", "CDS": "gold"},
         return_plot="fig",
@@ -68,8 +69,62 @@ def test_plot_mrna_annotation_uses_height_and_depth_columns_matplotlib():
     assert heights == [0.18, 0.18, 0.6, 0.6]
 
 
-def test_plot_mrna_annotation_rejects_missing_transcript_identifier():
+def test_plot_passes_adapter_specific_arguments_and_rejects_unknown_arguments():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _gtf_like_annotation(),
+        adapter="mRNA",
+        utr_height=0.5,
+        return_plot="fig",
+        warnings=False,
+    )
+    heights = sorted(round(patch.get_height(), 3) for patch in _patches(fig))
+    assert heights == [0.3, 0.3, 0.6, 0.6]
+
+    with pytest.raises(Exception, match="do not match any customizable features"):
+        pre.plot(
+            _gtf_like_annotation(),
+            adapter="mRNA",
+            not_an_adapter_arg=True,
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_adapter_options_are_printable_settable_and_used_by_plot(capsys):
+    pre.set_engine("matplotlib")
+    pre.reset_options(adapter="mRNA")
+
+    assert pre.print_options(adapter="mRNA", return_keys=True) == {
+        "id_col",
+        "feature_col",
+        "height_col",
+        "depth_col",
+        "utr_height",
+    }
+    pre.print_options(adapter="mRNA")
+    printed = capsys.readouterr().out
+    assert "utr_height" in printed
+    assert "<infer>" in printed
+
+    pre.set_options(adapter="mRNA", variable="utr_height", value=0.5)
+    assert pre.get_options("utr_height", adapter="mRNA") == 0.5
+
+    fig = pre.plot(
+        _gtf_like_annotation(),
+        adapter="mRNA",
+        return_plot="fig",
+        warnings=False,
+    )
+    heights = sorted(round(patch.get_height(), 3) for patch in _patches(fig))
+    assert heights == [0.3, 0.3, 0.6, 0.6]
+
+    pre.reset_options(adapter="mRNA")
+
+
+def test_mrna_adapter_rejects_missing_transcript_identifier():
     annotation = _gff_like_annotation().drop(columns=["Parent", "ID"])
 
     with pytest.raises(ValueError, match="Could not infer"):
-        pre.prepare_mrna_intervals(annotation)
+        pre.adapters.mRNA(annotation)

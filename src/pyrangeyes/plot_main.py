@@ -14,6 +14,7 @@ from .core import (
     set_options,
 )
 from .plot_features import prp_cmap
+from . import adapters
 from .data_preparation import (
     make_subset,
     get_genes_metadata,
@@ -113,6 +114,7 @@ def plot(
     to_file=None,
     theme=None,
     sort_ranges=False,
+    adapter=None,
     **kargs,
 ):
     """
@@ -246,6 +248,14 @@ def plot(
         If False, the default, unpacked plots preserve the first-seen order of rows/groups in the input.
         If True, interval groups are ordered by the internal genomic sorting behavior.
 
+    adapter: {None, str}, default None
+        Optional adapter to prepare domain-specific inputs before plotting. For example,
+        ``adapter="mRNA"`` converts freshly loaded GTF/GFF exon/CDS annotations into
+        intervals with ``height_col`` and ``depth_col`` columns, then plots them normally.
+        Adapter-specific keyword arguments (for example ``feature_col`` or ``utr_height``
+        for ``mRNA``) may be passed to ``plot`` and are consumed by the adapter before
+        customizable plot-feature keyword validation.
+
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
         nomenclature, description and default values.
@@ -287,6 +297,39 @@ def plot(
 
     >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
+
+    if adapter is not None:
+        adapter_func = adapters.get(adapter)
+        adapter_kwargs = adapters.get_options(adapter, "values")
+        plot_arg_values = {
+            "id_col": id_col,
+            "height_col": height_col,
+            "depth_col": depth_col,
+        }
+        accepted_adapter_kwargs = adapters.accepted_kwargs(adapter)
+        for arg_name, arg_value in plot_arg_values.items():
+            if arg_name in accepted_adapter_kwargs and arg_value is not None:
+                adapter_kwargs[arg_name] = arg_value
+
+        for arg_name in list(kargs):
+            if arg_name in accepted_adapter_kwargs:
+                adapter_kwargs[arg_name] = kargs.pop(arg_name)
+
+        if not isinstance(data, list):
+            data = adapter_func(data, **adapter_kwargs)
+        else:
+            data = [adapter_func(df_item, **adapter_kwargs) for df_item in data]
+
+        for arg_name, default_value in adapters.default_plot_args(
+            adapter, adapter_kwargs
+        ).items():
+            if locals()[arg_name] is None:
+                if arg_name == "id_col":
+                    id_col = default_value
+                elif arg_name == "height_col":
+                    height_col = default_value
+                elif arg_name == "depth_col":
+                    depth_col = default_value
 
     # Treat input data as list
     if not isinstance(data, list):
