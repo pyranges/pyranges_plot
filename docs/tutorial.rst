@@ -457,7 +457,38 @@ and contain "exon" or "CDS" values:
 
     pre.plot(pp, "mRNA")
 
-.. image:: images/prp_rtd_12.png
+.. image:: images/prp_rtd_35.png
+
+SNPs and other VCF-like point variants can be shown with the ``SNP`` adapter,
+which draws each variant as a diamond. Here ``width`` only controls the visual
+width of the diamond in genomic coordinates:
+
+.. code-block::
+
+    snps = pr.PyRanges(
+        {
+            "Chromosome": [1, 1, 2, 2, 4],
+            "Start": [7, 45, 13, 73, 29870],
+            "End": [8, 46, 14, 74, 29871],
+            "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
+            "REF": ["A", "G", "C", "T", "A"],
+            "ALT": ["T", "A", "G", "C", "G"],
+        }
+    )
+
+    pre.plot(snps, "SNP", color_col="ALT", width=40)
+
+.. image:: images/prp_rtd_36.png
+
+When plotting multiple PyRanges objects, ``adapter`` can be a list with exactly
+one adapter per object. This makes it easy to combine different representations
+in one figure:
+
+.. code-block::
+
+    pre.plot([pp, snps], adapter=["mRNA", "SNP"], width=40)
+
+.. image:: images/prp_rtd_37.png
 
 
 

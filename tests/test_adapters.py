@@ -33,6 +33,19 @@ def _gff_like_annotation():
     )
 
 
+def _snp_like_variants():
+    return pr.PyRanges(
+        {
+            "Chromosome": ["1", "1", "1"],
+            "Start": [15, 32, 70],
+            "End": [16, 33, 71],
+            "ID": ["rs1", ".", "rs3"],
+            "REF": ["A", "G", "T"],
+            "ALT": ["C", "A", "G"],
+        }
+    )
+
+
 def _patches(fig):
     return [patch for patch in fig.axes[0].patches if patch.get_width() > 0]
 
@@ -130,8 +143,35 @@ def test_adapter_describe_lists_available_adapters():
     descriptions = pre.adapters.describe()
 
     assert "mRNA" in descriptions
+    assert "SNP" in descriptions
     assert "CDS" in descriptions["mRNA"]
     assert pre.adapters.describe("mRNA") == descriptions["mRNA"]
+
+
+def test_snp_adapter_adds_diamond_shape_and_generated_ids():
+    prepared = pre.adapters.SNP(_snp_like_variants(), width=10)
+
+    assert prepared["__adapter_shape__"].tolist() == ["diamond", "diamond", "diamond"]
+    assert prepared["__adapter_height__"].tolist() == [0.8, 0.8, 0.8]
+    assert prepared["End"].sub(prepared["Start"]).tolist() == [10, 10, 10]
+
+
+def test_plot_accepts_one_adapter_per_input_object():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        [_gtf_like_annotation(), _snp_like_variants()],
+        adapter=["mRNA", "SNP"],
+        return_plot="fig",
+        warnings=False,
+    )
+
+    assert fig.axes
+
+
+def test_plot_rejects_adapter_list_length_mismatch():
+    with pytest.raises(ValueError, match="one adapter per PyRanges object"):
+        pre.plot([_gtf_like_annotation(), _snp_like_variants()], adapter=["mRNA"])
 
 
 def test_mrna_adapter_rejects_missing_transcript_identifier():

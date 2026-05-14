@@ -123,6 +123,17 @@ data7 = pr.PyRanges(
     }
 )
 
+data8 = pr.PyRanges(
+    {
+        "Chromosome": ["1", "1", "2", "2", "4"],
+        "Start": [80, 145, 12, 44, 35],
+        "End": [81, 146, 13, 45, 36],
+        "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
+        "REF": ["A", "G", "C", "T", "A"],
+        "ALT": ["T", "A", "G", "C", "G"],
+    }
+)
+
 vcf = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,  # CHROM renamed to Chromosome
@@ -513,6 +524,26 @@ test_cases = [
             utr_height=0.6,
             color_col="Feature",
             colormap={"exon": "lightgrey", "CDS": "gold"},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test27",
+        pre.plot(
+            data8,
+            "SNP",
+            color_col="ALT",
+            width=8,
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test28",
+        pre.plot(
+            [data2, data8],
+            adapter=["mRNA", "SNP"],
             sort_ranges=True,
             return_plot="fig",
         ),

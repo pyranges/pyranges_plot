@@ -2,7 +2,7 @@ import pyranges1 as pr
 from pyranges1.core.names import START_COL, END_COL
 
 from .core import coord2percent, percent2coord, make_annotation, rgb_string_to_tuple
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Polygon, Rectangle
 import pandas as pd
 
 from ..names import (
@@ -12,6 +12,7 @@ from ..names import (
     TEXT_PAD_COL,
     COLOR_INFO,
     BORDER_COLOR_COL,
+    SHAPE_COL,
     THICK_COL,
 )
 
@@ -203,20 +204,36 @@ def plot_row(
     if isinstance(arrow_color, str) and arrow_color[:3] == "rgb":
         arrow_color = rgb_string_to_tuple(arrow_color)
 
-    # Plot EXON as rectangle
-    exon_rect = Rectangle(
-        (start, gene_ix - exon_height / 2),
-        stop - start,
-        exon_height,
-        edgecolor=exon_border,
-        facecolor=exon_color,
-        fill=True,
-        zorder=3,
-    )
-    ax.add_patch(exon_rect)
+    shape = row.get(SHAPE_COL, "rectangle")
+    if shape == "diamond":
+        x_mid = (start + stop) / 2
+        exon_patch = Polygon(
+            [
+                (x_mid, gene_ix + exon_height / 2),
+                (stop, gene_ix),
+                (x_mid, gene_ix - exon_height / 2),
+                (start, gene_ix),
+            ],
+            closed=True,
+            edgecolor=exon_border,
+            facecolor=exon_color,
+            fill=True,
+            zorder=3,
+        )
+    else:
+        exon_patch = Rectangle(
+            (start, gene_ix - exon_height / 2),
+            stop - start,
+            exon_height,
+            edgecolor=exon_border,
+            facecolor=exon_color,
+            fill=True,
+            zorder=3,
+        )
+    ax.add_patch(exon_patch)
 
     # create annotation for exon
-    make_annotation(exon_rect, fig, ax, geneinfo, tag_background)
+    make_annotation(exon_patch, fig, ax, geneinfo, tag_background)
 
     # Add ID annotation if it is the first exon
     if row[EXON_IX_COL] == 0 and text:
@@ -243,7 +260,7 @@ def plot_row(
     incl = percent2coord(ax, arrow_size / 2)  # how long is the arrow in the plot (OX)
 
     # create and plot lines
-    if not dir_flag:
+    if not dir_flag and shape != "diamond":
         plot_direction(
             ax,
             strand,

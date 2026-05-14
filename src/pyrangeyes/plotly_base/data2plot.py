@@ -13,6 +13,7 @@ from ..names import (
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
+    SHAPE_COL,
     THICK_COL,
 )
 
@@ -219,11 +220,20 @@ def plot_row(
         gene_ix + exon_height / 2,
     )  ##gene middle point -+ half of exon size
 
-    # Plot EXON as rectangle
+    shape = row.get(SHAPE_COL, "rectangle")
+    if shape == "diamond":
+        x_mid = (x0 + x1) / 2
+        x_values = [x_mid, x1, x_mid, x0, x_mid]
+        y_values = [y1, (y0 + y1) / 2, y0, (y0 + y1) / 2, y1]
+    else:
+        x_values = [x0, x1, x1, x0, x0]
+        y_values = [y0, y0, y1, y1, y0]
+
+    # Plot EXON/variant shape
     fig.add_trace(
         go.Scatter(
-            x=[x0, x1, x1, x0, x0],
-            y=[y0, y0, y1, y1, y0],
+            x=x_values,
+            y=y_values,
             fill="toself",
             fillcolor=exon_color,
             mode="lines",
@@ -268,7 +278,7 @@ def plot_row(
     incl = percent2coord(fig, chrom_ix + 1, arrow_size / 2)  # how long in the plot (OX)
 
     # create and plot lines
-    if not dir_flag:
+    if not dir_flag and shape != "diamond":
         plot_direction(
             fig,
             strand,

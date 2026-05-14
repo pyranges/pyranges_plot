@@ -17,6 +17,10 @@ DEFAULT = _DefaultOption()
 
 _CDS_FEATURES = {"CDS"}
 _EXON_FEATURES = {"exon"}
+ADAPTER_ID_COL = "__adapter_id__"
+ADAPTER_HEIGHT_COL = "__adapter_height__"
+ADAPTER_DEPTH_COL = "__adapter_depth__"
+ADAPTER_SHAPE_COL = "__adapter_shape__"
 
 
 def _split_parent(value):
@@ -57,11 +61,13 @@ def mRNA(
 ):
     """Prepare GTF/GFF mRNA annotations for plotting.
 
-    The adapter returns a PyRanges object enriched with columns suitable for
-    ``plot(..., height_col=..., depth_col=...)``. It reproduces the visual
-    effect of ``thick_cds=True`` without using that plotting option: exon/UTR
-    intervals receive a thinner relative height, CDS intervals receive full
-    height, and CDS intervals draw on top.
+    The adapter returns a PyRanges object ready for ``plot(..., "mRNA")``:
+    exon/UTR intervals receive a thinner relative height, CDS intervals receive
+    full height, and CDS intervals draw on top.
+
+    Arguments left as ``DEFAULT`` are read from the current adapter options at
+    call time. Inspect them with ``pre.get_options(adapter="mRNA", varname="values")``
+    or ``pre.print_options(adapter="mRNA")``.
 
     Parameters
     ----------
@@ -71,24 +77,18 @@ def mRNA(
         ``Parent`` columns; for exon/CDS rows, the first ``Parent`` value is
         used as the transcript identifier when needed.
     id_col : str, None, or DEFAULT, default DEFAULT
-        Transcript/mRNA identifier column. ``DEFAULT`` reads the current
-        adapter option from ``get_options("mRNA", "id_col")``. The shipped
-        option is ``None``, which means ``transcript_id`` (or similar) is used
-        when present, otherwise it is derived from GFF3 ``Parent``/``ID``
-        columns and stored as ``transcript_id``.
+        Transcript/mRNA identifier column. ``None`` means ``transcript_id`` (or
+        similar) is used when present, otherwise it is derived from GFF3
+        ``Parent``/``ID`` columns and stored as ``transcript_id``.
     feature_col : str or DEFAULT, default DEFAULT
         Column containing feature types such as ``exon`` and ``CDS``.
-        ``DEFAULT`` reads the current ``feature_col`` adapter option.
     height_col : str or DEFAULT, default DEFAULT
-        Output relative-height column for ``plot(height_col=...)``.
-        ``DEFAULT`` reads the current ``height_col`` adapter option.
+        Output relative-height column.
     depth_col : str or DEFAULT, default DEFAULT
-        Output draw-order column for ``plot(depth_col=...)``. Exons are ``0``;
-        CDS intervals are ``1`` and draw later/on top. ``DEFAULT`` reads the
-        current ``depth_col`` adapter option.
+        Output draw-order column. Exons are ``0``; CDS intervals are ``1`` and
+        draw later/on top.
     utr_height : float or DEFAULT, default DEFAULT
         Relative height assigned to exon/UTR intervals. Must be in ``[0, 1]``.
-        ``DEFAULT`` reads the current ``utr_height`` adapter option.
 
     Returns
     -------
@@ -152,13 +152,115 @@ def mRNA(
 
     df[height_col] = df[feature_col].map({"exon": utr_height, "CDS": 1.0}).astype(float)
     df[depth_col] = df[feature_col].map({"exon": 0, "CDS": 1}).astype(int)
+    df[ADAPTER_ID_COL] = df[resolved_id_col]
+    df[ADAPTER_HEIGHT_COL] = df[height_col]
+    df[ADAPTER_DEPTH_COL] = df[depth_col]
+    df[ADAPTER_SHAPE_COL] = "rectangle"
 
     return pr.PyRanges(df)
 
 
-_ADAPTERS = {"mRNA": mRNA}
+def SNP(
+    variants,
+    *,
+    id_col=DEFAULT,
+    ref_col=DEFAULT,
+    alt_col=DEFAULT,
+    width=DEFAULT,
+    height=DEFAULT,
+    shape_col=DEFAULT,
+    **_,
+):
+    """Prepare SNP/VCF-like variants for plotting as diamonds.
+
+    Arguments left as ``DEFAULT`` are read from the current adapter options at
+    call time. Inspect them with ``pre.get_options(adapter="SNP", varname="values")``
+    or ``pre.print_options(adapter="SNP")``.
+
+    Parameters
+    ----------
+    variants : pyranges.PyRanges or pandas.DataFrame
+        Variant intervals, commonly from VCF-like data with ``REF`` and ``ALT``
+        columns.
+    id_col : str, None, or DEFAULT, default DEFAULT
+        Variant identifier column. If no usable ID is available, a readable
+        ``chrom:start REF>ALT`` identifier is created.
+    ref_col, alt_col : str or DEFAULT, default DEFAULT
+        Reference and alternate allele columns used for generated IDs and
+        tooltips when present.
+    width : int or float or DEFAULT, default DEFAULT
+        Diamond width in genomic coordinates.
+    height : float or DEFAULT, default DEFAULT
+        Relative diamond height; must range from 0 to 1.
+    shape_col : str or DEFAULT, default DEFAULT
+        Output shape column used internally by ``plot``.
+
+    Returns
+    -------
+    pyranges.PyRanges
+        Variant intervals enriched with ID, height, and diamond-shape columns.
+    """
+
+    id_col, ref_col, alt_col, width, height, shape_col = _resolve_defaults(
+        "SNP",
+        {
+            "id_col": id_col,
+            "ref_col": ref_col,
+            "alt_col": alt_col,
+            "width": width,
+            "height": height,
+            "shape_col": shape_col,
+        },
+    ).values()
+
+    if width <= 0:
+        raise ValueError("width must be positive.")
+    if not 0 <= height <= 1:
+        raise ValueError("height must be in the [0, 1] range.")
+
+    df = _as_dataframe(variants)
+
+    resolved_id_col = id_col or _first_existing(
+        df.columns, ["ID", "Name", "variant_id"]
+    )
+    has_usable_id = (
+        resolved_id_col in df.columns
+        and not df[resolved_id_col].isna().all()
+        and not (df[resolved_id_col].astype(str) == ".").all()
+    )
+    if not has_usable_id:
+        resolved_id_col = "variant_id"
+        ref_values = df[ref_col].astype(str) if ref_col in df.columns else "?"
+        alt_values = df[alt_col].astype(str) if alt_col in df.columns else "?"
+        df[resolved_id_col] = (
+            df["Chromosome"].astype(str)
+            + ":"
+            + df["Start"].astype(str)
+            + " "
+            + ref_values
+            + ">"
+            + alt_values
+        )
+
+    center = (df["Start"].astype(float) + df["End"].astype(float)) / 2
+    df["Start"] = (center - width / 2).round().astype(int)
+    df["End"] = (center + width / 2).round().astype(int)
+    invalid_width = df["End"] <= df["Start"]
+    df.loc[invalid_width, "End"] = df.loc[invalid_width, "Start"] + 1
+
+    df[ADAPTER_ID_COL] = df[resolved_id_col]
+    df[ADAPTER_HEIGHT_COL] = height
+    df[ADAPTER_DEPTH_COL] = 0
+    df[shape_col] = "diamond"
+    df[ADAPTER_SHAPE_COL] = df[shape_col]
+
+    return pr.PyRanges(df)
+
+
+_ADAPTERS = {"mRNA": mRNA, "SNP": SNP}
 _ADAPTER_DESCRIPTIONS = {
-    "mRNA": "Pre-configured mRNA/GTF/GFF visualization: exon/UTR intervals are thin and CDS intervals are thick."
+    "mRNA": "Pre-configured mRNA/GTF/GFF visualization: exon/UTR intervals are thin and CDS intervals are thick.",
+    "SNP": "Pre-configured SNP/VCF-like visualization: variants are drawn as diamond markers.",
 }
 _ADAPTER_OPTIONS = {
     "mRNA": {
@@ -174,12 +276,12 @@ _ADAPTER_OPTIONS = {
         ),
         "height_col": (
             "__mrna_height__",
-            "Output relative-height column used as plot(height_col=...).",
+            "Output relative-height column used by the adapter.",
             " ",
         ),
         "depth_col": (
             "__mrna_depth__",
-            "Output draw-order column used as plot(depth_col=...). CDS draws on top of exon.",
+            "Output draw-order column used by the adapter. CDS draws on top of exon.",
             " ",
         ),
         "utr_height": (
@@ -187,17 +289,44 @@ _ADAPTER_OPTIONS = {
             "Relative height assigned to exon/UTR intervals; must range from 0 to 1.",
             " ",
         ),
-    }
+    },
+    "SNP": {
+        "id_col": (
+            None,
+            "Variant identifier column. None means infer from ID/Name/variant_id, or create one from position and alleles.",
+            " ",
+        ),
+        "ref_col": (
+            "REF",
+            "Reference allele column used for generated IDs/tooltips.",
+            " ",
+        ),
+        "alt_col": (
+            "ALT",
+            "Alternate allele column used for generated IDs/tooltips.",
+            " ",
+        ),
+        "width": (20, "Diamond width in genomic coordinates.", " "),
+        "height": (0.8, "Relative diamond height; must range from 0 to 1.", " "),
+        "shape_col": (ADAPTER_SHAPE_COL, "Output shape column used by plot().", " "),
+    },
 }
 _ADAPTER_OPTIONS_IN_USE = {
     adapter_name: dict(options) for adapter_name, options in _ADAPTER_OPTIONS.items()
 }
 _DEFAULT_PLOT_ARGS_FROM_OPTIONS = {
     "mRNA": {
-        "id_col": "id_col",
-        "height_col": "height_col",
-        "depth_col": "depth_col",
-    }
+        "id_col": ADAPTER_ID_COL,
+        "height_col": ADAPTER_HEIGHT_COL,
+        "depth_col": ADAPTER_DEPTH_COL,
+        "shape_col": ADAPTER_SHAPE_COL,
+    },
+    "SNP": {
+        "id_col": ADAPTER_ID_COL,
+        "height_col": ADAPTER_HEIGHT_COL,
+        "depth_col": ADAPTER_DEPTH_COL,
+        "shape_col": ADAPTER_SHAPE_COL,
+    },
 }
 
 
@@ -340,6 +469,7 @@ def accepted_kwargs(name):
 __all__ = [
     "DEFAULT",
     "mRNA",
+    "SNP",
     "get",
     "names",
     "describe",
