@@ -157,6 +157,9 @@ def mRNA(
 
 
 _ADAPTERS = {"mRNA": mRNA}
+_ADAPTER_DESCRIPTIONS = {
+    "mRNA": "Pre-configured mRNA/GTF/GFF visualization: exon/UTR intervals are thin and CDS intervals are thick."
+}
 _ADAPTER_OPTIONS = {
     "mRNA": {
         "id_col": (
@@ -223,6 +226,23 @@ def names():
     """Return available adapter names."""
 
     return sorted(_ADAPTERS)
+
+
+def describe(name=None):
+    """Return a short description of available adapters.
+
+    Parameters
+    ----------
+    name : str, optional
+        Adapter name. If omitted, descriptions for all adapters are returned.
+    """
+
+    if name is not None:
+        get(name)  # validates name
+        return _ADAPTER_DESCRIPTIONS[name]
+    return {
+        adapter_name: _ADAPTER_DESCRIPTIONS[adapter_name] for adapter_name in names()
+    }
 
 
 def get_options(name, varname="all"):
@@ -322,6 +342,7 @@ __all__ = [
     "mRNA",
     "get",
     "names",
+    "describe",
     "get_options",
     "set_options",
     "reset_options",

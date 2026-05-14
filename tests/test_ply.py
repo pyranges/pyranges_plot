@@ -494,6 +494,29 @@ test_cases = [
             return_plot="fig",
         ),
     ),
+    (
+        "test25",
+        pre.plot(
+            data2,
+            "mRNA",
+            color_col="Feature",
+            colormap={"exon": "lightgrey", "CDS": "gold"},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test26",
+        pre.plot(
+            data2,
+            adapter="mRNA",
+            utr_height=0.6,
+            color_col="Feature",
+            colormap={"exon": "lightgrey", "CDS": "gold"},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
 ]
 
 """

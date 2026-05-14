@@ -126,6 +126,14 @@ def test_adapter_options_are_printable_settable_and_used_by_plot(capsys):
     pre.reset_options(adapter="mRNA")
 
 
+def test_adapter_describe_lists_available_adapters():
+    descriptions = pre.adapters.describe()
+
+    assert "mRNA" in descriptions
+    assert "CDS" in descriptions["mRNA"]
+    assert pre.adapters.describe("mRNA") == descriptions["mRNA"]
+
+
 def test_mrna_adapter_rejects_missing_transcript_identifier():
     annotation = _gff_like_annotation().drop(columns=["Parent", "ID"])
 

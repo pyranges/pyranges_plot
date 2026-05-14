@@ -43,11 +43,11 @@ pre.plot(
 
 
 # Figure 2
-# show thick_cds and save png (Figure 2.A)
+# show mRNA structure with the adapter and save png (Figure 2.A)
 pre.plot(
     gr_2,
+    "mRNA",
     id_col="Parent",
-    thick_cds=True,
     text=False,
     to_file=("fig_2a.png", (500, 300)),
     arrow_size=0.04,

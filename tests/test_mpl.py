@@ -381,3 +381,30 @@ def test21():
     )
     fig = plt.gcf()
     return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test22():
+    pre.plot(
+        data2,
+        "mRNA",
+        color_col="Feature",
+        colormap={"exon": "lightgrey", "CDS": "gold"},
+        sort_ranges=True,
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test23():
+    pre.plot(
+        data2,
+        adapter="mRNA",
+        utr_height=0.6,
+        color_col="Feature",
+        colormap={"exon": "lightgrey", "CDS": "gold"},
+        sort_ranges=True,
+    )
+    fig = plt.gcf()
+    return fig

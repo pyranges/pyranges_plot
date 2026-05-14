@@ -91,6 +91,7 @@ def _attach_panel_display(chrmd_df_grouped, panel_display):
 
 def plot(
     data,
+    adapter=None,
     *,
     id_col=None,
     warnings=None,
@@ -114,7 +115,6 @@ def plot(
     to_file=None,
     theme=None,
     sort_ranges=False,
-    adapter=None,
     **kargs,
 ):
     """
@@ -124,6 +124,13 @@ def plot(
     ----------
     data: {pyranges.PyRanges or list of pyranges.PyRanges}
         Pyranges, derived dataframe or list of them with annotation data.
+
+    adapter: {None, str}, default None
+        Optional shortcut for a pre-configured visualization. For example,
+        ``plot(annotation, "mRNA")`` or ``plot(annotation, adapter="mRNA")``
+        renders GTF/GFF-like mRNA structure with thin exon/UTR regions and
+        thick CDS regions. Use ``pre.adapters.describe()`` to list available
+        adapters.
 
     id_col: str, default None
         Name of the column containing gene ID.
@@ -249,17 +256,10 @@ def plot(
         If False, the default, unpacked plots preserve the first-seen order of rows/groups in the input.
         If True, interval groups are ordered by the internal genomic sorting behavior.
 
-    adapter: {None, str}, default None
-        Optional adapter to prepare domain-specific inputs before plotting. For example,
-        ``adapter="mRNA"`` converts freshly loaded GTF/GFF exon/CDS annotations into
-        intervals with ``height_col`` and ``depth_col`` columns, then plots them normally.
-        Adapter-specific keyword arguments (for example ``feature_col`` or ``utr_height``
-        for ``mRNA``) may be passed to ``plot`` and are consumed by the adapter before
-        customizable plot-feature keyword validation.
-
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
-        nomenclature, description and default values.
+        nomenclature, description and default values. Adapter options can also be passed here when ``adapter``
+        is set; inspect them with, for example, ``print_options(adapter="mRNA")``.
 
 
 

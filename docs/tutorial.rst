@@ -418,12 +418,14 @@ while when an int is given it will be interpreted as number of base pairs.
 .. image:: images/prp_rtd_14.png
 
 
-Showing mRNA structure
-----------------------
+Showing mRNA structure with adapters
+------------------------------------
 
-A familiar visualization to many bioinformaticians involves showing the mRNA structure with coding sequences (CDS)
-displayed thicker than UTR (untranslated) regions. This is achieved by setting the ``thick_cds`` parameter to ``True``.
-Note that data must be coded like standard GFF/GTF files,
+Adapters are shortcuts to useful representations. They prepare domain-specific inputs with sensible defaults before plotting.
+For example, the ``mRNA`` adapter shows a familiar bioinformatics view where coding sequences (CDS) are displayed thicker
+than UTR (untranslated) regions. You can list available adapters with ``pre.adapters.describe()``.
+
+For the ``mRNA`` adapter, data must be coded like standard GFF/GTF files,
 with different rows for exons and for CDS, wherein CDS are subsets of exons. A "Feature" column must be present
 and contain "exon" or "CDS" values:
 
@@ -453,7 +455,7 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    pre.plot(pp, thick_cds=True)
+    pre.plot(pp, "mRNA")
 
 .. image:: images/prp_rtd_12.png
 
