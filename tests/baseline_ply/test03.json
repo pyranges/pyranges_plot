@@ -1671,9 +1671,9 @@
     "annotations": [
       {
         "font": {
-          "color": "black",
+          "size": 18,
           "family": "Arial",
-          "size": 18
+          "color": "black"
         },
         "showarrow": false,
         "text": "Chromosome 1",
@@ -1683,71 +1683,6 @@
         "y": 1.0,
         "yanchor": "bottom",
         "yref": "paper"
-      },
-      {
-        "font": {
-          "size": 10.0
-        },
-        "showarrow": false,
-        "text": "['t1', 'a']",
-        "textangle": 0,
-        "x": 449,
-        "xanchor": "right",
-        "xref": "x",
-        "y": 0.5,
-        "yref": "y"
-      },
-      {
-        "font": {
-          "size": 10.0
-        },
-        "showarrow": false,
-        "text": "['t2', 'a']",
-        "textangle": 0,
-        "x": 249,
-        "xanchor": "right",
-        "xref": "x",
-        "y": 1.5,
-        "yref": "y"
-      },
-      {
-        "font": {
-          "size": 10.0
-        },
-        "showarrow": false,
-        "text": "['t2', 'b']",
-        "textangle": 0,
-        "x": 3449,
-        "xanchor": "right",
-        "xref": "x",
-        "y": 2.5,
-        "yref": "y"
-      },
-      {
-        "font": {
-          "size": 10.0
-        },
-        "showarrow": false,
-        "text": "['t3', 'b']",
-        "textangle": 0,
-        "x": 4449,
-        "xanchor": "right",
-        "xref": "x",
-        "y": 3.5,
-        "yref": "y"
-      },
-      {
-        "font": {
-          "size": 10.0
-        },
-        "showarrow": false,
-        "text": "['t4', 'b']",
-        "textangle": 0,
-        "x": 5949,
-        "xanchor": "right",
-        "xref": "x",
-        "y": 4.5,
-        "yref": "y"
       }
     ],
     "font": {

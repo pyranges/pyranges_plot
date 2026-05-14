@@ -177,18 +177,27 @@ def get_theme():
 
 def set_options(varname=None, value=None, *, adapter=None, variable=None):
     """
-    Define some feature options of the plot layout.
+    Define plot-layout options, or adapter options when ``adapter`` is given.
 
     Parameters
     ----------
-    varname: {str, dict}
+    varname : str or dict, optional
+        Plot option name to change, or a dictionary with ``{option: value}``
+        pairs. Use :func:`print_options` to inspect available plot options.
 
-        Name of the variable to change, or dictionary with the {variable: value} pairs.
-        To check the available customizable options use pre.print_default().
+        When ``adapter`` is provided, this is the adapter option name unless
+        ``variable`` is also provided.
 
-    value:
+    value : object, optional
+        New value assigned to ``varname`` or ``variable``.
 
-        New value of the variable to be assigned to varname if needed.
+    adapter : str, optional keyword-only
+        Adapter whose options should be changed, for example ``"mRNA"``.
+
+    variable : str or dict, optional keyword-only
+        Alias for ``varname`` when setting adapter options. This makes calls
+        such as ``set_options(adapter="mRNA", variable="utr_height", value=0.5)``
+        explicit while preserving the original positional API.
 
     Examples
     --------
@@ -199,6 +208,8 @@ def set_options(varname=None, value=None, *, adapter=None, variable=None):
     >>> pre.set_options('title_size', 20)
 
     >>> pre.set_options({'plot_background': 'magenta', 'title_size': 20})
+
+    >>> pre.set_options(adapter='mRNA', variable='utr_height', value=0.5)
 
     """
 
@@ -226,14 +237,23 @@ def set_options(varname=None, value=None, *, adapter=None, variable=None):
 
 def get_options(varname="all", *, adapter=None):
     """
-    Obtain the deafault value for a plot layout variable/s and its description.
+    Obtain plot-layout options, or adapter options when ``adapter`` is given.
 
     Parameters
     ----------
-    varname: {str, list}, default 'all'
+    varname : str or list, default 'all'
+        Option name(s) to retrieve.
 
-        Name of the variable/s to get the value and description. Use "values" to get
-        only the variables values excluding the description and modified tag.
+        - ``"all"`` returns the full ``{option: (value, description, modified)}``
+          mapping.
+        - ``"values"`` returns only current values as ``{option: value}``.
+        - A list returns option values in the same order.
+        - A single option name returns one current value.
+
+    adapter : str, optional keyword-only
+        Adapter whose options should be read, for example ``"mRNA"``. Adapter
+        functions use their ``DEFAULT`` sentinel to pull current values from
+        this option store at runtime.
 
     """
 
@@ -274,13 +294,17 @@ def get_original_options():
 
 def reset_options(varname="all", *, adapter=None):
     """
-    Reset the deafault value for one, some or all plot layout variables to their original vlaue.
+    Reset one, some, or all plot-layout options to their original value.
+
+    When ``adapter`` is provided, reset options for that adapter instead.
 
     Parameters
     ----------
-    varname: {str, list}, default 'all'
+    varname : str or list, default 'all'
+        Option name, list of names, or ``"all"``.
 
-        Name of the variable/ to reset the value.
+    adapter : str, optional keyword-only
+        Adapter whose options should be reset, for example ``"mRNA"``.
 
     Examples
     --------
@@ -293,6 +317,8 @@ def reset_options(varname="all", *, adapter=None):
     >>> pre.reset_options('tag_bkg')
 
     >>> pre.reset_options(['title_size', 'tag_background'])
+
+    >>> pre.reset_options(adapter='mRNA')
 
     """
 
@@ -380,7 +406,15 @@ def _format_options_table(options_dict, *, feature_label="Feature"):
 
 
 def print_options(return_keys=False, *, adapter=None):
-    """Prints the customizable features default values and description."""
+    """Print customizable plot or adapter options.
+
+    Parameters
+    ----------
+    return_keys : bool, default False
+        If True, return the option-name set instead of printing a table.
+    adapter : str, optional keyword-only
+        Adapter whose options should be printed, for example ``"mRNA"``.
+    """
 
     if adapter is not None:
         adapter_options = get_options(adapter=adapter)

@@ -111,6 +111,9 @@ def test_adapter_options_are_printable_settable_and_used_by_plot(capsys):
     pre.set_options(adapter="mRNA", variable="utr_height", value=0.5)
     assert pre.get_options("utr_height", adapter="mRNA") == 0.5
 
+    prepared = pre.adapters.mRNA(_gtf_like_annotation())
+    assert sorted(prepared["__mrna_height__"].unique()) == [0.5, 1.0]
+
     fig = pre.plot(
         _gtf_like_annotation(),
         adapter="mRNA",

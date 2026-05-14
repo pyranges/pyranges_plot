@@ -106,7 +106,7 @@ def plot(
     limits=None,
     regions=None,
     thick_cds=False,
-    text=True,
+    text=None,
     legend=False,
     title_chr=None,
     y_labels=None,
@@ -210,8 +210,9 @@ def plot(
         must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
         Feature value other than exon and CDS will be discarded for plotting.
 
-    text: {bool, '{string}'}, default True
-        Whether an annotation should appear beside the gene in the plot. If True, the id/index will be used. To
+    text: {None, bool, '{string}'}, default None
+        Whether an annotation should appear beside the gene in the plot. If None, text is enabled for packed
+        plots and disabled for unpacked plots to avoid duplicated row labels. If True, the id/index will be used. To
         customize the annotation use the '{string}' option to choose another data column. Providing the text as
         a '{data_column_name}' allows slicing in the case of strings by using '{data_column_name[:4]}'.
 
@@ -297,6 +298,9 @@ def plot(
 
     >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
+
+    if text is None:
+        text = bool(packed)
 
     if adapter is not None:
         adapter_func = adapters.get(adapter)
