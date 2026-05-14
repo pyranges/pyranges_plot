@@ -21,6 +21,7 @@ ADAPTER_ID_COL = "__adapter_id__"
 ADAPTER_HEIGHT_COL = "__adapter_height__"
 ADAPTER_DEPTH_COL = "__adapter_depth__"
 ADAPTER_SHAPE_COL = "__adapter_shape__"
+ADAPTER_MARKER_SIZE_COL = "__adapter_marker_size__"
 
 
 def _split_parent(value):
@@ -166,12 +167,13 @@ def SNP(
     id_col=DEFAULT,
     ref_col=DEFAULT,
     alt_col=DEFAULT,
-    width=DEFAULT,
     height=DEFAULT,
+    shape=DEFAULT,
+    size=DEFAULT,
     shape_col=DEFAULT,
     **_,
 ):
-    """Prepare SNP/VCF-like variants for plotting as diamonds.
+    """Prepare SNP/VCF-like variants for plotting as fixed-size markers.
 
     Arguments left as ``DEFAULT`` are read from the current adapter options at
     call time. Inspect them with ``pre.get_options(adapter="SNP", varname="values")``
@@ -188,10 +190,13 @@ def SNP(
     ref_col, alt_col : str or DEFAULT, default DEFAULT
         Reference and alternate allele columns used for generated IDs and
         tooltips when present.
-    width : int or float or DEFAULT, default DEFAULT
-        Diamond width in genomic coordinates.
     height : float or DEFAULT, default DEFAULT
-        Relative diamond height; must range from 0 to 1.
+        Relative marker row height; must range from 0 to 1.
+    shape : {"diamond", "triangle-up", "triangle-down", "circle"} or DEFAULT
+        Marker shape.
+    size : int or float or DEFAULT, default DEFAULT
+        Marker size in screen points. Width and height are kept equal in the
+        rendered visualization.
     shape_col : str or DEFAULT, default DEFAULT
         Output shape column used internally by ``plot``.
 
@@ -201,24 +206,33 @@ def SNP(
         Variant intervals enriched with ID, height, and diamond-shape columns.
     """
 
-    id_col, ref_col, alt_col, width, height, shape_col = _resolve_defaults(
+    id_col, ref_col, alt_col, height, shape, size, shape_col = _resolve_defaults(
         "SNP",
         {
             "id_col": id_col,
             "ref_col": ref_col,
             "alt_col": alt_col,
-            "width": width,
             "height": height,
+            "shape": shape,
+            "size": size,
             "shape_col": shape_col,
         },
     ).values()
 
-    if width <= 0:
-        raise ValueError("width must be positive.")
     if not 0 <= height <= 1:
         raise ValueError("height must be in the [0, 1] range.")
+    if size <= 0:
+        raise ValueError("size must be positive.")
+    accepted_shapes = {"diamond", "triangle-up", "triangle-down", "circle"}
+    if shape not in accepted_shapes:
+        raise ValueError(
+            f"shape must be one of {sorted(accepted_shapes)}; got {shape!r}."
+        )
 
     df = _as_dataframe(variants)
+    lengths = df["End"].astype(int) - df["Start"].astype(int)
+    if not (lengths == 1).all():
+        raise ValueError("SNP adapter expects single-position intervals of length 1.")
 
     resolved_id_col = id_col or _first_existing(
         df.columns, ["ID", "Name", "variant_id"]
@@ -242,17 +256,12 @@ def SNP(
             + alt_values
         )
 
-    center = (df["Start"].astype(float) + df["End"].astype(float)) / 2
-    df["Start"] = (center - width / 2).round().astype(int)
-    df["End"] = (center + width / 2).round().astype(int)
-    invalid_width = df["End"] <= df["Start"]
-    df.loc[invalid_width, "End"] = df.loc[invalid_width, "Start"] + 1
-
     df[ADAPTER_ID_COL] = df[resolved_id_col]
     df[ADAPTER_HEIGHT_COL] = height
     df[ADAPTER_DEPTH_COL] = 0
-    df[shape_col] = "diamond"
+    df[shape_col] = shape
     df[ADAPTER_SHAPE_COL] = df[shape_col]
+    df[ADAPTER_MARKER_SIZE_COL] = size
 
     return pr.PyRanges(df)
 
@@ -260,7 +269,7 @@ def SNP(
 _ADAPTERS = {"mRNA": mRNA, "SNP": SNP}
 _ADAPTER_DESCRIPTIONS = {
     "mRNA": "Pre-configured mRNA/GTF/GFF visualization: exon/UTR intervals are thin and CDS intervals are thick.",
-    "SNP": "Pre-configured SNP/VCF-like visualization: variants are drawn as diamond markers.",
+    "SNP": "Pre-configured SNP/VCF-like visualization: single-position variants are drawn as fixed-size markers.",
 }
 _ADAPTER_OPTIONS = {
     "mRNA": {
@@ -306,8 +315,13 @@ _ADAPTER_OPTIONS = {
             "Alternate allele column used for generated IDs/tooltips.",
             " ",
         ),
-        "width": (20, "Diamond width in genomic coordinates.", " "),
-        "height": (0.8, "Relative diamond height; must range from 0 to 1.", " "),
+        "height": (0.8, "Relative marker row height; must range from 0 to 1.", " "),
+        "shape": (
+            "diamond",
+            "Marker shape: diamond, triangle-up, triangle-down, or circle.",
+            " ",
+        ),
+        "size": (18, "Marker size in screen points; width and height are equal.", " "),
         "shape_col": (ADAPTER_SHAPE_COL, "Output shape column used by plot().", " "),
     },
 }

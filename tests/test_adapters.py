@@ -148,12 +148,13 @@ def test_adapter_describe_lists_available_adapters():
     assert pre.adapters.describe("mRNA") == descriptions["mRNA"]
 
 
-def test_snp_adapter_adds_diamond_shape_and_generated_ids():
-    prepared = pre.adapters.SNP(_snp_like_variants(), width=10)
+def test_snp_adapter_adds_fixed_size_shape_and_generated_ids():
+    prepared = pre.adapters.SNP(_snp_like_variants(), shape="triangle-up", size=20)
 
-    assert prepared["__adapter_shape__"].tolist() == ["diamond", "diamond", "diamond"]
+    assert prepared["__adapter_shape__"].tolist() == ["triangle-up"] * 3
     assert prepared["__adapter_height__"].tolist() == [0.8, 0.8, 0.8]
-    assert prepared["End"].sub(prepared["Start"]).tolist() == [10, 10, 10]
+    assert prepared["__adapter_marker_size__"].tolist() == [20, 20, 20]
+    assert prepared["End"].sub(prepared["Start"]).tolist() == [1, 1, 1]
 
 
 def test_plot_accepts_one_adapter_per_input_object():

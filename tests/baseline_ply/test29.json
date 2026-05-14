@@ -83,7 +83,7 @@
           "color": "#f05f89"
         },
         "size": 18,
-        "symbol": "diamond"
+        "symbol": "triangle-down"
       },
       "mode": "markers",
       "name": "T",
@@ -157,7 +157,7 @@
           "color": "#f0db36"
         },
         "size": 18,
-        "symbol": "diamond"
+        "symbol": "triangle-down"
       },
       "mode": "markers",
       "name": "A",
@@ -231,7 +231,7 @@
           "color": "#7bc45f"
         },
         "size": 18,
-        "symbol": "diamond"
+        "symbol": "triangle-down"
       },
       "mode": "markers",
       "name": "G",
@@ -305,7 +305,7 @@
           "color": "#5e4699"
         },
         "size": 18,
-        "symbol": "diamond"
+        "symbol": "triangle-down"
       },
       "mode": "markers",
       "name": "C",
@@ -379,7 +379,7 @@
           "color": "#7bc45f"
         },
         "size": 18,
-        "symbol": "diamond"
+        "symbol": "triangle-down"
       },
       "mode": "markers",
       "name": "G",

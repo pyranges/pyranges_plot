@@ -35,13 +35,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[nan] (70, 90)<br>ID: rs1",
+      "text": "[nan] (80, 81)<br>ID: rs1",
       "x": [
-        70,
-        90,
-        90,
-        70,
-        70
+        80,
+        81,
+        81,
+        80,
+        80
       ],
       "y": [
         0.49625,
@@ -76,29 +76,24 @@
       "yaxis": "y"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#ffadc9",
       "hoverinfo": "text",
-      "line": {
-        "color": "#ffadc9"
+      "marker": {
+        "color": "#ffadc9",
+        "line": {
+          "color": "#ffadc9"
+        },
+        "size": 18.0,
+        "symbol": "triangle-up"
       },
-      "mode": "lines",
+      "mode": "markers",
       "name": "rs1",
       "showlegend": false,
-      "text": "<br>(70, 90)<br>ID: rs1<br>A>T",
+      "text": "<br>(80, 81)<br>ID: rs1<br>A>T",
       "x": [
-        80.0,
-        90,
-        80.0,
-        70,
-        80.0
+        80.5
       ],
       "y": [
-        0.74,
-        0.5,
-        0.26,
-        0.5,
-        0.74
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -114,13 +109,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[nan] (136, 156)<br>ID: rs2",
+      "text": "[nan] (145, 146)<br>ID: rs2",
       "x": [
-        136,
-        156,
-        156,
-        136,
-        136
+        145,
+        146,
+        146,
+        145,
+        145
       ],
       "y": [
         0.49625,
@@ -155,29 +150,24 @@
       "yaxis": "y"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#ffee76",
       "hoverinfo": "text",
-      "line": {
-        "color": "#ffee76"
+      "marker": {
+        "color": "#ffee76",
+        "line": {
+          "color": "#ffee76"
+        },
+        "size": 18.0,
+        "symbol": "triangle-up"
       },
-      "mode": "lines",
+      "mode": "markers",
       "name": "rs2",
       "showlegend": false,
-      "text": "<br>(136, 156)<br>ID: rs2<br>G>A",
+      "text": "<br>(145, 146)<br>ID: rs2<br>G>A",
       "x": [
-        146.0,
-        156,
-        146.0,
-        136,
-        146.0
+        145.5
       ],
       "y": [
-        0.74,
-        0.5,
-        0.26,
-        0.5,
-        0.74
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -193,13 +183,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[nan] (2, 22)<br>ID: rs3",
+      "text": "[nan] (12, 13)<br>ID: rs3",
       "x": [
-        2,
-        22,
-        22,
-        2,
-        2
+        12,
+        13,
+        13,
+        12,
+        12
       ],
       "y": [
         0.49625,
@@ -234,29 +224,24 @@
       "yaxis": "y2"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#a8e89a",
       "hoverinfo": "text",
-      "line": {
-        "color": "#a8e89a"
+      "marker": {
+        "color": "#a8e89a",
+        "line": {
+          "color": "#a8e89a"
+        },
+        "size": 18.0,
+        "symbol": "triangle-up"
       },
-      "mode": "lines",
+      "mode": "markers",
       "name": "rs3",
       "showlegend": false,
-      "text": "<br>(2, 22)<br>ID: rs3<br>C>G",
+      "text": "<br>(12, 13)<br>ID: rs3<br>C>G",
       "x": [
-        12.0,
-        22,
-        12.0,
-        2,
-        12.0
+        12.5
       ],
       "y": [
-        0.74,
-        0.5,
-        0.26,
-        0.5,
-        0.74
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -272,13 +257,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[nan] (34, 54)<br>ID: rs4",
+      "text": "[nan] (44, 45)<br>ID: rs4",
       "x": [
-        34,
-        54,
-        54,
-        34,
-        34
+        44,
+        45,
+        45,
+        44,
+        44
       ],
       "y": [
         0.49625,
@@ -313,29 +298,24 @@
       "yaxis": "y2"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#816bb9",
       "hoverinfo": "text",
-      "line": {
-        "color": "#816bb9"
+      "marker": {
+        "color": "#816bb9",
+        "line": {
+          "color": "#816bb9"
+        },
+        "size": 18.0,
+        "symbol": "triangle-up"
       },
-      "mode": "lines",
+      "mode": "markers",
       "name": "rs4",
       "showlegend": false,
-      "text": "<br>(34, 54)<br>ID: rs4<br>T>C",
+      "text": "<br>(44, 45)<br>ID: rs4<br>T>C",
       "x": [
-        44.0,
-        54,
-        44.0,
-        34,
-        44.0
+        44.5
       ],
       "y": [
-        0.74,
-        0.5,
-        0.26,
-        0.5,
-        0.74
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -351,13 +331,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[nan] (26, 46)<br>ID: rs5",
+      "text": "[nan] (35, 36)<br>ID: rs5",
       "x": [
-        26,
-        46,
-        46,
-        26,
-        26
+        35,
+        36,
+        36,
+        35,
+        35
       ],
       "y": [
         0.49625,
@@ -392,29 +372,24 @@
       "yaxis": "y3"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#ffc56b",
       "hoverinfo": "text",
-      "line": {
-        "color": "#ffc56b"
+      "marker": {
+        "color": "#ffc56b",
+        "line": {
+          "color": "#ffc56b"
+        },
+        "size": 18.0,
+        "symbol": "triangle-up"
       },
-      "mode": "lines",
+      "mode": "markers",
       "name": "rs5",
       "showlegend": false,
-      "text": "<br>(26, 46)<br>ID: rs5<br>A>G",
+      "text": "<br>(35, 36)<br>ID: rs5<br>A>G",
       "x": [
-        36.0,
-        46,
-        36.0,
-        26,
-        36.0
+        35.5
       ],
       "y": [
-        0.74,
-        0.5,
-        0.26,
-        0.5,
-        0.74
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x3",
@@ -3212,7 +3187,7 @@
         "showarrow": false,
         "text": "rs1",
         "textangle": 0,
-        "x": 69,
+        "x": 79,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
@@ -3225,7 +3200,7 @@
         "showarrow": false,
         "text": "rs2",
         "textangle": 0,
-        "x": 135,
+        "x": 144,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
@@ -3238,7 +3213,7 @@
         "showarrow": false,
         "text": "rs3",
         "textangle": 0,
-        "x": 2,
+        "x": 12,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
@@ -3251,7 +3226,7 @@
         "showarrow": false,
         "text": "rs4",
         "textangle": 0,
-        "x": 34,
+        "x": 44,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
@@ -3264,7 +3239,7 @@
         "showarrow": false,
         "text": "rs5",
         "textangle": 0,
-        "x": 26,
+        "x": 35,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,

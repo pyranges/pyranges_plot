@@ -427,7 +427,6 @@ def test24():
         data8,
         "SNP",
         color_col="ALT",
-        width=8,
         sort_ranges=True,
     )
     fig = plt.gcf()
@@ -439,7 +438,22 @@ def test25():
     pre.plot(
         [data2, data8],
         adapter=["mRNA", "SNP"],
+        shape="triangle-up",
         sort_ranges=True,
     )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test26():
+    pre.plot(data8, "SNP", shape="triangle-down", color_col="ALT", sort_ranges=True)
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test27():
+    pre.plot(data8, "SNP", shape="circle", color_col="ALT", sort_ranges=True)
     fig = plt.gcf()
     return fig

@@ -534,7 +534,6 @@ test_cases = [
             data8,
             "SNP",
             color_col="ALT",
-            width=8,
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -544,6 +543,29 @@ test_cases = [
         pre.plot(
             [data2, data8],
             adapter=["mRNA", "SNP"],
+            shape="triangle-up",
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test29",
+        pre.plot(
+            data8,
+            "SNP",
+            shape="triangle-down",
+            color_col="ALT",
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test30",
+        pre.plot(
+            data8,
+            "SNP",
+            shape="circle",
+            color_col="ALT",
             sort_ranges=True,
             return_plot="fig",
         ),

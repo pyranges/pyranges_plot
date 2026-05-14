@@ -459,9 +459,9 @@ and contain "exon" or "CDS" values:
 
 .. image:: images/prp_rtd_35.png
 
-SNPs and other VCF-like point variants can be shown with the ``SNP`` adapter,
-which draws each variant as a diamond. Here ``width`` only controls the visual
-width of the diamond in genomic coordinates:
+SNPs and other VCF-like single-position variants can be shown with the ``SNP``
+adapter. It draws fixed-size markers that stay visibly square on screen; choose
+``shape`` from ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, or ``"circle"``:
 
 .. code-block::
 
@@ -476,7 +476,7 @@ width of the diamond in genomic coordinates:
         }
     )
 
-    pre.plot(snps, "SNP", color_col="ALT", width=40)
+    pre.plot(snps, "SNP", color_col="ALT", shape="diamond")
 
 .. image:: images/prp_rtd_36.png
 
@@ -486,7 +486,7 @@ in one figure:
 
 .. code-block::
 
-    pre.plot([pp, snps], adapter=["mRNA", "SNP"], width=40)
+    pre.plot([pp, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
 
 .. image:: images/prp_rtd_37.png
 

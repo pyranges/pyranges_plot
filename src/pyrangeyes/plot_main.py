@@ -40,6 +40,7 @@ from .names import (
     TEXT_PAD_COL,
     THICK_COL,
     SHAPE_COL,
+    MARKER_SIZE_COL,
 )
 
 # Check for matplotlib
@@ -102,9 +103,6 @@ def plot(
     add_aligned_plots=None,
     color_col=None,
     outline_col=None,
-    height_col=None,
-    depth_col=None,
-    shape_col=None,
     shrink=False,
     limits=None,
     regions=None,
@@ -117,6 +115,9 @@ def plot(
     to_file=None,
     theme=None,
     sort_ranges=False,
+    height_col=None,
+    depth_col=None,
+    shape_col=None,
     **kargs,
 ):
     """
@@ -632,7 +633,13 @@ def plot(
                 f"The provided shape_col {shape_col!r} is not present in the given data."
             )
         subdf[SHAPE_COL] = subdf[shape_col].fillna("rectangle")
-        accepted_shapes = {"rectangle", "diamond"}
+        accepted_shapes = {
+            "rectangle",
+            "diamond",
+            "triangle-up",
+            "triangle-down",
+            "circle",
+        }
         unknown_shapes = set(subdf[SHAPE_COL]) - accepted_shapes
         if unknown_shapes:
             raise ValueError(
@@ -641,6 +648,9 @@ def plot(
             )
     else:
         subdf[SHAPE_COL] = "rectangle"
+
+    if adapters.ADAPTER_MARKER_SIZE_COL in subdf.columns:
+        subdf[MARKER_SIZE_COL] = subdf[adapters.ADAPTER_MARKER_SIZE_COL]
 
     # Store color information in data
     # color_col as list

@@ -34,23 +34,14 @@ def tutorial_snps():
     )
 
 
-def tutorial_unpacked():
-    return pr.PyRanges(
-        {
-            "Chromosome": ["1", "1", "1", "1"],
-            "Start": [5, 13, 18, 4],
-            "End": [10, 15, 22, 7],
-            "transcript_id": ["first", "second", "second", "third"],
-        }
-    )
-
-
 def save(fig, path):
     fig.savefig(path, dpi=120, bbox_inches="tight")
     plt.close(fig)
 
 
 def make_figures():
+    """Generate the exact figures referenced by docs/tutorial.rst."""
+
     pre.set_engine("matplotlib")
 
     pp = tutorial_mrna()
@@ -63,7 +54,7 @@ def make_figures():
         snps,
         "SNP",
         color_col="ALT",
-        width=40,
+        shape="diamond",
         return_plot="fig",
         warnings=False,
     )
@@ -72,21 +63,17 @@ def make_figures():
     fig = pre.plot(
         [pp, snps],
         adapter=["mRNA", "SNP"],
-        width=40,
+        shape="triangle-up",
         return_plot="fig",
         warnings=False,
     )
     save(fig, DOCS_IMAGES / "prp_rtd_37.png")
 
-    fig = pre.plot(
-        tutorial_unpacked(),
-        id_col="transcript_id",
-        packed=False,
-        return_plot="fig",
-        warnings=False,
-        title_chr=" ",
-    )
-    save(fig, DOCS_IMAGES / "prp_rtd_38.png")
+
+def _showcase_page(pdf, fig, title):
+    fig.suptitle(title)
+    pdf.savefig(fig, bbox_inches="tight")
+    plt.close(fig)
 
 
 def make_pdf():
@@ -94,20 +81,40 @@ def make_pdf():
 
     make_figures()
     pdf_path = ARTIFACTS / "adapter_showcase.pdf"
+    pp = tutorial_mrna()
+    snps = tutorial_snps()
+
     with PdfPages(pdf_path) as pdf:
-        for image_name, title in [
-            ("prp_rtd_35.png", "mRNA adapter: thin UTR/exon, thick CDS"),
-            ("prp_rtd_36.png", "SNP adapter: diamond variant markers"),
-            ("prp_rtd_37.png", "Per-track adapters: mRNA + SNP"),
-            ("prp_rtd_38.png", "text=None: labels hidden for unpacked plots"),
-        ]:
-            img = plt.imread(DOCS_IMAGES / image_name)
-            fig, ax = plt.subplots(figsize=(11, 6))
-            ax.imshow(img)
-            ax.set_title(title)
-            ax.axis("off")
-            pdf.savefig(fig, bbox_inches="tight")
-            plt.close(fig)
+        pre.set_engine("matplotlib")
+        _showcase_page(
+            pdf,
+            pre.plot(pp, "mRNA", return_plot="fig", warnings=False),
+            "mRNA adapter: thin UTR/exon, thick CDS",
+        )
+        for shape in ["diamond", "triangle-up", "triangle-down", "circle"]:
+            _showcase_page(
+                pdf,
+                pre.plot(
+                    snps,
+                    "SNP",
+                    shape=shape,
+                    color_col="ALT",
+                    return_plot="fig",
+                    warnings=False,
+                ),
+                f"SNP adapter: fixed-size {shape} markers",
+            )
+        _showcase_page(
+            pdf,
+            pre.plot(
+                [pp, snps],
+                adapter=["mRNA", "SNP"],
+                shape="triangle-up",
+                return_plot="fig",
+                warnings=False,
+            ),
+            "Per-track adapters: mRNA + SNP triangle-up markers",
+        )
     return pdf_path
 
 

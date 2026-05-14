@@ -2,7 +2,7 @@ import pyranges1 as pr
 from pyranges1.core.names import START_COL, END_COL
 
 from .core import coord2percent, percent2coord, make_annotation, rgb_string_to_tuple
-from matplotlib.patches import Polygon, Rectangle
+from matplotlib.patches import Rectangle
 import pandas as pd
 
 from ..names import (
@@ -12,6 +12,7 @@ from ..names import (
     TEXT_PAD_COL,
     COLOR_INFO,
     BORDER_COLOR_COL,
+    MARKER_SIZE_COL,
     SHAPE_COL,
     THICK_COL,
 )
@@ -205,19 +206,21 @@ def plot_row(
         arrow_color = rgb_string_to_tuple(arrow_color)
 
     shape = row.get(SHAPE_COL, "rectangle")
-    if shape == "diamond":
-        x_mid = (start + stop) / 2
-        exon_patch = Polygon(
-            [
-                (x_mid, gene_ix + exon_height / 2),
-                (stop, gene_ix),
-                (x_mid, gene_ix - exon_height / 2),
-                (start, gene_ix),
-            ],
-            closed=True,
-            edgecolor=exon_border,
-            facecolor=exon_color,
-            fill=True,
+    marker_shapes = {
+        "diamond": "D",
+        "triangle-up": "^",
+        "triangle-down": "v",
+        "circle": "o",
+    }
+    if shape in marker_shapes:
+        marker_size = row.get(MARKER_SIZE_COL, 18)
+        exon_patch = ax.scatter(
+            [(start + stop) / 2],
+            [gene_ix],
+            marker=marker_shapes[shape],
+            s=marker_size**2,
+            edgecolors=exon_border,
+            facecolors=exon_color,
             zorder=3,
         )
     else:
@@ -230,7 +233,7 @@ def plot_row(
             fill=True,
             zorder=3,
         )
-    ax.add_patch(exon_patch)
+        ax.add_patch(exon_patch)
 
     # create annotation for exon
     make_annotation(exon_patch, fig, ax, geneinfo, tag_background)
