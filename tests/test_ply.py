@@ -123,6 +123,17 @@ data7 = pr.PyRanges(
     }
 )
 
+data8 = pr.PyRanges(
+    {
+        "Chromosome": ["1", "1", "2", "2", "4"],
+        "Start": [80, 145, 12, 44, 35],
+        "End": [81, 146, 13, 45, 36],
+        "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
+        "REF": ["A", "G", "C", "T", "A"],
+        "ALT": ["T", "A", "G", "C", "G"],
+    }
+)
+
 vcf = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,  # CHROM renamed to Chromosome
@@ -491,6 +502,71 @@ test_cases = [
                 "outline": {"type": "quantitative", "colors": ["black", "gold"]},
             },
             legend=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test25",
+        pre.plot(
+            data2,
+            "mRNA",
+            color_col="Feature",
+            colormap={"exon": "lightgrey", "CDS": "gold"},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test26",
+        pre.plot(
+            data2,
+            adapter="mRNA",
+            utr_height=0.6,
+            color_col="Feature",
+            colormap={"exon": "lightgrey", "CDS": "gold"},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test27",
+        pre.plot(
+            data8,
+            "SNP",
+            color_col="ALT",
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test28",
+        pre.plot(
+            [data2, data8],
+            adapter=["mRNA", "SNP"],
+            shape="triangle-up",
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test29",
+        pre.plot(
+            data8,
+            "SNP",
+            shape="triangle-down",
+            color_col="ALT",
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test30",
+        pre.plot(
+            data8,
+            "SNP",
+            shape="circle",
+            color_col="ALT",
+            sort_ranges=True,
             return_plot="fig",
         ),
     ),

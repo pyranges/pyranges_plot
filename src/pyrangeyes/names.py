@@ -25,6 +25,8 @@ OUTLINE_LEGEND_TITLE_COL = "__outline_legend_title__"
 EXON_IX_COL = "__exon_ix__"
 TEXT_PAD_COL = "__text_pad__"
 THICK_COL = "__thickness_col__"
+SHAPE_COL = "__shape_col__"
+MARKER_SIZE_COL = "__marker_size_col__"
 
 # Panel/region splitting (multi-window per chromosome)
 PANEL_SEP = (

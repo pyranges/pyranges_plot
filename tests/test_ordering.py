@@ -40,3 +40,30 @@ def test_packed_false_preserves_input_row_order_by_default_matplotlib():
     )
 
     assert _top_to_bottom_ylabels(fig.axes[0]) == ["first", "second", "third"]
+
+
+def test_text_none_defaults_to_packed_only_matplotlib():
+    pre.set_engine("matplotlib")
+
+    packed_fig = pre.plot(
+        _out_of_genomic_order_data(),
+        id_col="transcript_id",
+        packed=True,
+        return_plot="fig",
+        warnings=False,
+        title_chr=" ",
+    )
+    unpacked_fig = pre.plot(
+        _out_of_genomic_order_data(),
+        id_col="transcript_id",
+        packed=False,
+        return_plot="fig",
+        warnings=False,
+        title_chr=" ",
+    )
+
+    packed_text = {text.get_text() for text in packed_fig.axes[0].texts}
+    unpacked_text = {text.get_text() for text in unpacked_fig.axes[0].texts}
+
+    assert {"first", "second", "third"}.issubset(packed_text)
+    assert unpacked_text == {""}

@@ -418,12 +418,14 @@ while when an int is given it will be interpreted as number of base pairs.
 .. image:: images/prp_rtd_14.png
 
 
-Showing mRNA structure
-----------------------
+Showing mRNA structure with adapters
+------------------------------------
 
-A familiar visualization to many bioinformaticians involves showing the mRNA structure with coding sequences (CDS)
-displayed thicker than UTR (untranslated) regions. This is achieved by setting the ``thick_cds`` parameter to ``True``.
-Note that data must be coded like standard GFF/GTF files,
+Adapters are shortcuts to useful representations. They prepare domain-specific inputs with sensible defaults before plotting.
+For example, the ``mRNA`` adapter shows a familiar bioinformatics view where coding sequences (CDS) are displayed thicker
+than UTR (untranslated) regions. You can list available adapters with ``pre.adapters.describe()``.
+
+For the ``mRNA`` adapter, data must be coded like standard GFF/GTF files,
 with different rows for exons and for CDS, wherein CDS are subsets of exons. A "Feature" column must be present
 and contain "exon" or "CDS" values:
 
@@ -453,9 +455,40 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    pre.plot(pp, thick_cds=True)
+    pre.plot(pp, "mRNA")
 
-.. image:: images/prp_rtd_12.png
+.. image:: images/prp_rtd_35.png
+
+SNPs and other VCF-like single-position variants can be shown with the ``SNP``
+adapter. It draws fixed-size markers that stay visibly square on screen; choose
+``shape`` from ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, or ``"circle"``:
+
+.. code-block::
+
+    snps = pr.PyRanges(
+        {
+            "Chromosome": [1, 1, 2, 2, 4],
+            "Start": [7, 45, 13, 73, 29870],
+            "End": [8, 46, 14, 74, 29871],
+            "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
+            "REF": ["A", "G", "C", "T", "A"],
+            "ALT": ["T", "A", "G", "C", "G"],
+        }
+    )
+
+    pre.plot(snps, "SNP", color_col="ALT", shape="diamond")
+
+.. image:: images/prp_rtd_36.png
+
+When plotting multiple PyRanges objects, ``adapter`` can be a list with exactly
+one adapter per object. This makes it easy to combine different representations
+in one figure:
+
+.. code-block::
+
+    pre.plot([pp, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
+
+.. image:: images/prp_rtd_37.png
 
 
 

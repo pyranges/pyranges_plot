@@ -12,6 +12,20 @@
       }
     },
     {
+      "x": [],
+      "y": [],
+      "type": "scatter",
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "x": [],
+      "y": [],
+      "type": "scatter",
+      "xaxis": "x3",
+      "yaxis": "y3"
+    },
+    {
       "fill": "toself",
       "fillcolor": "white",
       "hoverinfo": "text",
@@ -21,13 +35,13 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[+] (500, 3700)<br>ID: ['t1', 'a']",
+      "text": "(80, 81)<br>ID: rs1",
       "x": [
-        500,
-        3700,
-        3700,
-        500,
-        500
+        80,
+        81,
+        81,
+        80,
+        80
       ],
       "y": [
         0.49625,
@@ -50,8 +64,8 @@
       "mode": "lines",
       "showlegend": false,
       "x": [
-        1500,
-        3500
+        NaN,
+        NaN
       ],
       "y": [
         0.5,
@@ -62,100 +76,24 @@
       "yaxis": "y"
     },
     {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
+      "hoverinfo": "text",
+      "marker": {
+        "color": "#f05f89",
+        "line": {
+          "color": "#f05f89"
+        },
+        "size": 18,
+        "symbol": "circle"
       },
-      "mode": "lines",
-      "name": "['t1', 'a']",
+      "mode": "markers",
+      "name": "T",
       "showlegend": false,
+      "text": "<br>(80, 81)<br>ID: rs1<br>A>T",
       "x": [
-        2478.88,
-        2521.12
+        80.5
       ],
       "y": [
-        0.21000000000000002,
         0.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t1', 'a']",
-      "showlegend": false,
-      "x": [
-        2521.12,
-        2478.88
-      ],
-      "y": [
-        0.5,
-        0.79
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#f05f89",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f05f89"
-      },
-      "mode": "lines",
-      "name": "t1",
-      "showlegend": false,
-      "text": "<br>[+] (500, 1500)<br>ID: t1",
-      "x": [
-        500,
-        1500,
-        1500,
-        500,
-        500
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#f05f89",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f05f89"
-      },
-      "mode": "lines",
-      "name": "t1",
-      "showlegend": false,
-      "text": "<br>[+] (3500, 3700)<br>ID: t1",
-      "x": [
-        3500,
-        3700,
-        3700,
-        3500,
-        3500
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -171,170 +109,20 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[-] (300, 1700)<br>ID: ['t2', 'a']",
+      "text": "(145, 146)<br>ID: rs2",
       "x": [
-        300,
-        1700,
-        1700,
-        300,
-        300
+        145,
+        146,
+        146,
+        145,
+        145
       ],
       "y": [
-        1.49625,
-        1.49625,
-        1.50375,
-        1.50375,
-        1.49625
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "#f0db36",
-        "dash": "solid",
-        "width": 0.7
-      },
-      "mode": "lines",
-      "showlegend": false,
-      "x": [
-        600,
-        1300
-      ],
-      "y": [
-        1.5,
-        1.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t2', 'a']",
-      "showlegend": false,
-      "x": [
-        928.88,
-        971.12
-      ],
-      "y": [
-        1.5,
-        1.79
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t2', 'a']",
-      "showlegend": false,
-      "x": [
-        971.12,
-        928.88
-      ],
-      "y": [
-        1.21,
-        1.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#f0db36",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f0db36"
-      },
-      "mode": "lines",
-      "name": "t2",
-      "showlegend": false,
-      "text": "<br>[-] (300, 600)<br>ID: t2",
-      "x": [
-        300,
-        600,
-        600,
-        300,
-        300
-      ],
-      "y": [
-        1.2,
-        1.2,
-        1.8,
-        1.8,
-        1.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#f0db36",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f0db36"
-      },
-      "mode": "lines",
-      "name": "t2",
-      "showlegend": false,
-      "text": "<br>[-] (1300, 1700)<br>ID: t2",
-      "x": [
-        1300,
-        1700,
-        1700,
-        1300,
-        1300
-      ],
-      "y": [
-        1.2,
-        1.2,
-        1.8,
-        1.8,
-        1.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "white",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f0db36",
-        "width": 0
-      },
-      "mode": "lines",
-      "showlegend": false,
-      "text": "[-] (3500, 3900)<br>ID: ['t2', 'b']",
-      "x": [
-        3500,
-        3900,
-        3900,
-        3500,
-        3500
-      ],
-      "y": [
-        2.49625,
-        2.49625,
-        2.50375,
-        2.50375,
-        2.49625
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -354,79 +142,32 @@
         NaN
       ],
       "y": [
-        2.5,
-        2.5
+        0.5,
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x",
       "yaxis": "y"
     },
     {
-      "fill": "toself",
-      "fillcolor": "#f0db36",
       "hoverinfo": "text",
-      "line": {
-        "color": "#f0db36"
+      "marker": {
+        "color": "#f0db36",
+        "line": {
+          "color": "#f0db36"
+        },
+        "size": 18,
+        "symbol": "circle"
       },
-      "mode": "lines",
-      "name": "t2",
+      "mode": "markers",
+      "name": "A",
       "showlegend": false,
-      "text": "<br>[-] (3500, 3900)<br>ID: t2",
+      "text": "<br>(145, 146)<br>ID: rs2<br>G>A",
       "x": [
-        3500,
-        3900,
-        3900,
-        3500,
-        3500
+        145.5
       ],
       "y": [
-        2.2,
-        2.2,
-        2.8,
-        2.8,
-        2.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t2', 'b']",
-      "showlegend": false,
-      "x": [
-        3678.88,
-        3721.12
-      ],
-      "y": [
-        2.5,
-        2.79
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t2', 'b']",
-      "showlegend": false,
-      "x": [
-        3721.12,
-        3678.88
-      ],
-      "y": [
-        2.21,
-        2.5
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -442,24 +183,24 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[+] (4500, 5700)<br>ID: ['t3', 'b']",
+      "text": "(12, 13)<br>ID: rs3",
       "x": [
-        4500,
-        5700,
-        5700,
-        4500,
-        4500
+        12,
+        13,
+        13,
+        12,
+        12
       ],
       "y": [
-        3.49625,
-        3.49625,
-        3.50375,
-        3.50375,
-        3.49625
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
       "hoverinfo": "skip",
@@ -471,208 +212,40 @@
       "mode": "lines",
       "showlegend": false,
       "x": [
-        4700,
-        4900
+        NaN,
+        NaN
       ],
       "y": [
-        3.5,
-        3.5
+        0.5,
+        0.5
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t3', 'b']",
-      "showlegend": false,
-      "x": [
-        4778.88,
-        4821.12
-      ],
-      "y": [
-        3.21,
-        3.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t3', 'b']",
-      "showlegend": false,
-      "x": [
-        4821.12,
-        4778.88
-      ],
-      "y": [
-        3.5,
-        3.79
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
+      "hoverinfo": "text",
+      "marker": {
         "color": "#7bc45f",
-        "dash": "solid",
-        "width": 0.7
+        "line": {
+          "color": "#7bc45f"
+        },
+        "size": 18,
+        "symbol": "circle"
       },
-      "mode": "lines",
+      "mode": "markers",
+      "name": "G",
       "showlegend": false,
+      "text": "<br>(12, 13)<br>ID: rs3<br>C>G",
       "x": [
-        5100,
-        5600
+        12.5
       ],
       "y": [
-        3.5,
-        3.5
+        0.5
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t3', 'b']",
-      "showlegend": false,
-      "x": [
-        5328.88,
-        5371.12
-      ],
-      "y": [
-        3.21,
-        3.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
-      },
-      "mode": "lines",
-      "name": "['t3', 'b']",
-      "showlegend": false,
-      "x": [
-        5371.12,
-        5328.88
-      ],
-      "y": [
-        3.5,
-        3.79
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#7bc45f",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#7bc45f"
-      },
-      "mode": "lines",
-      "name": "t3",
-      "showlegend": false,
-      "text": "<br>[+] (4500, 4700)<br>ID: t3",
-      "x": [
-        4500,
-        4700,
-        4700,
-        4500,
-        4500
-      ],
-      "y": [
-        3.2,
-        3.2,
-        3.8,
-        3.8,
-        3.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#7bc45f",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#7bc45f"
-      },
-      "mode": "lines",
-      "name": "t3",
-      "showlegend": false,
-      "text": "<br>[+] (4900, 5100)<br>ID: t3",
-      "x": [
-        4900,
-        5100,
-        5100,
-        4900,
-        4900
-      ],
-      "y": [
-        3.2,
-        3.2,
-        3.8,
-        3.8,
-        3.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#7bc45f",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#7bc45f"
-      },
-      "mode": "lines",
-      "name": "t3",
-      "showlegend": false,
-      "text": "<br>[+] (5600, 5700)<br>ID: t3",
-      "x": [
-        5600,
-        5700,
-        5700,
-        5600,
-        5600
-      ],
-      "y": [
-        3.2,
-        3.2,
-        3.8,
-        3.8,
-        3.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
@@ -684,24 +257,24 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[-] (6000, 6700)<br>ID: ['t4', 'b']",
+      "text": "(44, 45)<br>ID: rs4",
       "x": [
-        6000,
-        6700,
-        6700,
-        6000,
-        6000
+        44,
+        45,
+        45,
+        44,
+        44
       ],
       "y": [
-        4.49625,
-        4.49625,
-        4.50375,
-        4.50375,
-        4.49625
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
       "hoverinfo": "skip",
@@ -717,83 +290,110 @@
         NaN
       ],
       "y": [
-        4.5,
-        4.5
+        0.5,
+        0.5
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x2",
+      "yaxis": "y2"
+    },
+    {
+      "hoverinfo": "text",
+      "marker": {
+        "color": "#5e4699",
+        "line": {
+          "color": "#5e4699"
+        },
+        "size": 18,
+        "symbol": "circle"
+      },
+      "mode": "markers",
+      "name": "C",
+      "showlegend": false,
+      "text": "<br>(44, 45)<br>ID: rs4<br>T>C",
+      "x": [
+        44.5
+      ],
+      "y": [
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x2",
+      "yaxis": "y2"
     },
     {
       "fill": "toself",
-      "fillcolor": "#5e4699",
+      "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#5e4699"
+        "color": "#7bc45f",
+        "width": 0
       },
       "mode": "lines",
-      "name": "t4",
       "showlegend": false,
-      "text": "<br>[-] (6000, 6700)<br>ID: t4",
+      "text": "(35, 36)<br>ID: rs5",
       "x": [
-        6000,
-        6700,
-        6700,
-        6000,
-        6000
+        35,
+        36,
+        36,
+        35,
+        35
       ],
       "y": [
-        4.2,
-        4.2,
-        4.8,
-        4.8,
-        4.2
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x3",
+      "yaxis": "y3"
     },
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "grey",
-        "width": 1.0
+        "color": "#7bc45f",
+        "dash": "solid",
+        "width": 0.7
       },
       "mode": "lines",
-      "name": "['t4', 'b']",
       "showlegend": false,
       "x": [
-        6328.88,
-        6371.12
+        NaN,
+        NaN
       ],
       "y": [
-        4.5,
-        4.79
+        0.5,
+        0.5
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x3",
+      "yaxis": "y3"
     },
     {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "grey",
-        "width": 1.0
+      "hoverinfo": "text",
+      "marker": {
+        "color": "#7bc45f",
+        "line": {
+          "color": "#7bc45f"
+        },
+        "size": 18,
+        "symbol": "circle"
       },
-      "mode": "lines",
-      "name": "['t4', 'b']",
+      "mode": "markers",
+      "name": "G",
       "showlegend": false,
+      "text": "<br>(35, 36)<br>ID: rs5<br>A>G",
       "x": [
-        6371.12,
-        6328.88
+        35.5
       ],
       "y": [
-        4.21,
-        4.5
+        0.5
       ],
       "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
+      "xaxis": "x3",
+      "yaxis": "y3"
     }
   ],
   "layout": {
@@ -1580,8 +1180,8 @@
         1.0
       ],
       "range": [
-        -20.0,
-        7020.0
+        76.7,
+        149.3
       ],
       "tickformat": "d",
       "showgrid": true,
@@ -1589,30 +1189,30 @@
       "griddash": "dot",
       "zeroline": false,
       "tickvals": [
-        300,
-        1011,
-        1722,
-        2433,
-        3144,
-        3855,
-        4566,
-        5277,
-        5988,
-        6699,
-        7410
+        80,
+        87,
+        94,
+        101,
+        108,
+        115,
+        122,
+        129,
+        136,
+        143,
+        150
       ],
       "ticktext": [
-        300,
-        1011,
-        1722,
-        2433,
-        3144,
-        3855,
-        4566,
-        5277,
-        5988,
-        6699,
-        7410
+        80,
+        87,
+        94,
+        101,
+        108,
+        115,
+        122,
+        129,
+        136,
+        143,
+        150
       ],
       "showline": true,
       "linewidth": 1,
@@ -1623,43 +1223,136 @@
     "yaxis": {
       "anchor": "x",
       "domain": [
-        0.0,
+        0.7777777777777778,
         1.0
       ],
       "range": [
         -0.3,
-        5.3
+        1.3
       ],
       "fixedrange": true,
+      "tickvals": [],
+      "ticktext": [],
+      "showgrid": false,
+      "zeroline": false,
+      "showline": true,
+      "linewidth": 1,
+      "linecolor": "black",
+      "mirror": true,
+      "color": "black"
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [
+        0.0,
+        1.0
+      ],
+      "range": [
+        10.35,
+        46.65
+      ],
+      "tickformat": "d",
+      "showgrid": true,
+      "gridcolor": "lightgrey",
+      "griddash": "dot",
+      "zeroline": false,
       "tickvals": [
-        1.5,
-        0.5,
-        2.5,
-        3.5,
-        4.5
+        12,
+        15,
+        18,
+        21,
+        24,
+        27,
+        30,
+        33,
+        36,
+        39,
+        42,
+        45
       ],
       "ticktext": [
-        [
-          "t2",
-          "a"
-        ],
-        [
-          "t1",
-          "a"
-        ],
-        [
-          "t2",
-          "b"
-        ],
-        [
-          "t3",
-          "b"
-        ],
-        [
-          "t4",
-          "b"
-        ]
+        12,
+        15,
+        18,
+        21,
+        24,
+        27,
+        30,
+        33,
+        36,
+        39,
+        42,
+        45
       ],
+      "showline": true,
+      "linewidth": 1,
+      "linecolor": "black",
+      "mirror": true,
+      "color": "black"
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [
+        0.3888888888888889,
+        0.6111111111111112
+      ],
+      "range": [
+        -0.3,
+        1.3
+      ],
+      "fixedrange": true,
+      "tickvals": [],
+      "ticktext": [],
+      "showgrid": false,
+      "zeroline": false,
+      "showline": true,
+      "linewidth": 1,
+      "linecolor": "black",
+      "mirror": true,
+      "color": "black"
+    },
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [
+        0.0,
+        1.0
+      ],
+      "range": [
+        34.95,
+        36.05
+      ],
+      "tickformat": "d",
+      "showgrid": true,
+      "gridcolor": "lightgrey",
+      "griddash": "dot",
+      "zeroline": false,
+      "tickvals": [
+        35,
+        37
+      ],
+      "ticktext": [
+        35,
+        37
+      ],
+      "showline": true,
+      "linewidth": 1,
+      "linecolor": "black",
+      "mirror": true,
+      "color": "black"
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [
+        0.0,
+        0.22222222222222224
+      ],
+      "range": [
+        -0.3,
+        1.3
+      ],
+      "fixedrange": true,
+      "tickvals": [],
+      "ticktext": [],
       "showgrid": false,
       "zeroline": false,
       "showline": true,
@@ -1671,9 +1364,9 @@
     "annotations": [
       {
         "font": {
-          "size": 18,
+          "color": "black",
           "family": "Arial",
-          "color": "black"
+          "size": 18
         },
         "showarrow": false,
         "text": "Chromosome 1",
@@ -1683,6 +1376,101 @@
         "y": 1.0,
         "yanchor": "bottom",
         "yref": "paper"
+      },
+      {
+        "font": {
+          "color": "black",
+          "family": "Arial",
+          "size": 18
+        },
+        "showarrow": false,
+        "text": "Chromosome 2",
+        "x": 0.5,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 0.6111111111111112,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "color": "black",
+          "family": "Arial",
+          "size": 18
+        },
+        "showarrow": false,
+        "text": "Chromosome 4",
+        "x": 0.5,
+        "xanchor": "center",
+        "xref": "paper",
+        "y": 0.22222222222222224,
+        "yanchor": "bottom",
+        "yref": "paper"
+      },
+      {
+        "font": {
+          "size": 10.0
+        },
+        "showarrow": false,
+        "text": "rs1",
+        "textangle": 0,
+        "x": 80,
+        "xanchor": "right",
+        "xref": "x",
+        "y": 0.5,
+        "yref": "y"
+      },
+      {
+        "font": {
+          "size": 10.0
+        },
+        "showarrow": false,
+        "text": "rs2",
+        "textangle": 0,
+        "x": 145,
+        "xanchor": "right",
+        "xref": "x",
+        "y": 0.5,
+        "yref": "y"
+      },
+      {
+        "font": {
+          "size": 10.0
+        },
+        "showarrow": false,
+        "text": "rs3",
+        "textangle": 0,
+        "x": 12,
+        "xanchor": "right",
+        "xref": "x2",
+        "y": 0.5,
+        "yref": "y2"
+      },
+      {
+        "font": {
+          "size": 10.0
+        },
+        "showarrow": false,
+        "text": "rs4",
+        "textangle": 0,
+        "x": 44,
+        "xanchor": "right",
+        "xref": "x2",
+        "y": 0.5,
+        "yref": "y2"
+      },
+      {
+        "font": {
+          "size": 10.0
+        },
+        "showarrow": false,
+        "text": "rs5",
+        "textangle": 0,
+        "x": 35,
+        "xanchor": "right",
+        "xref": "x3",
+        "y": 0.5,
+        "yref": "y3"
       }
     ],
     "font": {

@@ -1,0 +1,3 @@
+# Local-only generated artifacts and showcase/report scripts
+artifacts/
+examples/make_adapter_showcase.py

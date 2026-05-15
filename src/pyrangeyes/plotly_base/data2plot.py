@@ -13,6 +13,8 @@ from ..names import (
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
+    MARKER_SIZE_COL,
+    SHAPE_COL,
     THICK_COL,
 )
 
@@ -219,23 +221,54 @@ def plot_row(
         gene_ix + exon_height / 2,
     )  ##gene middle point -+ half of exon size
 
-    # Plot EXON as rectangle
-    fig.add_trace(
-        go.Scatter(
-            x=[x0, x1, x1, x0, x0],
-            y=[y0, y0, y1, y1, y0],
-            fill="toself",
-            fillcolor=exon_color,
-            mode="lines",
-            line=dict(color=exon_border),
-            text=geneinfo,
-            hoverinfo="text",
-            name=str(row[COLOR_TAG_COL]),
-            showlegend=legend,
-        ),
-        row=chrom_ix + 1,
-        col=1,
-    )
+    shape = row.get(SHAPE_COL, "rectangle")
+    marker_shapes = {
+        "diamond": "diamond",
+        "triangle-up": "triangle-up",
+        "triangle-down": "triangle-down",
+        "circle": "circle",
+    }
+    if shape in marker_shapes:
+        fig.add_trace(
+            go.Scatter(
+                x=[(x0 + x1) / 2],
+                y=[(y0 + y1) / 2],
+                mode="markers",
+                marker=dict(
+                    symbol=marker_shapes[shape],
+                    size=row.get(MARKER_SIZE_COL, 18),
+                    color=exon_color,
+                    line=dict(color=exon_border),
+                ),
+                text=geneinfo,
+                hoverinfo="text",
+                name=str(row[COLOR_TAG_COL]),
+                showlegend=legend,
+            ),
+            row=chrom_ix + 1,
+            col=1,
+        )
+    else:
+        x_values = [x0, x1, x1, x0, x0]
+        y_values = [y0, y0, y1, y1, y0]
+
+        # Plot EXON as rectangle
+        fig.add_trace(
+            go.Scatter(
+                x=x_values,
+                y=y_values,
+                fill="toself",
+                fillcolor=exon_color,
+                mode="lines",
+                line=dict(color=exon_border),
+                text=geneinfo,
+                hoverinfo="text",
+                name=str(row[COLOR_TAG_COL]),
+                showlegend=legend,
+            ),
+            row=chrom_ix + 1,
+            col=1,
+        )
 
     # Add ID annotation if it is the first exon
     if row[EXON_IX_COL] == 0 and text:
@@ -268,7 +301,7 @@ def plot_row(
     incl = percent2coord(fig, chrom_ix + 1, arrow_size / 2)  # how long in the plot (OX)
 
     # create and plot lines
-    if not dir_flag:
+    if not dir_flag and shape != "diamond":
         plot_direction(
             fig,
             strand,

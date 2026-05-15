@@ -14,6 +14,7 @@ from .core import (
     set_options,
 )
 from .plot_features import prp_cmap
+from . import adapters
 from .data_preparation import (
     make_subset,
     get_genes_metadata,
@@ -38,6 +39,8 @@ from .names import (
     EXON_IX_COL,
     TEXT_PAD_COL,
     THICK_COL,
+    SHAPE_COL,
+    MARKER_SIZE_COL,
 )
 
 # Check for matplotlib
@@ -90,6 +93,7 @@ def _attach_panel_display(chrmd_df_grouped, panel_display):
 
 def plot(
     data,
+    adapter=None,
     *,
     id_col=None,
     warnings=None,
@@ -99,13 +103,11 @@ def plot(
     add_aligned_plots=None,
     color_col=None,
     outline_col=None,
-    height_col=None,
-    depth_col=None,
     shrink=False,
     limits=None,
     regions=None,
     thick_cds=False,
-    text=True,
+    text=None,
     legend=False,
     title_chr=None,
     y_labels=None,
@@ -113,6 +115,9 @@ def plot(
     to_file=None,
     theme=None,
     sort_ranges=False,
+    height_col=None,
+    depth_col=None,
+    shape_col=None,
     **kargs,
 ):
     """
@@ -122,6 +127,14 @@ def plot(
     ----------
     data: {pyranges.PyRanges or list of pyranges.PyRanges}
         Pyranges, derived dataframe or list of them with annotation data.
+
+    adapter: {None, str, list}, default None
+        Optional shortcut for a pre-configured visualization. For example,
+        ``plot(annotation, "mRNA")`` renders GTF/GFF-like mRNA structure with
+        thin exon/UTR regions and thick CDS regions. For a list of PyRanges,
+        pass one adapter per object, such as ``plot([transcripts, variants],
+        adapter=["mRNA", "SNP"])``. Use ``pre.adapters.describe()`` to list
+        available adapters.
 
     id_col: str, default None
         Name of the column containing gene ID.
@@ -181,6 +194,10 @@ def plot(
         Numeric column defining interval draw order for overlapping intervals. Lower values are drawn first;
         higher values are drawn later, on top of lower-depth intervals. No range constraint is applied.
 
+    shape_col: str, default None
+        Column defining interval shapes. Supported values are ``"rectangle"`` and ``"diamond"``.
+        Usually this is set by adapters rather than provided directly.
+
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
 
@@ -208,8 +225,9 @@ def plot(
         must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
         Feature value other than exon and CDS will be discarded for plotting.
 
-    text: {bool, '{string}'}, default True
-        Whether an annotation should appear beside the gene in the plot. If True, the id/index will be used. To
+    text: {None, bool, '{string}'}, default None
+        Whether an annotation should appear beside the gene in the plot. If None, text is enabled for packed
+        plots and disabled for unpacked plots to avoid duplicated row labels. If True, the id/index will be used. To
         customize the annotation use the '{string}' option to choose another data column. Providing the text as
         a '{data_column_name}' allows slicing in the case of strings by using '{data_column_name[:4]}'.
 
@@ -248,7 +266,8 @@ def plot(
 
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
-        nomenclature, description and default values.
+        nomenclature, description and default values. Adapter options can also be passed here when ``adapter``
+        is set; inspect them with, for example, ``print_options(adapter="mRNA")``.
 
 
 
@@ -288,9 +307,65 @@ def plot(
     >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
 
+    if text is None:
+        text = bool(packed)
+
     # Treat input data as list
     if not isinstance(data, list):
         data = [data]
+
+    if adapter is not None:
+        if isinstance(adapter, str):
+            adapter_names = [adapter] * len(data)
+        else:
+            adapter_names = list(adapter)
+            if len(adapter_names) != len(data):
+                raise ValueError(
+                    "When adapter is a list, provide exactly one adapter per PyRanges object."
+                )
+
+        plot_arg_values = {
+            "id_col": id_col,
+            "height_col": height_col,
+            "depth_col": depth_col,
+            "shape_col": shape_col,
+        }
+        adapted_data = []
+        adapter_defaults = []
+        consumed_kargs = set()
+        for adapter_name, df_item in zip(adapter_names, data):
+            adapter_func = adapters.get(adapter_name)
+            adapter_kwargs = adapters.get_options(adapter_name, "values")
+            accepted_adapter_kwargs = adapters.accepted_kwargs(adapter_name)
+            for arg_name, arg_value in plot_arg_values.items():
+                if arg_name in accepted_adapter_kwargs and arg_value is not None:
+                    adapter_kwargs[arg_name] = arg_value
+            for arg_name, arg_value in kargs.items():
+                if arg_name in accepted_adapter_kwargs:
+                    adapter_kwargs[arg_name] = arg_value
+                    consumed_kargs.add(arg_name)
+            adapted_data.append(adapter_func(df_item, **adapter_kwargs))
+            adapter_defaults.append(
+                adapters.default_plot_args(adapter_name, adapter_kwargs)
+            )
+        for arg_name in consumed_kargs:
+            kargs.pop(arg_name)
+        data = adapted_data
+        default_plot_args = {}
+        for defaults in adapter_defaults:
+            for arg_name, default_value in defaults.items():
+                if arg_name not in default_plot_args:
+                    default_plot_args[arg_name] = default_value
+                elif default_plot_args[arg_name] != default_value:
+                    default_plot_args.pop(arg_name, None)
+        if id_col is None and "id_col" in default_plot_args:
+            id_col = default_plot_args["id_col"]
+        if height_col is None and "height_col" in default_plot_args:
+            height_col = default_plot_args["height_col"]
+        if depth_col is None and "depth_col" in default_plot_args:
+            depth_col = default_plot_args["depth_col"]
+        if shape_col is None and "shape_col" in default_plot_args:
+            shape_col = default_plot_args["shape_col"]
 
     # Ensure correct y_labels
     if y_labels:
@@ -551,6 +626,31 @@ def plot(
 
     else:
         subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
+
+    if shape_col is not None:
+        if shape_col not in subdf.columns:
+            raise ValueError(
+                f"The provided shape_col {shape_col!r} is not present in the given data."
+            )
+        subdf[SHAPE_COL] = subdf[shape_col].fillna("rectangle")
+        accepted_shapes = {
+            "rectangle",
+            "diamond",
+            "triangle-up",
+            "triangle-down",
+            "circle",
+        }
+        unknown_shapes = set(subdf[SHAPE_COL]) - accepted_shapes
+        if unknown_shapes:
+            raise ValueError(
+                f"shape_col {shape_col!r} contains unsupported shapes: {sorted(unknown_shapes)}. "
+                f"Supported shapes are: {sorted(accepted_shapes)}."
+            )
+    else:
+        subdf[SHAPE_COL] = "rectangle"
+
+    if adapters.ADAPTER_MARKER_SIZE_COL in subdf.columns:
+        subdf[MARKER_SIZE_COL] = subdf[adapters.ADAPTER_MARKER_SIZE_COL]
 
     # Store color information in data
     # color_col as list
