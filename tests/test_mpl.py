@@ -457,3 +457,48 @@ def test27():
     pre.plot(data8, "SNP", shape="circle", color_col="ALT", sort_ranges=True)
     fig = plt.gcf()
     return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test28():
+    pre.plot(
+        data1,
+        id_col="transcript_id",
+        color_col="transcript_id",
+        text={
+            "label": "{transcript_id}:{Feature}",
+            "position": "right",
+            "avoid_overlaps": False,
+            "pad": 1,
+            "size": 8,
+        },
+        sort_ranges=True,
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test29():
+    pre.plot(
+        data7,
+        id_col="id",
+        color_col="fill",
+        colormap="direct",
+        text={"label": "{id}", "position": "center", "color": "white", "size": 9},
+    )
+    fig = plt.gcf()
+    return fig
+
+
+@pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
+def test30():
+    pre.plot(
+        data8,
+        "SNP",
+        color_col="ALT",
+        text={"label": "{REF}>{ALT}", "position": "above", "angle": 20, "size": 8},
+        sort_ranges=True,
+    )
+    fig = plt.gcf()
+    return fig
