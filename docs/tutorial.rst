@@ -1022,3 +1022,31 @@ visualization. Here's how you can achieve this configuration:
         p.run_server(debug=True)
 
 .. image:: images/prp_rtd_28.png
+
+Interactive browser panels
+--------------------------
+
+For Plotly output, ``pyrangeyes`` can build an interactive browser figure with
+one mode selector per panel::
+
+    import pyrangeyes as pre
+
+    pre.set_engine("ply")
+    fig = pre.browser(
+        annotation,
+        adapter="mRNA",
+        text={"label": "{transcript_id}", "position": "right"},
+        color_col="Feature",
+        colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
+    )
+
+Each panel has a compact dropdown on its right side. Changing a dropdown affects
+only that panel, so different chromosomes or input PyRanges objects can use
+different views at the same time:
+
+* ``squish``: packed, compact, no labels.
+* ``packed``: packed with labels.
+* ``list``: unpacked rows without interval labels.
+* ``zip``: collapsed summary box for the panel.
+
+``browser`` is currently Plotly-only.
