@@ -20,7 +20,6 @@ from .data_preparation import (
     get_genes_metadata,
     get_chromosome_metadata,
     compute_thresh,
-    compute_tpad,
     subdf_assigncolor,
     assign_label_rows,
     _normalize_limits_to_panels,
@@ -38,10 +37,131 @@ from .names import (
     CUM_DELTA_COL,
     EXON_IX_COL,
     TEXT_PAD_COL,
+    TEXT_LABEL_COL,
+    TEXT_START_COL,
+    TEXT_END_COL,
+    TEXT_MID_COL,
+    TEXT_PAD_FRAC_COL,
+    TEXT_PAD_Y_COL,
+    TEXT_HEIGHT_COL,
     THICK_COL,
     SHAPE_COL,
     MARKER_SIZE_COL,
 )
+
+
+def _normalize_text_spec(text, packed):
+    """Normalize the public ``text=`` argument into a rendering spec."""
+    if text is None:
+        text = bool(packed)
+    if isinstance(text, bool):
+        return {
+            "enabled": text,
+            "label": None,
+            "position": "left",
+            "avoid_overlaps": text,
+            "use_label_for_overlap_avoidance": False,
+            "is_options_dict": False,
+        }
+    if isinstance(text, str):
+        return {
+            "enabled": True,
+            "label": text,
+            "position": "left",
+            "avoid_overlaps": True,
+            "use_label_for_overlap_avoidance": False,
+            "is_options_dict": False,
+        }
+    if not isinstance(text, dict):
+        raise TypeError("text must be None, bool, str, or a dict of text options.")
+
+    allowed = {
+        "enabled",
+        "label",
+        "position",
+        "avoid_overlaps",
+        "pad",
+        "size",
+        "color",
+        "angle",
+    }
+    extra = set(text) - allowed
+    if extra:
+        raise ValueError(f"Unknown text option(s): {sorted(extra)}")
+
+    enabled = text.get("enabled", True)
+    label = text.get("label")
+    if isinstance(label, bool):
+        enabled = label
+        label = None
+
+    position = text.get("position", "left")
+    allowed_positions = {"left", "right", "center", "above", "below"}
+    if position not in allowed_positions:
+        raise ValueError(
+            f"text position must be one of {sorted(allowed_positions)}; got {position!r}."
+        )
+
+    return {
+        "enabled": bool(enabled),
+        "label": label,
+        "position": position,
+        "avoid_overlaps": bool(text.get("avoid_overlaps", bool(enabled))),
+        "use_label_for_overlap_avoidance": True,
+        "is_options_dict": True,
+        "pad": text.get("pad", 1),
+        "size": text.get("size"),
+        "color": text.get("color"),
+        "angle": text.get("angle", 0),
+    }
+
+
+def _format_text_label(row, text_spec, genename):
+    if not text_spec["enabled"]:
+        return ""
+    label = text_spec.get("label")
+    if label is None:
+        return str(genename)
+    return str(label).format_map(row.to_dict())
+
+
+def _assign_text_group_spans(subdf, id_col, interval_height):
+    """Attach post-transform group spans used to position text labels."""
+    group_cols = [CHROM_COL, PR_INDEX_COL] + id_col
+    grouped = subdf.groupby(group_cols, observed=True, sort=False)
+    subdf[TEXT_START_COL] = grouped[START_COL].transform("min")
+    subdf[TEXT_END_COL] = grouped[END_COL].transform("max")
+    subdf[TEXT_MID_COL] = (subdf[TEXT_START_COL] + subdf[TEXT_END_COL]) / 2
+    # Vertical text at pad=0 should sit outside the full allocated interval row,
+    # not the possibly shorter rendered rectangle from height_col/adapters. This
+    # matches the intron-arrow envelope and keeps UTR-only labels from appearing
+    # inside the row's visual space.
+    subdf[TEXT_HEIGHT_COL] = interval_height
+    return subdf
+
+
+def _attach_panel_y_height(chrmd_df, genesmd_df, interval_height):
+    """Attach per-PyRanges-object panel height for percentage text padding."""
+    grouped = genesmd_df.groupby([CHROM_COL, PR_INDEX_COL], observed=True)["ycoord"]
+    panel_y_height = grouped.max() - grouped.min() + 0.5 + interval_height
+    return chrmd_df.join(panel_y_height.rename("y_height"))
+
+
+def _assign_text_pad_fraction(df, chrmd_df):
+    """Attach text pad as a fraction of the visible span on each axis."""
+    chrom = df[CHROM_COL].iloc[0]
+    pr_ix = df[PR_INDEX_COL].iloc[0]
+    chrmd = chrmd_df.loc[(chrom, pr_ix)]
+    x_range = df[END_COL].max() - df[START_COL].min()
+    if TEXT_PAD_FRAC_COL in df.columns:
+        frac = df[TEXT_PAD_FRAC_COL].iloc[0]
+    else:
+        frac = 0 if x_range == 0 else df[TEXT_PAD_COL].iloc[0] / x_range
+    df[TEXT_PAD_FRAC_COL] = [frac] * len(df)
+    df[TEXT_PAD_COL] = [frac * x_range] * len(df)
+    df[TEXT_PAD_Y_COL] = [frac * chrmd["y_height"]] * len(df)
+    return df
+
 
 # Check for matplotlib
 try:
@@ -225,11 +345,16 @@ def plot(
         must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
         Feature value other than exon and CDS will be discarded for plotting.
 
-    text: {None, bool, '{string}'}, default None
-        Whether an annotation should appear beside the gene in the plot. If None, text is enabled for packed
-        plots and disabled for unpacked plots to avoid duplicated row labels. If True, the id/index will be used. To
-        customize the annotation use the '{string}' option to choose another data column. Providing the text as
-        a '{data_column_name}' allows slicing in the case of strings by using '{data_column_name[:4]}'.
+    text: {None, bool, str, dict}, default None
+        Controls interval text annotations. If None, text is enabled for packed
+        plots and disabled for unpacked plots to avoid duplicated row labels.
+        If True, the id/index is used; if False, labels are disabled. A string
+        is interpreted as a format template such as ``"{Feature}"``.
+        A dictionary accepts ``label``, ``position`` (``"left"``,
+        ``"right"``, ``"center"``, ``"above"``,
+        ``"below"``), ``avoid_overlaps`` (reserve label space while packing),
+        ``pad`` (percentage of the visible span; ``pad=1`` means 1%; default 1),
+        ``size``, ``color``, and ``angle``.
 
     legend: bool, default False
         Whether the legend should appear in the plot.
@@ -307,8 +432,7 @@ def plot(
     >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
 
-    if text is None:
-        text = bool(packed)
+    text = _normalize_text_spec(text, packed)
 
     # Treat input data as list
     if not isinstance(data, list):
@@ -493,6 +617,10 @@ def plot(
         "shrunk_bkg": getvalue("shrunk_bkg"),
         "x_ticks": getvalue("x_ticks"),
     }
+    if text.get("pad") is not None:
+        feat_dict["text_pad"] = float(text["pad"]) / 100
+    if text.get("size") is not None:
+        feat_dict["text_size"] = float(text["size"])
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
     if colormap == "popart":
@@ -562,6 +690,16 @@ def plot(
     subdf["__id_col_2count__"] = list(
         zip(*[subdf[c] for c in [CHROM_COL] + [PR_INDEX_COL] + ID_COL])
     )
+    if text["enabled"]:
+
+        def _row_genename(row):
+            vals = [row[c] for c in ID_COL]
+            return vals[0] if len(vals) == 1 else tuple(vals)
+
+        subdf[TEXT_LABEL_COL] = [
+            _format_text_label(row, text, _row_genename(row))
+            for _, row in subdf.iterrows()
+        ]
 
     # Validate depth_col before rendering. Higher depth values are drawn later,
     # so they appear on top of lower-depth intervals when intervals overlap.
@@ -697,6 +835,12 @@ def plot(
         sort_ranges,
     )
 
+    if text["enabled"]:
+        labels = subdf.groupby(
+            [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
+        )[TEXT_LABEL_COL].first()
+        genesmd_df = genesmd_df.join(labels.rename(TEXT_LABEL_COL))
+
     genesmd_df = assign_label_rows(
         genesmd_df,
         ID_COL,
@@ -705,6 +849,10 @@ def plot(
         packed=packed,
         sort_ranges=sort_ranges,
         plot_limits=None,  # You can pass limits if needed
+        text_label_col=TEXT_LABEL_COL
+        if text.get("use_label_for_overlap_avoidance")
+        else None,
+        text_avoid=text["enabled"] and text["avoid_overlaps"],
     )
 
     # Create chromosome metadata DataFrame
@@ -715,6 +863,9 @@ def plot(
         packed,
         feat_dict["v_spacer"],
         feat_dict["interval_height"],
+    )
+    chrmd_df = _attach_panel_y_height(
+        chrmd_df, genesmd_df, feat_dict["interval_height"]
     )
     _attach_panel_display(chrmd_df_grouped, panel_display)
 
@@ -757,6 +908,12 @@ def plot(
             sort_ranges,
         )
 
+        if text["enabled"]:
+            labels = subdf.groupby(
+                [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
+            )[TEXT_LABEL_COL].first()
+            genesmd_df = genesmd_df.join(labels.rename(TEXT_LABEL_COL))
+
         genesmd_df = assign_label_rows(
             genesmd_df,
             ID_COL,
@@ -765,6 +922,10 @@ def plot(
             packed=packed,
             sort_ranges=sort_ranges,
             plot_limits=None,  # You can pass limits if needed
+            text_label_col=TEXT_LABEL_COL
+            if text.get("use_label_for_overlap_avoidance")
+            else None,
+            text_avoid=text["enabled"] and text["avoid_overlaps"],
         )
 
         # recompute limits
@@ -776,6 +937,9 @@ def plot(
             feat_dict["v_spacer"],
             feat_dict["interval_height"],
             ts_data=ts_data,
+        )
+        chrmd_df = _attach_panel_y_height(
+            chrmd_df, genesmd_df, feat_dict["interval_height"]
         )
         _attach_panel_display(chrmd_df_grouped, panel_display)
 
@@ -793,6 +957,8 @@ def plot(
     subdf[EXON_IX_COL] = subdf.groupby(
         [CHROM_COL, PR_INDEX_COL] + ID_COL, group_keys=False, observed=True
     ).cumcount()
+    if text["enabled"]:
+        subdf = _assign_text_group_spans(subdf, ID_COL, feat_dict["interval_height"])
     genesmd_df.sort_values([CHROM_COL, PR_INDEX_COL] + [START_COL], inplace=True)
 
     # Deal with text_pad
@@ -800,10 +966,11 @@ def plot(
     if isinstance(text_pad, int):
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
     elif isinstance(text_pad, float):
+        subdf[TEXT_PAD_FRAC_COL] = [text_pad] * len(subdf)
         subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
-        subdf = subdf.groupby(CHROM_COL, group_keys=False, observed=True)[
-            subdf.columns
-        ].apply(lambda x: compute_tpad(x if not x.empty else x, chrmd_df_grouped))
+    subdf = subdf.groupby([CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True)[
+        subdf.columns
+    ].apply(lambda x: _assign_text_pad_fraction(x, chrmd_df))
 
     # Deal with added plots
     if (len(chrmd_df_grouped) > 1) and add_aligned_plots:

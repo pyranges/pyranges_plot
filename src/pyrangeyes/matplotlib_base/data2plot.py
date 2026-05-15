@@ -10,6 +10,12 @@ from ..names import (
     ADJEND_COL,
     EXON_IX_COL,
     TEXT_PAD_COL,
+    TEXT_LABEL_COL,
+    TEXT_START_COL,
+    TEXT_END_COL,
+    TEXT_MID_COL,
+    TEXT_PAD_Y_COL,
+    TEXT_HEIGHT_COL,
     COLOR_INFO,
     BORDER_COLOR_COL,
     MARKER_SIZE_COL,
@@ -239,23 +245,71 @@ def plot_row(
     make_annotation(exon_patch, fig, ax, geneinfo, tag_background)
 
     # Add ID annotation if it is the first exon
-    if row[EXON_IX_COL] == 0 and text:
+    text_enabled = text.get("enabled", True) if isinstance(text, dict) else bool(text)
+    if row[EXON_IX_COL] == 0 and text_enabled:
         text_pad = row[TEXT_PAD_COL]
-        # text == True
-        if isinstance(text, bool):
+        if isinstance(text, dict):
+            ann = row.get(TEXT_LABEL_COL, genename)
+            position = text.get("position", "left")
+            color = text.get("color") or plot_border
+            angle = text.get("angle", 0)
+            font_size = text.get("size") or text_size
+            raw_pad = text.get("pad")
+        elif isinstance(text, bool):
             ann = genename
-        # text == '{string}'
+            position = "left"
+            color = plot_border
+            angle = 0
+            font_size = text_size
+            raw_pad = None
         else:
             row_dict = row.to_dict()
             ann = text.format_map(row_dict)
+            position = "left"
+            color = plot_border
+            angle = 0
+            font_size = text_size
+            raw_pad = None
+
+        vertical_pad = 0.04
+        if raw_pad is not None:
+            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+
+        group_start = row.get(TEXT_START_COL, start)
+        group_end = row.get(TEXT_END_COL, stop)
+        group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
+
+        x = group_start - text_pad
+        y = gene_ix
+        ha = "right"
+        va = "center"
+        if position == "right":
+            x = group_end + text_pad
+            ha = "left"
+        elif position == "center":
+            x = group_mid
+            ha = "center"
+        elif position == "above":
+            x = group_mid
+            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+            y = gene_ix + group_height / 2 + vertical_pad
+            ha = "center"
+            va = "bottom"
+        elif position == "below":
+            x = group_mid
+            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+            y = gene_ix - group_height / 2 - vertical_pad
+            ha = "center"
+            va = "top"
 
         ax.annotate(
             ann,
-            xy=(start - text_pad, gene_ix),
-            horizontalalignment="right",
-            verticalalignment="center",
-            color=plot_border,
-            fontsize=text_size,
+            xy=(x, y),
+            horizontalalignment=ha,
+            verticalalignment=va,
+            color=color,
+            fontsize=font_size,
+            rotation=angle,
         )
 
     # Plot DIRECTION ARROW in EXON

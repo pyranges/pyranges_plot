@@ -61,7 +61,7 @@ def compute_tpad(df, chrmd_df_grouped):
     chrom = df[CHROM_COL].iloc[0]
     chrmd = chrmd_df_grouped.loc[chrom]
     limit_range = chrmd["max"] - chrmd["min"]
-    df[TEXT_PAD_COL] = [int(df[TEXT_PAD_COL].iloc[0] * limit_range)] * len(df)
+    df[TEXT_PAD_COL] = [df[TEXT_PAD_COL].iloc[0] * limit_range] * len(df)
 
     return df
 
@@ -875,7 +875,15 @@ def no_overlap(a, b, pad=2, pw=None):
 
 
 def assign_label_rows(
-    subdf, id_col, PR_INDEX_COL, text_pad, packed, sort_ranges, plot_limits=None
+    subdf,
+    id_col,
+    PR_INDEX_COL,
+    text_pad,
+    packed,
+    sort_ranges,
+    plot_limits=None,
+    text_label_col=None,
+    text_avoid=True,
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -945,11 +953,14 @@ def assign_label_rows(
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
             # In case sort_ranges is true we reorder the df by start
             if sort_ranges:
+                agg = {"Start_min": ("Start", "min"), "End_max": ("End", "max")}
+                if text_label_col and text_label_col in sub.columns:
+                    agg[text_label_col] = (text_label_col, "first")
                 gdf = (
                     sub.groupby(
                         [PR_INDEX_COL] + id_col, observed=True, sort=sort_ranges
                     )
-                    .agg(Start_min=("Start", "min"), End_max=("End", "max"))
+                    .agg(**agg)
                     .reset_index()
                 )
             else:
@@ -967,21 +978,27 @@ def assign_label_rows(
                         (sub[PR_INDEX_COL] == pr_ix)
                         & (sub[id_col].apply(tuple, axis=1) == id_vals)
                     ]
-                    records.append(
-                        {
-                            PR_INDEX_COL: pr_ix,
-                            **{c: v for c, v in zip(id_col, id_vals)},
-                            "Start_min": g["Start"].min(),
-                            "End_max": g["End"].max(),
-                        }
-                    )
+                    record = {
+                        PR_INDEX_COL: pr_ix,
+                        **{c: v for c, v in zip(id_col, id_vals)},
+                        "Start_min": g["Start"].min(),
+                        "End_max": g["End"].max(),
+                    }
+                    if text_label_col and text_label_col in g.columns:
+                        record[text_label_col] = g[text_label_col].iloc[0]
+                    records.append(record)
 
                 gdf = pd.DataFrame(records)
 
             rows = []  # each element = row interval
             for _, g in gdf.iterrows():
                 if packed:
-                    label_len = len(str(tuple(g[id_col])))
+                    label_len = 0
+                    if text_avoid:
+                        if text_label_col and text_label_col in g:
+                            label_len = len(str(g[text_label_col]))
+                        else:
+                            label_len = len(str(tuple(g[id_col])))
                     # agafem l'interval VISUAL del grup connectat
                     vsp = visual_spans[
                         (visual_spans[PR_INDEX_COL] == g[PR_INDEX_COL])

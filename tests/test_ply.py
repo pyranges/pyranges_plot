@@ -570,6 +570,45 @@ test_cases = [
             return_plot="fig",
         ),
     ),
+    (
+        "test31",
+        pre.plot(
+            data1,
+            id_col="transcript_id",
+            color_col="transcript_id",
+            text={
+                "label": "{transcript_id}:{Feature}",
+                "position": "right",
+                "avoid_overlaps": False,
+                "pad": 1,
+                "size": 8,
+            },
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test32",
+        pre.plot(
+            data7,
+            id_col="id",
+            color_col="fill",
+            colormap="direct",
+            text={"label": "{id}", "position": "center", "color": "white", "size": 9},
+            return_plot="fig",
+        ),
+    ),
+    (
+        "test33",
+        pre.plot(
+            data8,
+            "SNP",
+            color_col="ALT",
+            text={"label": "{REF}>{ALT}", "position": "above", "angle": 20, "size": 8},
+            sort_ranges=True,
+            return_plot="fig",
+        ),
+    ),
 ]
 
 """

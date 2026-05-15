@@ -10,6 +10,12 @@ from ..names import (
     ADJEND_COL,
     EXON_IX_COL,
     TEXT_PAD_COL,
+    TEXT_LABEL_COL,
+    TEXT_START_COL,
+    TEXT_END_COL,
+    TEXT_MID_COL,
+    TEXT_PAD_Y_COL,
+    TEXT_HEIGHT_COL,
     COLOR_INFO,
     COLOR_TAG_COL,
     BORDER_COLOR_COL,
@@ -271,28 +277,87 @@ def plot_row(
         )
 
     # Add ID annotation if it is the first exon
-    if row[EXON_IX_COL] == 0 and text:
+    text_enabled = text.get("enabled", True) if isinstance(text, dict) else bool(text)
+    if row[EXON_IX_COL] == 0 and text_enabled:
         text_pad = row[TEXT_PAD_COL]
-        # text == True
-        if isinstance(text, bool):
+        if isinstance(text, dict):
+            ann = str(row.get(TEXT_LABEL_COL, genename))
+            position = text.get("position", "left")
+            color = text.get("color")
+            angle = text.get("angle", 0)
+            font_size = text.get("size") or text_size
+            raw_pad = text.get("pad")
+        elif isinstance(text, bool):
             ann = str(genename)
-        # text == '{string}'
+            position = "left"
+            color = None
+            angle = 0
+            font_size = text_size
+            is_text_dict = False
+            raw_pad = None
         else:
             row_dict = row.to_dict()
             ann = text.format(**row_dict)
+            position = "left"
+            color = None
+            angle = 0
+            font_size = text_size
+            is_text_dict = False
+            raw_pad = None
+        if isinstance(text, dict):
+            is_text_dict = text.get("is_options_dict", False)
+
+        vertical_pad = 0.04
+        if raw_pad is not None:
+            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+
+        group_start = row.get(TEXT_START_COL, x0)
+        group_end = row.get(TEXT_END_COL, x1)
+        group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
+
+        x = group_start - text_pad
+        y = (y0 + y1) / 2
+        xanchor = "right"
+        yanchor = "middle"
+        if position == "right":
+            x = group_end + text_pad
+            xanchor = "left"
+        elif position == "center":
+            x = group_mid
+            xanchor = "center"
+        elif position == "above":
+            x = group_mid
+            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+            y = (y0 + y1) / 2 + group_height / 2 + vertical_pad
+            xanchor = "center"
+            yanchor = "bottom"
+        elif position == "below":
+            x = group_mid
+            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+            y = (y0 + y1) / 2 - group_height / 2 - vertical_pad
+            xanchor = "center"
+            yanchor = "top"
+
+        font = {"size": font_size}
+        if color is not None:
+            font["color"] = color
+
+        annotation = dict(
+            x=x,
+            y=y,
+            showarrow=False,
+            text=ann,
+            textangle=-angle,
+            xanchor=xanchor,
+        )
+        if is_text_dict:
+            annotation["yanchor"] = yanchor
 
         fig.add_annotation(
-            dict(
-                x=x0 - text_pad,
-                y=(y0 + y1) / 2,
-                showarrow=False,
-                text=ann,
-                textangle=0,
-                xanchor="right",
-            ),
+            annotation,
             row=chrom_ix + 1,
             col=1,
-            font={"size": text_size},
+            font=font,
         )
 
     # Plot DIRECTION ARROW in EXON

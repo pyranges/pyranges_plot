@@ -70,7 +70,7 @@ plot_features_dict = {
         " ",
     ),
     "text_pad": (
-        0.008,
+        0.003,
         "Space where the id annotation is placed beside the interval. When text_pad is float, it represents the percentage of the plot space, while an int pad represents number of positions or base pairs.",
         " ",
     ),
