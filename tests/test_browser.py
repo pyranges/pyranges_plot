@@ -62,6 +62,20 @@ def test_browser_uses_plot_like_chrom_panels_for_multiple_objects():
     assert fig.layout.yaxis2 is not None
 
 
+def test_browser_mode_buttons_update_panel_shapes_and_y_range():
+    pre.set_engine("ply")
+    data = _browser_data()
+    fig = pre.browser([data, data], id_col="id")
+
+    assert len(fig.layout.shapes) > 0
+    first_menu = fig.layout.updatemenus[0]
+    full_button = first_menu.buttons[3]
+    layout_update = full_button.args[1]
+
+    assert any(key.startswith("shapes[") for key in layout_update)
+    assert "yaxis.range" in layout_update
+
+
 def test_browser_default_mode_controls_initial_visibility():
     pre.set_engine("ply")
     fig = pre.browser(_browser_data(), id_col="id", default_mode="zip")
