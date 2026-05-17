@@ -53,6 +53,15 @@ def test_browser_buttons_update_only_their_panel_traces():
     assert len(second_zip.args[0]["visible"]) == len(second_trace_indices)
 
 
+def test_browser_uses_plot_like_chrom_panels_for_multiple_objects():
+    pre.set_engine("ply")
+    data = _browser_data()
+    fig = pre.browser([data, data], id_col="id")
+
+    assert len(fig.layout.updatemenus) == 2
+    assert fig.layout.yaxis2 is not None
+
+
 def test_browser_default_mode_controls_initial_visibility():
     pre.set_engine("ply")
     fig = pre.browser(_browser_data(), id_col="id", default_mode="zip")

@@ -5,6 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import dataclass
 
+import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from pyranges1.core.names import CHROM_COL, START_COL, END_COL
@@ -56,16 +57,24 @@ def _split_panels(data, adapter=None):
     data_l = _as_list(data)
 
     if isinstance(data, list):
-        for data_ix, pr_obj in enumerate(data_l):
-            panels.append(
-                BrowserPanel(
-                    len(panels),
-                    None,
-                    data_ix,
-                    pr_obj,
-                    _adapter_for(adapter, data_ix, len(data_l)),
+        if all(CHROM_COL in pr_obj.columns for pr_obj in data_l):
+            chroms = []
+            for pr_obj in data_l:
+                for chrom in list(pr_obj[CHROM_COL].drop_duplicates()):
+                    if chrom not in chroms:
+                        chroms.append(chrom)
+            for chrom in chroms:
+                panels.append(
+                    BrowserPanel(
+                        len(panels),
+                        chrom,
+                        0,
+                        [pr_obj[pr_obj[CHROM_COL] == chrom] for pr_obj in data_l],
+                        adapter,
+                    )
                 )
-            )
+        else:
+            panels.append(BrowserPanel(0, None, 0, data_l, adapter))
         return panels
 
     for data_ix, pr_obj in enumerate(data_l):
@@ -106,7 +115,7 @@ def _mode_kwargs(mode, base_kwargs, base_text, base_interval_height):
     elif mode == "packed":
         kwargs.update(packed=True, text=base_text if base_text is not None else True)
     elif mode == "full":
-        kwargs.update(packed=False, text=False, y_labels=[""])
+        kwargs.update(packed=False, text=False)
     elif mode == "zip":
         return kwargs
     else:
@@ -157,7 +166,11 @@ def _add_source_figure(master, source, row, visible):
 
 
 def _zip_summary(panel, id_col=None):
-    df = panel.data
+    df = (
+        pd.concat(panel.data, ignore_index=True)
+        if isinstance(panel.data, list)
+        else panel.data
+    )
     start = int(df[START_COL].min()) if START_COL in df.columns and len(df) else 0
     end = int(df[END_COL].max()) if END_COL in df.columns and len(df) else 1
     n_intervals = len(df)
