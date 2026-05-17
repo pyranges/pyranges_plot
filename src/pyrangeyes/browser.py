@@ -108,15 +108,23 @@ def _chroms_from_data(data):
 def _panels_for_figure(data, fig):
     """Return panels in the same row order as plot() uses for chromosome subplots."""
     chroms = _chroms_from_data(data)
-    panels = [BrowserPanel(ix, chrom, _data_for_chrom(data, chrom)) for ix, chrom in enumerate(chroms)]
+    panels = [
+        BrowserPanel(ix, chrom, _data_for_chrom(data, chrom))
+        for ix, chrom in enumerate(chroms)
+    ]
     yaxes = _layout_yaxis_names(fig)
     if len(panels) != len(yaxes):
         # Fallback for future plot() layouts that do not map 1:1 to chromosome rows.
-        panels = [BrowserPanel(ix, chroms[ix] if ix < len(chroms) else None, data) for ix in range(len(yaxes))]
+        panels = [
+            BrowserPanel(ix, chroms[ix] if ix < len(chroms) else None, data)
+            for ix in range(len(yaxes))
+        ]
     return panels
 
 
-def _plot_mode_figure(data, adapter, mode, base_kwargs, base_text, base_interval_height):
+def _plot_mode_figure(
+    data, adapter, mode, base_kwargs, base_text, base_interval_height
+):
     kwargs = _mode_kwargs(mode, base_kwargs, base_text, base_interval_height)
     return plot(
         data,
@@ -286,9 +294,12 @@ def browser(
 
     if default_mode == "zip":
         layout_mode = next((mode for mode in modes if mode != "zip"), "packed")
-        base_fig = deepcopy(mode_figures.get(layout_mode) or _plot_mode_figure(
-            data, adapter, "packed", base_kwargs, base_text, base_interval_height
-        ))
+        base_fig = deepcopy(
+            mode_figures.get(layout_mode)
+            or _plot_mode_figure(
+                data, adapter, "packed", base_kwargs, base_text, base_interval_height
+            )
+        )
         for trace in base_fig.data:
             trace.visible = False
         for annotation in base_fig.layout.annotations or []:
@@ -304,9 +315,15 @@ def browser(
     panel_trace_indices = {panel.yaxis_ref: [] for panel in panels}
     panel_annotation_indices = {panel.yaxis_ref: [] for panel in panels}
     panel_shape_indices = {panel.yaxis_ref: [] for panel in panels}
-    panel_mode_traces = {panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels}
-    panel_mode_annotations = {panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels}
-    panel_mode_shapes = {panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels}
+    panel_mode_traces = {
+        panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels
+    }
+    panel_mode_annotations = {
+        panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels
+    }
+    panel_mode_shapes = {
+        panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels
+    }
     panel_mode_ranges = {panel.yaxis_ref: {} for panel in panels}
 
     for ix, trace in enumerate(base_fig.data):
@@ -339,7 +356,9 @@ def browser(
             panel_mode_ranges[panel.yaxis_ref][default_mode] = [0, 1]
         else:
             panel_mode_ranges[panel.yaxis_ref].update(
-                _copy_layout_from_mode(base_fig, mode_figures[default_mode], panel, default_mode)
+                _copy_layout_from_mode(
+                    base_fig, mode_figures[default_mode], panel, default_mode
+                )
             )
 
     for mode in modes:
@@ -351,7 +370,9 @@ def browser(
                 trace.visible = default_mode == "zip"
                 base_fig.add_trace(trace)
                 trace_ix = len(base_fig.data) - 1
-                base_fig.add_annotation({**annotation, "visible": default_mode == "zip"})
+                base_fig.add_annotation(
+                    {**annotation, "visible": default_mode == "zip"}
+                )
                 ann_ix = len(base_fig.layout.annotations) - 1
                 panel_trace_indices[panel.yaxis_ref].append(trace_ix)
                 panel_annotation_indices[panel.yaxis_ref].append(ann_ix)
