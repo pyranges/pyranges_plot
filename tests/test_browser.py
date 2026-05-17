@@ -27,20 +27,22 @@ def test_browser_adds_one_mode_button_per_panel():
 
     assert len(fig.layout.updatemenus) == 2
     assert [button.label for button in fig.layout.updatemenus[0].buttons] == [
-        "squish",
-        "packed",
-        "list",
-        "zip",
+        "Zip",
+        "Squish",
+        "Packed",
+        "Full",
     ]
-    assert all(menu.x > 1 for menu in fig.layout.updatemenus)
+    assert all(menu.x <= 1 for menu in fig.layout.updatemenus)
+    assert fig.layout.dragmode == "select"
+    assert fig.layout.selectdirection == "h"
 
 
 def test_browser_buttons_update_only_their_panel_traces():
     pre.set_engine("ply")
     fig = pre.browser(_browser_data(), id_col="id")
     first_menu, second_menu = fig.layout.updatemenus
-    first_zip = first_menu.buttons[3]
-    second_zip = second_menu.buttons[3]
+    first_zip = first_menu.buttons[0]
+    second_zip = second_menu.buttons[0]
 
     first_trace_indices = list(first_zip.args[2])
     second_trace_indices = list(second_zip.args[2])
@@ -55,7 +57,7 @@ def test_browser_default_mode_controls_initial_visibility():
     pre.set_engine("ply")
     fig = pre.browser(_browser_data(), id_col="id", default_mode="zip")
 
-    zip_button = fig.layout.updatemenus[0].buttons[3]
+    zip_button = fig.layout.updatemenus[0].buttons[0]
     panel_trace_indices = list(zip_button.args[2])
     zip_visible_mask = list(zip_button.args[0]["visible"])
     actual_visible_mask = [
