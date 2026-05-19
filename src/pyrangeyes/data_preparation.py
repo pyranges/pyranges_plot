@@ -1016,7 +1016,12 @@ def assign_label_rows(
                     assigned_row = None
                     for rid, row_intervals in enumerate(rows):
                         if all(
-                            no_overlap(interval, (s0, e0), pw=plot_width)
+                            no_overlap(
+                                interval,
+                                (s0, e0),
+                                pad=0 if not text_avoid else 2,
+                                pw=None if not text_avoid else plot_width,
+                            )
                             for s0, e0 in row_intervals
                         ):
                             assigned_row = rid

@@ -1022,3 +1022,24 @@ visualization. Here's how you can achieve this configuration:
         p.run_server(debug=True)
 
 .. image:: images/prp_rtd_28.png
+
+Interactive browsing
+--------------------
+
+After configuring a Plotly plot, use ``pre.browse()`` when you want the same
+figure layout with per-panel view controls::
+
+    import pyrangeyes as pre
+
+    pre.set_engine("ply")
+    fig = pre.browse(
+        annotation,
+        adapter="mRNA",
+        text={"label": "{transcript_id}", "position": "right"},
+        color_col="Feature",
+        colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
+    )
+
+Each panel gets a compact selector for ``squish``, ``packed``, ``list``, or
+``zip`` mode, and switching one panel does not affect the others. ``browse()`` is
+currently Plotly-only.
