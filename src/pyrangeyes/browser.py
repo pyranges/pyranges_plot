@@ -237,8 +237,6 @@ def _axis_layout(fig, yaxis_name):
     return layout
 
 
-
-
 def _mode_weight(axis_layout, mode):
     if mode == "zip":
         return 0.12
@@ -281,7 +279,9 @@ def _mixed_domains(
         for panel in panels
     ]
     panel_heights = [
-        _panel_pixel_height(panel_mode_axis_layouts[panel.yaxis_ref][panel_mode], panel_mode)
+        _panel_pixel_height(
+            panel_mode_axis_layouts[panel.yaxis_ref][panel_mode], panel_mode
+        )
         for panel, panel_mode in zip(panels, panel_modes)
     ]
     gap_px = 60 if len(panels) > 1 else 0
@@ -296,7 +296,9 @@ def _mixed_domains(
         bottom = (top_px - panel_height) / plot_height
         domains[f"{panel.yaxis_name}.domain"] = [bottom, top]
         if ix < len(panel_title_indices):
-            domains[f"annotations[{panel_title_indices[ix]}].y"] = top + 20 / plot_height
+            domains[f"annotations[{panel_title_indices[ix]}].y"] = (
+                top + 20 / plot_height
+            )
         if ix < len(menu_indices):
             domains[f"updatemenus[{menu_indices[ix]}].y"] = top + 20 / plot_height
         top_px -= panel_height + gap_px
@@ -491,7 +493,12 @@ def browse(
 
     for panel in panels:
         if default_mode == "zip":
-            panel_mode_axis_layouts[panel.yaxis_ref][default_mode] = {"range": [0, 1], "visible": False, "tickvals": [], "ticktext": []}
+            panel_mode_axis_layouts[panel.yaxis_ref][default_mode] = {
+                "range": [0, 1],
+                "visible": False,
+                "tickvals": [],
+                "ticktext": [],
+            }
             panel_mode_xaxis_layouts[panel.yaxis_ref][default_mode] = {"visible": False}
         else:
             panel_mode_axis_layouts[panel.yaxis_ref].update(
@@ -518,7 +525,12 @@ def browse(
                 panel_annotation_indices[panel.yaxis_ref].append(ann_ix)
                 panel_mode_traces[panel.yaxis_ref][mode].append(trace_ix)
                 panel_mode_annotations[panel.yaxis_ref][mode].append(ann_ix)
-                panel_mode_axis_layouts[panel.yaxis_ref][mode] = {"range": [0, 1], "visible": False, "tickvals": [], "ticktext": []}
+                panel_mode_axis_layouts[panel.yaxis_ref][mode] = {
+                    "range": [0, 1],
+                    "visible": False,
+                    "tickvals": [],
+                    "ticktext": [],
+                }
                 panel_mode_xaxis_layouts[panel.yaxis_ref][mode] = {"visible": False}
                 continue
 
@@ -652,7 +664,9 @@ def browse(
         for panel in panels
     ]
     base_fig.update_layout(
-        height=_figure_height(default_panel_heights, gap_px=60 if len(panels) > 1 else 0),
+        height=_figure_height(
+            default_panel_heights, gap_px=60 if len(panels) > 1 else 0
+        ),
         updatemenus=updatemenus,
         showlegend=False,
         dragmode="select",
