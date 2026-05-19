@@ -1023,16 +1023,16 @@ visualization. Here's how you can achieve this configuration:
 
 .. image:: images/prp_rtd_28.png
 
-Interactive browser panels
---------------------------
+Interactive browsing
+--------------------
 
-For Plotly output, ``pyrangeyes`` can build an interactive browser figure with
-one mode selector per panel::
+After configuring a Plotly plot, use ``pre.browse()`` when you want the same
+figure layout with per-panel view controls::
 
     import pyrangeyes as pre
 
     pre.set_engine("ply")
-    fig = pre.browser(
+    fig = pre.browse(
         annotation,
         adapter="mRNA",
         text={"label": "{transcript_id}", "position": "right"},
@@ -1040,13 +1040,6 @@ one mode selector per panel::
         colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
     )
 
-Each panel has a compact dropdown on its right side. Changing a dropdown affects
-only that panel, so different chromosomes or input PyRanges objects can use
-different views at the same time:
-
-* ``squish``: packed, compact, no labels.
-* ``packed``: packed with labels.
-* ``list``: unpacked rows without interval labels.
-* ``zip``: collapsed summary box for the panel.
-
-``browser`` is currently Plotly-only.
+Each panel gets a compact selector for ``squish``, ``packed``, ``list``, or
+``zip`` mode, and switching one panel does not affect the others. ``browse()`` is
+currently Plotly-only.

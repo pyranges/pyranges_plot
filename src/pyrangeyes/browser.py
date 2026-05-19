@@ -39,6 +39,10 @@ class BrowserPanel:
         return "x" if self.index == 0 else f"x{self.index + 1}"
 
     @property
+    def xaxis_name(self):
+        return "xaxis" if self.index == 0 else f"xaxis{self.index + 1}"
+
+    @property
     def yaxis_ref(self):
         return "y" if self.index == 0 else f"y{self.index + 1}"
 
@@ -75,9 +79,12 @@ def _mode_kwargs(mode, base_kwargs, base_text, base_interval_height):
             v_spacer=min(kwargs.get("v_spacer", 0.2), 0.08),
         )
     elif mode == "packed":
-        kwargs.update(packed=True, text=base_text if base_text is not None else True)
+        packed_text = base_text
+        if packed_text is None or packed_text is True:
+            packed_text = {"enabled": True, "avoid_overlaps": True}
+        kwargs.update(packed=True, text=packed_text)
     elif mode == "full":
-        kwargs.update(packed=False, text=False)
+        kwargs.update(packed=False, text=False, y_labels=kwargs.get("y_labels", None))
     else:
         raise ValueError(
             f"Unknown browser mode {mode!r}; expected one of {BROWSER_MODES}."
@@ -179,11 +186,135 @@ def _layout_yaxis_names(fig):
     return names
 
 
+def _jsonish(value):
+    if value is None:
+        return None
+    if hasattr(value, "tolist"):
+        value = value.tolist()
+    if isinstance(value, tuple):
+        return list(value)
+    if isinstance(value, list):
+        return [_jsonish(item) for item in value]
+    return value
+
+
 def _axis_range(fig, yaxis_name):
     axis = getattr(fig.layout, yaxis_name)
     if axis.range is not None:
         return list(axis.range)
     return None
+
+
+def _axis_layout(fig, yaxis_name):
+    axis = getattr(fig.layout, yaxis_name)
+    axis_json = axis.to_plotly_json()
+    layout = {}
+    for key in (
+        "range",
+        "domain",
+        "tickmode",
+        "tickvals",
+        "ticktext",
+        "showticklabels",
+        "showgrid",
+        "zeroline",
+        "showline",
+        "linewidth",
+        "linecolor",
+        "mirror",
+        "color",
+        "fixedrange",
+        "visible",
+    ):
+        if key in axis_json:
+            layout[key] = _jsonish(axis_json[key])
+    layout.setdefault("visible", True)
+
+    # Plotly does not remove old tick labels unless they are explicitly
+    # overwritten, so packed/squish/zip switches must clear labels left by full.
+    layout.setdefault("tickvals", [])
+    layout.setdefault("ticktext", [])
+    return layout
+
+
+
+
+def _mode_weight(axis_layout, mode):
+    if mode == "zip":
+        return 0.12
+    axis_range = axis_layout.get("range") or [0, 1]
+    if len(axis_range) < 2:
+        return 1.0
+    span = abs(float(axis_range[1]) - float(axis_range[0]))
+    return span or 1.0
+
+
+def _panel_pixel_height(axis_layout, mode):
+    if mode == "zip":
+        return 58
+    span = _mode_weight(axis_layout, mode)
+    if mode == "squish":
+        return max(20, round(span / 0.25 * 8))
+    if mode in {"packed", "full"}:
+        return max(48, round(span / 0.6 * 18))
+    return max(48, round(span * 30))
+
+
+def _figure_height(panel_heights, gap_px=60, margin_px=120):
+    if not panel_heights:
+        return margin_px
+    return margin_px + sum(panel_heights) + gap_px * (len(panel_heights) - 1)
+
+
+def _mixed_domains(
+    panels,
+    base_fig,
+    panel_mode_axis_layouts,
+    active_panel,
+    mode,
+    default_mode,
+    panel_title_indices=(),
+    menu_indices=(),
+):
+    panel_modes = [
+        mode if panel.yaxis_ref == active_panel.yaxis_ref else default_mode
+        for panel in panels
+    ]
+    panel_heights = [
+        _panel_pixel_height(panel_mode_axis_layouts[panel.yaxis_ref][panel_mode], panel_mode)
+        for panel, panel_mode in zip(panels, panel_modes)
+    ]
+    gap_px = 60 if len(panels) > 1 else 0
+    plot_height = sum(panel_heights) + gap_px * max(0, len(panel_heights) - 1)
+    if plot_height <= 0:
+        return {}
+
+    domains = {"height": _figure_height(panel_heights, gap_px=gap_px)}
+    top_px = plot_height
+    for ix, (panel, panel_height) in enumerate(zip(panels, panel_heights)):
+        top = top_px / plot_height
+        bottom = (top_px - panel_height) / plot_height
+        domains[f"{panel.yaxis_name}.domain"] = [bottom, top]
+        if ix < len(panel_title_indices):
+            domains[f"annotations[{panel_title_indices[ix]}].y"] = top + 20 / plot_height
+        if ix < len(menu_indices):
+            domains[f"updatemenus[{menu_indices[ix]}].y"] = top + 20 / plot_height
+        top_px -= panel_height + gap_px
+    return domains
+
+
+def _panel_title_indices(fig, panels):
+    indices = []
+    for ix, annotation in enumerate(fig.layout.annotations or []):
+        if len(indices) >= len(panels):
+            break
+        if _is_panel_annotation(annotation):
+            continue
+        xref = getattr(annotation, "xref", None)
+        yref = getattr(annotation, "yref", None)
+        if xref == "paper" and yref == "paper":
+            indices.append(ix)
+    return indices
 
 
 def _trace_values(values):
@@ -227,12 +358,9 @@ def _zip_trace_and_annotation(panel, id_col=None):
     if end <= start:
         end = start + 1
     trace = go.Scatter(
-        x=[start, end, end, start, start],
-        y=[0.25, 0.25, 0.75, 0.75, 0.25],
-        mode="lines",
-        fill="toself",
-        fillcolor="rgba(180, 190, 205, 0.25)",
-        line=dict(color="rgba(80, 90, 110, 0.8)", width=1),
+        x=[],
+        y=[],
+        mode="markers",
         hoverinfo="skip",
         showlegend=False,
         xaxis=panel.xaxis_ref,
@@ -253,13 +381,15 @@ def _zip_trace_and_annotation(panel, id_col=None):
 
 def _copy_layout_from_mode(base_fig, mode_fig, panel, mode):
     yaxis_name = panel.yaxis_name
-    axis_range = _axis_range(mode_fig, yaxis_name)
-    if axis_range is None:
-        axis_range = _axis_range_from_trace_values(mode_fig.data, panel.yaxis_ref)
-    return {mode: axis_range}
+    axis_layout = _axis_layout(mode_fig, yaxis_name)
+    if "range" not in axis_layout or axis_layout["range"] is None:
+        axis_layout["range"] = _axis_range_from_trace_values(
+            mode_fig.data, panel.yaxis_ref
+        )
+    return {mode: axis_layout}
 
 
-def browser(
+def browse(
     data,
     adapter=None,
     *,
@@ -269,15 +399,22 @@ def browser(
     return_plot="fig",
     **kwargs,
 ):
-    """Create a Plotly figure with per-panel view controls.
+    """Build an interactive Plotly interval browser.
 
-    ``browser()`` deliberately reuses the regular Plotly ``plot()`` output for
-    layout, axes, subplot structure, multi-object stacking, titles, and default
-    interactivity. It layers alternate view traces and per-panel mode controls on
-    top of that figure instead of rebuilding the plot layout from scratch.
+    ``browse()`` starts from the regular ``plot()`` Plotly figure, preserving its
+    layout, axes, subplot structure, titles, multi-object stacking, and standard
+    interactivity. It then adds alternate per-panel interval views and compact
+    mode selectors so each chromosome or input panel can switch independently
+    between ``"squish"``, ``"packed"``, ``"list"``, and ``"zip"`` views.
+
+    Parameters are the same as ``plot()`` unless listed here. ``modes`` selects
+    the available views, ``default_mode`` chooses the initial view, and
+    ``button_x`` positions the panel selectors. The function is Plotly-only and
+    returns a Plotly figure by default; pass ``return_plot`` as for ``plot()`` to
+    request another supported Plotly return type.
     """
     if get_engine() not in {"ply", "plotly"}:
-        raise ValueError("browser() is Plotly-only; call pre.set_engine('ply') first.")
+        raise ValueError("browse() is Plotly-only; call pre.set_engine('ply') first.")
 
     modes, default_mode = _normalize_modes(modes, default_mode)
     base_kwargs = deepcopy(kwargs)
@@ -324,7 +461,8 @@ def browser(
     panel_mode_shapes = {
         panel.yaxis_ref: {mode: [] for mode in modes} for panel in panels
     }
-    panel_mode_ranges = {panel.yaxis_ref: {} for panel in panels}
+    panel_mode_axis_layouts = {panel.yaxis_ref: {} for panel in panels}
+    panel_mode_xaxis_layouts = {panel.yaxis_ref: {} for panel in panels}
 
     for ix, trace in enumerate(base_fig.data):
         yref = _trace_axis_ref(trace, "yaxis")
@@ -353,13 +491,15 @@ def browser(
 
     for panel in panels:
         if default_mode == "zip":
-            panel_mode_ranges[panel.yaxis_ref][default_mode] = [0, 1]
+            panel_mode_axis_layouts[panel.yaxis_ref][default_mode] = {"range": [0, 1], "visible": False, "tickvals": [], "ticktext": []}
+            panel_mode_xaxis_layouts[panel.yaxis_ref][default_mode] = {"visible": False}
         else:
-            panel_mode_ranges[panel.yaxis_ref].update(
+            panel_mode_axis_layouts[panel.yaxis_ref].update(
                 _copy_layout_from_mode(
                     base_fig, mode_figures[default_mode], panel, default_mode
                 )
             )
+            panel_mode_xaxis_layouts[panel.yaxis_ref][default_mode] = {"visible": True}
 
     for mode in modes:
         if mode == default_mode:
@@ -378,13 +518,15 @@ def browser(
                 panel_annotation_indices[panel.yaxis_ref].append(ann_ix)
                 panel_mode_traces[panel.yaxis_ref][mode].append(trace_ix)
                 panel_mode_annotations[panel.yaxis_ref][mode].append(ann_ix)
-                panel_mode_ranges[panel.yaxis_ref][mode] = [0, 1]
+                panel_mode_axis_layouts[panel.yaxis_ref][mode] = {"range": [0, 1], "visible": False, "tickvals": [], "ticktext": []}
+                panel_mode_xaxis_layouts[panel.yaxis_ref][mode] = {"visible": False}
                 continue
 
             mode_fig = mode_figures[mode]
-            panel_mode_ranges[panel.yaxis_ref].update(
+            panel_mode_axis_layouts[panel.yaxis_ref].update(
                 _copy_layout_from_mode(base_fig, mode_fig, panel, mode)
             )
+            panel_mode_xaxis_layouts[panel.yaxis_ref][mode] = {"visible": True}
             for trace in mode_fig.data:
                 if _trace_axis_ref(trace, "yaxis") != panel.yaxis_ref:
                     continue
@@ -432,7 +574,10 @@ def browser(
             panel_mode_traces[panel.yaxis_ref]["zip"].append(trace_ix)
             panel_mode_annotations[panel.yaxis_ref]["zip"].append(ann_ix)
 
+    panel_title_indices = _panel_title_indices(base_fig, panels)
     updatemenus = list(base_fig.layout.updatemenus or [])
+    base_menu_count = len(updatemenus)
+    menu_indices = list(range(base_menu_count, base_menu_count + len(panels)))
     for panel in panels:
         axis = getattr(base_fig.layout, panel.yaxis_name)
         domain = axis.domain or [0, 1]
@@ -456,9 +601,26 @@ def browser(
                     for ix in panel_shapes
                 }
             )
-            layout_update[f"{panel.yaxis_name}.range"] = panel_mode_ranges[
-                panel.yaxis_ref
-            ][mode]
+            for axis_prop, axis_value in panel_mode_axis_layouts[panel.yaxis_ref][
+                mode
+            ].items():
+                layout_update[f"{panel.yaxis_name}.{axis_prop}"] = axis_value
+            for axis_prop, axis_value in panel_mode_xaxis_layouts[panel.yaxis_ref][
+                mode
+            ].items():
+                layout_update[f"{panel.xaxis_name}.{axis_prop}"] = axis_value
+            layout_update.update(
+                _mixed_domains(
+                    panels,
+                    base_fig,
+                    panel_mode_axis_layouts,
+                    panel,
+                    mode,
+                    default_mode,
+                    panel_title_indices,
+                    menu_indices,
+                )
+            )
             buttons.append(
                 dict(
                     label=_MODE_LABELS[mode],
@@ -471,8 +633,10 @@ def browser(
                 type="dropdown",
                 buttons=buttons,
                 direction="down",
-                showactive=True,
-                active=list(modes).index(default_mode),
+                showactive=False,
+                active=-1,
+                font={"size": 10},
+                bgcolor="rgba(255,255,255,0.75)",
                 x=button_x,
                 xanchor="right",
                 y=min(domain[1] + 0.02, 1.0),
@@ -481,12 +645,23 @@ def browser(
             )
         )
 
+    default_panel_heights = [
+        _panel_pixel_height(
+            panel_mode_axis_layouts[panel.yaxis_ref][default_mode], default_mode
+        )
+        for panel in panels
+    ]
     base_fig.update_layout(
+        height=_figure_height(default_panel_heights, gap_px=60 if len(panels) > 1 else 0),
         updatemenus=updatemenus,
         showlegend=False,
         dragmode="select",
         selectdirection="h",
     )
+    if default_mode == "zip":
+        for panel in panels:
+            base_fig.update_xaxes(visible=False, row=panel.index + 1, col=1)
+            base_fig.update_yaxes(visible=False, row=panel.index + 1, col=1)
 
     if return_plot == "fig":
         return base_fig

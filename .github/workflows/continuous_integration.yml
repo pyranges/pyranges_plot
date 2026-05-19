@@ -25,14 +25,20 @@ jobs:
         source venv/bin/activate
         pip install --upgrade pip
         pip install -e .[all]
-        pip install pytest pytest-mpl ruff
+        pip install pytest pytest-mpl ruff playwright
     
     - name: Check formatting with ruff
       run: |
         ./venv/bin/ruff format --check src
     
+    - name: Install Playwright browser
+      run: |
+        ./venv/bin/python -m playwright install --with-deps chromium
+
     - name: Run tests MPL backend Agg
       run: |
         export MPLBACKEND=Agg
         ./venv/bin/pytest --mpl tests/test_mpl.py
         ./venv/bin/pytest tests/test_ply.py
+        ./venv/bin/pytest tests/test_browser.py
+        ./venv/bin/pytest -m browser_interactive tests/test_browser_interactive.py
