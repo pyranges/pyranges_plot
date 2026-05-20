@@ -18,11 +18,11 @@ def register_plot(engine=None):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.register_plot()
+    >>> pe.register_plot()
 
-    >>> pre.register_plot("matplotlib")
+    >>> pe.register_plot("matplotlib")
 
     """
 

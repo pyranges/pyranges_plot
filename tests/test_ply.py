@@ -329,7 +329,7 @@ test_cases = [
             [data2, data2],
             id_col="transcript_id",
             packed=False,
-            thick_cds=True,
+            adapter="mRNA",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -338,7 +338,7 @@ test_cases = [
         "test10",
         pre.plot(
             data2,
-            thick_cds=True,
+            adapter="mRNA",
             limits=(75, 125),
             text="{Feature}",
             sort_ranges=True,

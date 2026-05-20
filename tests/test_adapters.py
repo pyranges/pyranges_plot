@@ -139,13 +139,22 @@ def test_adapter_options_are_printable_settable_and_used_by_plot(capsys):
     pre.reset_options(adapter="mRNA")
 
 
-def test_adapter_describe_lists_available_adapters():
+def test_adapter_describe_lists_available_adapters(capsys):
     descriptions = pre.adapters.describe()
 
     assert "mRNA" in descriptions
     assert "SNP" in descriptions
     assert "CDS" in descriptions["mRNA"]
     assert pre.adapters.describe("mRNA") == descriptions["mRNA"]
+
+    adapters_repr = repr(pre.adapters)
+    assert "Available pyrangeyes adapters" in adapters_repr
+    assert "pe.print_options('mRNA')" in adapters_repr
+
+    pre.print_options("mRNA")
+    printed = capsys.readouterr().out
+    assert "Adapter option" in printed
+    assert "utr_height" in printed
 
 
 def test_snp_adapter_adds_fixed_size_shape_and_generated_ids():

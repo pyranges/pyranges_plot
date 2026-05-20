@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import sys
+import types
+
 import pandas as pd
 import pyranges1 as pr
 
@@ -67,8 +70,8 @@ def mRNA(
     full height, and CDS intervals draw on top.
 
     Arguments left as ``DEFAULT`` are read from the current adapter options at
-    call time. Inspect them with ``pre.get_options(adapter="mRNA", varname="values")``
-    or ``pre.print_options(adapter="mRNA")``.
+    call time. Inspect them with ``pe.get_options(adapter="mRNA", varname="values")``
+    or ``pe.print_options(adapter="mRNA")``.
 
     Parameters
     ----------
@@ -176,8 +179,8 @@ def SNP(
     """Prepare SNP/VCF-like variants for plotting as fixed-size markers.
 
     Arguments left as ``DEFAULT`` are read from the current adapter options at
-    call time. Inspect them with ``pre.get_options(adapter="SNP", varname="values")``
-    or ``pre.print_options(adapter="SNP")``.
+    call time. Inspect them with ``pe.get_options(adapter="SNP", varname="values")``
+    or ``pe.print_options(adapter="SNP")``.
 
     Parameters
     ----------
@@ -388,6 +391,24 @@ def describe(name=None):
     }
 
 
+def _format_description(name=None):
+    descriptions = describe(name)
+    if isinstance(descriptions, str):
+        descriptions = {name: descriptions}
+    lines = ["Available pyrangeyes adapters:"]
+    for adapter_name, description in descriptions.items():
+        lines.append(f"- {adapter_name}: {description}")
+    lines.append("Use pe.print_options('mRNA') to inspect adapter options.")
+    return "\n".join(lines)
+
+
+class _AdaptersModule(types.ModuleType):
+    def __repr__(self):
+        return _format_description()
+
+    __str__ = __repr__
+
+
 def get_options(name, varname="all"):
     """Return adapter options currently in use.
 
@@ -493,3 +514,6 @@ __all__ = [
     "default_plot_args",
     "accepted_kwargs",
 ]
+
+
+sys.modules[__name__].__class__ = _AdaptersModule

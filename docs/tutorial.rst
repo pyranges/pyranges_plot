@@ -18,9 +18,9 @@ The first compulsory step to obtain a plot is setting the **engine**, using func
 using :func:`register_plot <pyrangeyes.register_plot>`, which is optional but convenient:
 it allows to use the plot function directly from PyRanges objects (further explained later).
 
-    >>> import pyrangeyes as pre
-    >>> pre.set_engine("plotly")  # possible engines: "plotly" and "matplotlib"
-    >>> pre.register_plot()
+    >>> import pyrangeyes as pe
+    >>> pe.set_engine("plotly")  # possible engines: "plotly" and "matplotlib"
+    >>> pe.register_plot()
 
 
 Pyrangeyes centralizes the interface to producing graphics in
@@ -29,7 +29,7 @@ customize the appearance of the plot, showcased in this tutorial.
 To that end, we will use some example data included in the Pyrangeyes package.
 Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
 
-    >>> p = pre.example_data.p1
+    >>> p = pe.example_data.p1
     >>> print(p)
       index  |      Chromosome  Strand      Start      End  transcript_id    feature1    feature2
       int64  |           int64  object      int64    int64  object           object      object
@@ -49,7 +49,7 @@ By default, :func:`plot <pyrangeyes.plot>` produces an interactive plot. If the 
 a window appears. If the Plotly engine is selected, a server is automatically opened, and
 an address is printed in the console. The plot can be accessed by opening this address in a browser.
 
-    >>> pre.plot(p)
+    >>> pe.plot(p)
 
 .. image:: images/prp_rtd_01.png
 
@@ -63,7 +63,7 @@ Interactive navigation is intuitive:
 To create a pdf or png image file instead of opening an interactive plot,
 use the ``to_file`` parameter of :func:`plot <pyrangeyes.plot>`.
 
-    >>> pre.plot(p, to_file="my_plot.png")
+    >>> pe.plot(p, to_file="my_plot.png")
 
 Because we **registered** the plot function, we can also invoke it like a method of the PyRanges object, as
 ``PyRanges.plot(...)``. This is equivalent to the previous code:
@@ -74,15 +74,15 @@ In the figure above, intervals are displayed individually, i.e. each PyRanges ro
 To link the intervals instead, as to represent a transcript composed of exons, use the ``id_column`` parameter,
 indicating the column name that defines the groups of intervals.
 
-    >>> pre.plot(p, id_col="transcript_id")
+    >>> pe.plot(p, id_col="transcript_id")
 
 .. image:: images/prp_rtd_02.png
 
 Because the ``id_col`` parameter is used frequently, it can be set as default for all plots using function
 :func:`set_id_col <pyrangeyes.set_id_col>`. The following code is equivalent to the previous one:
 
-    >>> pre.set_id_col("transcript_id")
-    >>> pre.plot(p)
+    >>> pe.set_id_col("transcript_id")
+    >>> pe.plot(p)
 
 
 Selecting what to plot
@@ -92,7 +92,7 @@ By default, a **maximum of 25 transcripts** are plotted, customizable with the `
 :func:`plot <pyrangeyes.plot>`.
 Below, we can set the maximum number of transcripts show as 2. Note the warning shown:
 
-    >>> pre.plot(p, max_shown=2)
+    >>> pe.plot(p, max_shown=2)
 
 .. image:: images/prp_rtd_03.png
 
@@ -113,13 +113,13 @@ The ``limits`` parameter accepts different input types:
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> pre.plot(p, limits={1: (None, 100), 2: (60, 200)})
+    >>> pe.plot(p, limits={1: (None, 100), 2: (60, 200)})
 
 .. image:: images/prp_rtd_04.png
 
 To plot with specified limits, use the following code:
 
-    >>> pre.plot(p, limits=(0,300))
+    >>> pe.plot(p, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
 
@@ -129,13 +129,13 @@ Plotting selected regions as panels
 Use ``regions`` to replace the default one-panel-per-chromosome layout with specific panels.
 For example, this makes one panel per transcript by using a column name:
 
-    >>> pre.plot(p, regions="transcript_id", color_col="transcript_id")
+    >>> pe.plot(p, regions="transcript_id", color_col="transcript_id")
 
 .. image:: images/prp_rtd_29.png
 
 Explicit regions are also supported with ``(chromosome, start, end)`` tuples or PyRanges rows:
 
-    >>> pre.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
+    >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
 Coloring
 --------
@@ -146,7 +146,7 @@ We can select any other column to color the intervals by using the ``color_col``
 of :func:`plot <pyrangeyes.plot>`.
 For example, let's color by the Strand column:
 
-    >>> pre.plot(p, color_col="Strand")
+    >>> pe.plot(p, color_col="Strand")
 
 .. image:: images/prp_rtd_06.png
 
@@ -158,7 +158,7 @@ It is a versatile parameter, accepting many different types of input. Colors can
 rgb strings, or explicit color names such as ``"skyblue"`` and ``"black"``.
 Using a dictionary allows to exert full control over the coloring, explicitly setting each value-color pair:
 
-    >>> pre.plot(p, color_col="Strand",
+    >>> pe.plot(p, color_col="Strand",
     ...          colormap={"+": "green", "-": "red"})
 
 .. image:: images/prp_rtd_07.png
@@ -169,7 +169,7 @@ One can provide a list of colors in hex or rgb; or a string recognized as the na
 Matplotlib or Plotly colormap;
 or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" Matplotlib colormap:
 
-    >>> pre.plot(p, colormap="Dark2")
+    >>> pe.plot(p, colormap="Dark2")
 
 .. image:: images/prp_rtd_08.png
 
@@ -177,14 +177,14 @@ If a column already stores literal colors (for example hex strings), set ``color
 to use those values directly instead of mapping them as categories:
 
     >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
-    >>> pre.plot(p, color_col="fill", colormap="direct")
+    >>> pe.plot(p, color_col="fill", colormap="direct")
 
 .. image:: images/prp_rtd_30.png
 
 By default, interval outlines use the same resolved color as the fill. For one fixed
 outline color, use the ``outline_color`` option:
 
-    >>> pre.plot(p, color_col="Strand", outline_color="black")
+    >>> pe.plot(p, color_col="Strand", outline_color="black")
 
 .. image:: images/prp_rtd_31.png
 
@@ -192,7 +192,7 @@ Use ``outline_col`` to map outlines from a column. When fill and outline columns
 different value domains, provide a channel mapping with separate ``"color"`` and
 ``"outline"`` entries:
 
-    >>> pre.plot(
+    >>> pe.plot(
     ...     p,
     ...     color_col="Strand",
     ...     outline_col="feature1",
@@ -208,14 +208,14 @@ Numeric columns can be colored as a continuous gradient with ``type="quantitativ
 Values are normalized to the observed minimum and maximum by default:
 
     >>> p["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
-    >>> pre.plot(p, color_col="score", colormap={"type": "quantitative", "colors": "viridis"})
+    >>> pe.plot(p, color_col="score", colormap={"type": "quantitative", "colors": "viridis"})
 
 .. image:: images/prp_rtd_33.png
 
 Set ``range=(min, max)`` to choose the normalization range manually. The gradient
 can be a named continuous colormap, a list of colors, or normalized color stops:
 
-    >>> pre.plot(
+    >>> pe.plot(
     ...     p,
     ...     color_col="score",
     ...     colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (0, 1)},
@@ -227,7 +227,7 @@ To improve the clarity of the plot, we can enable a legend that labels each colo
 to interpret the intervals based on their assigned colors. This can be done by setting the 
 **legend** parameter of :func:`plot <pyrangeyes.plot>` as True:
 
-    >>> pre.plot(p, colormap="Dark2", legend=True)
+    >>> pe.plot(p, colormap="Dark2", legend=True)
 
 .. image:: images/prp_rtd_20.png
 
@@ -245,22 +245,22 @@ A wide range of **options** are available to customize appearance, as summarized
 These options can be provided as parameters to the :func:`plot <pyrangeyes.plot>` function, or
 set as default beforehand. Let's see an example of providing them as parameters:
 
-    >>> pre.plot(p, plot_bkg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
+    >>> pe.plot(p, plot_bkg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
 
 .. image:: images/prp_rtd_15.png
 
 To instead set these options as default, use the :func:`set_options <pyrangeyes.set_options>` function:
 
-    >>> pre.set_options('plot_bkg', 'rgb(173, 216, 230)')
-    >>> pre.set_options('plot_border', '#808080')
-    >>> pre.set_options('title_color', 'magenta')
-    >>> pre.plot(p)  # this will now open a plot identical to the previous one
+    >>> pe.set_options('plot_bkg', 'rgb(173, 216, 230)')
+    >>> pe.set_options('plot_border', '#808080')
+    >>> pe.set_options('title_color', 'magenta')
+    >>> pe.plot(p)  # this will now open a plot identical to the previous one
 
 To inspect the current default options, use the
 :func:`print_options <pyrangeyes.print_options>` function.
 Note that any modified values from the built-in defaults will be marked with an asterisk (*):
 
-    >>> pre.print_options()
+    >>> pe.print_options()
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     Feature      |       Value        | Edited? |                         Description                          |
     +------------------+--------------------+---------+--------------------------------------------------------------+
@@ -316,9 +316,9 @@ Note that any modified values from the built-in defaults will be marked with an 
 To reset options to built-in defaults,  use :func:`reset_options <pyrangeyes.reset_options>`.
 By default, it will reset all options. Providing arguments, you can select which options to reset:
 
-    >>> pre.reset_options('plot_background')  # reset one feature
-    >>> pre.reset_options(['plot_border', 'title_color'])  # reset a few features
-    >>> pre.reset_options()  # reset all features
+    >>> pe.reset_options('plot_background')  # reset one feature
+    >>> pe.reset_options(['plot_border', 'title_color'])  # reset a few features
+    >>> pe.reset_options()  # reset all features
 
 
 Built-in and custom themes
@@ -337,14 +337,14 @@ For example, below we create a theme corresponding to the appearance of our last
     ...     "plot_border": "#808080",
     ...     "title_color": "magenta"
     ... }
-    >>> pre.set_theme(my_theme)
-    >>> pre.plot(p)  # this will now open a plot identical to the previous one
+    >>> pe.set_theme(my_theme)
+    >>> pe.plot(p)  # this will now open a plot identical to the previous one
 
 Pyrangeyes comes with a few built-in themes, listed in the :func:`set_theme <pyrangeyes.set_theme>` function's
 documentation. For example, here's the "dark" theme:
 
-    >>> pre.set_theme('dark')
-    >>> pre.plot(p)
+    >>> pe.set_theme('dark')
+    >>> pe.plot(p)
 
 .. image:: images/prp_rtd_16.png
 
@@ -361,7 +361,7 @@ To instead display one transcript per row, set the ``packed`` parameter as ``Fal
 
 .. code-block::
 
-    pre.plot(p, packed=False, legend = False)
+    pe.plot(p, packed=False, legend = False)
 
 .. image:: images/prp_rtd_09.png
 
@@ -372,7 +372,7 @@ its genomic sorting behavior, pass ``sort_ranges=True``:
 
 .. code-block::
 
-    pre.plot(p, packed=False, sort_ranges=True)
+    pe.plot(p, packed=False, sort_ranges=True)
 
 
 Pyrangeyes offers the option to reduce horizontal space, occupied by introns or intergenic regions,
@@ -383,7 +383,7 @@ while when an int is given it will be interpreted as number of base pairs.
 
 .. code-block::
 
-    ppp = pre.example_data.p3
+    ppp = pe.example_data.p3
     print(ppp)
 
 
@@ -407,13 +407,13 @@ while when an int is given it will be interpreted as number of base pairs.
 
 .. code-block::
 
-    pre.plot(ppp, shrink=True)
+    pe.plot(ppp, shrink=True)
 
 .. image:: images/prp_rtd_13.png
 
 .. code-block::
 
-    pre.plot(ppp, shrink=True, shrink_threshold=0.2)
+    pe.plot(ppp, shrink=True, shrink_threshold=0.2)
 
 .. image:: images/prp_rtd_14.png
 
@@ -423,7 +423,7 @@ Showing mRNA structure with adapters
 
 Adapters are shortcuts to useful representations. They prepare domain-specific inputs with sensible defaults before plotting.
 For example, the ``mRNA`` adapter shows a familiar bioinformatics view where coding sequences (CDS) are displayed thicker
-than UTR (untranslated) regions. You can list available adapters with ``pre.adapters.describe()``.
+than UTR (untranslated) regions. You can list available adapters with ``pe.adapters.describe()``.
 
 For the ``mRNA`` adapter, data must be coded like standard GFF/GTF files,
 with different rows for exons and for CDS, wherein CDS are subsets of exons. A "Feature" column must be present
@@ -431,7 +431,7 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    pp = pre.example_data.p2
+    pp = pe.example_data.p2
     print(pp)
 
 
@@ -455,7 +455,7 @@ and contain "exon" or "CDS" values:
 
 .. code-block::
 
-    pre.plot(pp, "mRNA")
+    pe.plot(pp, "mRNA")
 
 .. image:: images/prp_rtd_35.png
 
@@ -476,7 +476,7 @@ adapter. It draws fixed-size markers that stay visibly square on screen; choose
         }
     )
 
-    pre.plot(snps, "SNP", color_col="ALT", shape="diamond")
+    pe.plot(snps, "SNP", color_col="ALT", shape="diamond")
 
 .. image:: images/prp_rtd_36.png
 
@@ -486,7 +486,7 @@ in one figure:
 
 .. code-block::
 
-    pre.plot([pp, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
+    pe.plot([pp, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
 
 .. image:: images/prp_rtd_37.png
 
@@ -507,8 +507,8 @@ Let's see an example with two PyRanges objects, mapping the occurrences of two a
 
 .. code-block::
 
-    p_ala = pre.example_data.p_ala
-    p_cys = pre.example_data.p_cys
+    p_ala = pe.example_data.p_ala
+    p_cys = pe.example_data.p_cys
 
     print(p_ala)
     print(p_cys)
@@ -548,7 +548,7 @@ Let's see an example with two PyRanges objects, mapping the occurrences of two a
 
 .. code-block::
 
-    pre.plot([p_ala, p_cys])
+    pe.plot([p_ala, p_cys])
 
 .. image:: images/prp_rtd_17.png
 
@@ -557,7 +557,7 @@ allows to provide a list of strings, one for each PyRanges object, to be display
 
 .. code-block::
 
-    pre.plot(
+    pe.plot(
         [p_ala, p_cys],
         y_labels=["pr Alanine", "pr Cysteine"]
     )
@@ -575,7 +575,7 @@ drawn later, so they appear on top when intervals overlap. No range constraint i
 
 .. code-block::
 
-    pre.plot(
+    pe.plot(
         [p_ala, p_cys],
         id_col="id",
         y_labels=["pr Alanine", "pr Cysteine"],
@@ -587,11 +587,11 @@ drawn later, so they appear on top when intervals overlap. No range constraint i
 Another way to highlight overlapping regions is by varying the height of the rendered interval blocks.
 This is achieved by using the ``height_col`` parameter, which defines a numeric data column whose values
 set relative interval heights. Values must range from 0 to 1, where 1 renders the block at the full
-``interval_height`` (see ``pre.print_options()``) and smaller values render proportionally shorter blocks:
+``interval_height`` (see ``pe.print_options()``) and smaller values render proportionally shorter blocks:
 
 .. code-block::
 
-    pre.plot(
+    pe.plot(
         [p_ala, p_cys],
         id_col="id",
         color_col="trait1",
@@ -617,7 +617,7 @@ to as {chrom}. An example could be the following:
 
 .. code-block::
 
-    pre.plot(
+    pe.plot(
         p,
         tooltip="first feature: {feature1}\nsecond feature: {feature2}",
         title_chr='Chr: {chrom}'
@@ -640,8 +640,8 @@ sapiens chromosome 1:
 
 .. code-block::
 
-    >>> pre.set_engine("plotly")
-    >>> ann = pre.example_data.ncbi_gff()
+    >>> pe.set_engine("plotly")
+    >>> ann = pe.example_data.ncbi_gff()
     >>> ann
     index    |    Chromosome    Source         Feature     Start      End        Score     Strand      Frame     frame     ID                          logic_name           Name             ...
     int64    |    category      object         category    int64      int64      object    category    object    object    object                      object               object           ...
@@ -663,7 +663,7 @@ provided as part of the example dataset and can be loaded into memory as follows
 
 .. code-block::
 
-    >>> vcf = pre.example_data.ncbi_vcf()
+    >>> vcf = pe.example_data.ncbi_vcf()
     >>> vcf
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
     int64    |    object        int32     object        object    object    object    category    ...
@@ -698,7 +698,7 @@ expand and extract this embedded information into separate, more accessible colu
 
 .. code-block::
 
-    >>> vcf_split = pre.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
+    >>> vcf_split = pe.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
     >>> vcf_split
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     INFO_1     INFO_2                  INFO_3                  ...
     int64    |    object        int32     object        object    object    object    category    int32     object     object     object                  object                  ...
@@ -726,7 +726,7 @@ directly from the VCF file:
 
 .. code-block::
 
-    >>> vcf_split = pre.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
+    >>> vcf_split = pe.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
     >>> vcf_split
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
     int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
@@ -789,13 +789,13 @@ Similarly, we need to focus on the SNPs within the selected region:
 
 Finally, we are ready to visualize our data. By combining the gene annotation from the selected genomic region with 
 the prepared PyRanges object representing the SNPs, we can generate an insightful plot that overlays both datasets. 
-Using the pre.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
+Using the pe.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
 or this, simply specify the id_col parameter to indicate the column containing unique identifiers, such as the SNP IDs. 
 Here's how you can do it:
 
 .. code-block::
 
-    >>> pre.plot([reg,coord_vcf],id_col='ID')
+    >>> pe.plot([reg,coord_vcf],id_col='ID')
 
 .. image:: images/prp_rtd_21.png
 
@@ -808,7 +808,7 @@ packing behavior; use ``avoid_overlaps=False`` when labels should not reserve ex
 
     >>> reg["Text_col"]=reg["Parent"]
     >>> coord_vcf['Text_col'] = ''
-    >>> pre.plot([reg,coord_vcf],id_col='ID',text={'label': '{Text_col}', 'position': 'right', 'avoid_overlaps': False})
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text={'label': '{Text_col}', 'position': 'right', 'avoid_overlaps': False})
 
 .. image:: images/prp_rtd_22.png
 
@@ -827,7 +827,7 @@ parameter:
     ...         mode='markers'
     ...     ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
     ... ]
-    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_23.png
 
@@ -858,7 +858,7 @@ We already used the options to customise the title., let's now customise the y a
     ...              mode='markers'
     ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'height': 0.5, 'y_space': 0.5})
     ... ]
-    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
 
 .. image:: images/prp_rtd_24.png
 
@@ -877,8 +877,8 @@ Next, we will use this column to define the y-axis for the plot:
 
 .. code-block::
 
-    >>> aligned = pre.make_scatter(coord_vcf, y='Count')
-    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+    >>> aligned = pe.make_scatter(coord_vcf, y='Count')
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_25.png
 
@@ -898,8 +898,8 @@ In our case we are going to color our genetic variants by its type (**TSA** colu
 
 .. code-block::
 
-    >>> aligned = pre.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
-    >>> pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
+    >>> aligned = pe.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_26.png
 
@@ -917,7 +917,7 @@ Example:
 
 .. code-block::
 
-    >>> p = pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+    >>> p = pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
     >>> p
     <dash.dash.Dash object at 0x73321d74e990>
 
@@ -929,7 +929,7 @@ integrate it into the Pyrangeyes layout. Below is an example of a Pyrangeyes com
     
     from dash import Dash, html, dcc
     
-    p = pre.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
+    p = pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
 
     # Example additional data
     variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
@@ -985,7 +985,7 @@ visualization. Here's how you can achieve this configuration:
 
     from dash import Dash, html, dcc
 
-    p = pre.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
+    p = pe.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
 
     # Example additional data
     variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
@@ -1007,7 +1007,7 @@ visualization. Here's how you can achieve this configuration:
     # Access and extend the existing Dash app's layout
     p.layout = html.Div(
         [
-            p.layout,  # Retain the existing layout from pre.plot
+            p.layout,  # Retain the existing layout from pe.plot
             html.Div(
                 [
                     dcc.Graph(figure=pie_chart, style={"margin-bottom": "20px"}),
@@ -1026,13 +1026,13 @@ visualization. Here's how you can achieve this configuration:
 Interactive browsing
 --------------------
 
-After configuring a Plotly plot, use ``pre.browse()`` when you want the same
+After configuring a Plotly plot, use ``pe.browse()`` when you want the same
 figure layout with per-panel view controls::
 
-    import pyrangeyes as pre
+    import pyrangeyes as pe
 
-    pre.set_engine("ply")
-    fig = pre.browse(
+    pe.set_engine("ply")
+    fig = pe.browse(
         annotation,
         adapter="mRNA",
         text={"label": "{transcript_id}", "position": "right"},

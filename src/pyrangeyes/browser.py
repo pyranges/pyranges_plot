@@ -416,7 +416,7 @@ def browse(
     request another supported Plotly return type.
     """
     if get_engine() not in {"ply", "plotly"}:
-        raise ValueError("browse() is Plotly-only; call pre.set_engine('ply') first.")
+        raise ValueError("browse() is Plotly-only; call pe.set_engine('ply') first.")
 
     modes, default_mode = _normalize_modes(modes, default_mode)
     base_kwargs = deepcopy(kwargs)

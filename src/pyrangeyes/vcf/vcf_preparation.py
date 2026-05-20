@@ -54,7 +54,7 @@ def split_fields(
 
     Example
     -------
-    >>> vcf = pre.example_data.ncbi_vcf()
+    >>> vcf = pe.example_data.ncbi_vcf()
     >>> vcf
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
     int64    |    object        int32     object        object    object    object    category    ...
@@ -70,7 +70,7 @@ def split_fields(
     242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           ...
     PyRanges with 242186 rows, 9 columns, and 1 index columns. (2 columns not shown: "INFO", "End").
     Contains 25 chromosomes.
-    >>> pre.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
+    >>> pe.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
     index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
     int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
     -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  --------  ----------------------  ----------------------  -----

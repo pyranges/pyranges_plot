@@ -44,7 +44,7 @@ def read_vcf(f: str | Path, nrows: bool | None = None):
 
     Examples
     --------
-    >>> vcf_pyranges = pre.vcf.read_vcf("example.vcf")
+    >>> vcf_pyranges = pe.vcf.read_vcf("example.vcf")
     >>> vcf_ranges
     index    |    Chromosome    Start    ID          REF       ALT       QUAL      FILTER      INFO                       End
     int64    |    category      int32    category    object    object    object    category    object                     int32

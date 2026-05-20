@@ -216,9 +216,9 @@ def test09():
         [data2, data2],
         id_col="transcript_id",
         packed=False,
-        thick_cds=True,
+        adapter="mRNA",
         sort_ranges=True,
-    )  # repeated rows in different pr, same chromosome, thick_cds with exon+cds
+    )  # repeated rows in different pr, same chromosome, mRNA adapter with exon+CDS
     fig = plt.gcf()
     return fig
 
@@ -226,8 +226,8 @@ def test09():
 @pytest.mark.mpl_image_compare(baseline_dir="baseline_mpl")
 def test10():
     pre.plot(
-        data2, thick_cds=True, limits=(75, 125), text="{Feature}", sort_ranges=True
-    )  # thick_cds not all exon+cds, text, limits as tuple
+        data2, adapter="mRNA", limits=(75, 125), text="{Feature}", sort_ranges=True
+    )  # mRNA adapter not all exon+CDS, text, limits as tuple
     fig = plt.gcf()
     return fig
 
@@ -338,7 +338,7 @@ def test18():
         [data2, data2],
         id_col="transcript_id",
         packed=False,
-        thick_cds=True,
+        adapter="mRNA",
         # to_file="tests/baseline_mpl/test18.png",
     )
     fig = plt.gcf()
