@@ -37,9 +37,9 @@ def set_id_col(name):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.set_id_col('gene_id')
+    >>> pe.set_id_col('gene_id')
 
     """
 
@@ -68,9 +68,9 @@ def set_engine(name):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.set_engine('plt')
+    >>> pe.set_engine('plt')
 
     """
 
@@ -100,9 +100,9 @@ def set_warnings(option):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.set_warnings(False)
+    >>> pe.set_warnings(False)
 
     """
 
@@ -131,10 +131,10 @@ def set_theme(name):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.set_theme("dark")
-    >>> pre.set_theme({"title_color": "goldenrod", "interval_height": 0.8})
+    >>> pe.set_theme("dark")
+    >>> pe.set_theme({"title_color": "goldenrod", "interval_height": 0.8})
 
     """
 
@@ -201,15 +201,15 @@ def set_options(varname=None, value=None, *, adapter=None, variable=None):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.set_options('plot_background', 'magenta')
+    >>> pe.set_options('plot_background', 'magenta')
 
-    >>> pre.set_options('title_size', 20)
+    >>> pe.set_options('title_size', 20)
 
-    >>> pre.set_options({'plot_background': 'magenta', 'title_size': 20})
+    >>> pe.set_options({'plot_background': 'magenta', 'title_size': 20})
 
-    >>> pre.set_options(adapter='mRNA', variable='utr_height', value=0.5)
+    >>> pe.set_options(adapter='mRNA', variable='utr_height', value=0.5)
 
     """
 
@@ -308,17 +308,17 @@ def reset_options(varname="all", *, adapter=None):
 
     Examples
     --------
-    >>> import pyrangeyes as pre
+    >>> import pyrangeyes as pe
 
-    >>> pre.reset_options()
+    >>> pe.reset_options()
 
-    >>> pre.reset_options('all')
+    >>> pe.reset_options('all')
 
-    >>> pre.reset_options('tag_bkg')
+    >>> pe.reset_options('tag_bkg')
 
-    >>> pre.reset_options(['title_size', 'tag_background'])
+    >>> pe.reset_options(['title_size', 'tag_background'])
 
-    >>> pre.reset_options(adapter='mRNA')
+    >>> pe.reset_options(adapter='mRNA')
 
     """
 
@@ -410,11 +410,17 @@ def print_options(return_keys=False, *, adapter=None):
 
     Parameters
     ----------
-    return_keys : bool, default False
+    return_keys : bool or str, default False
         If True, return the option-name set instead of printing a table.
+        Passing an adapter name here, for example ``print_options("mRNA")``,
+        prints options for that adapter.
     adapter : str, optional keyword-only
         Adapter whose options should be printed, for example ``"mRNA"``.
     """
+
+    if isinstance(return_keys, str) and adapter is None:
+        adapter = return_keys
+        return_keys = False
 
     if adapter is not None:
         adapter_options = get_options(adapter=adapter)

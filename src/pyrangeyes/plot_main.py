@@ -226,7 +226,6 @@ def plot(
     shrink=False,
     limits=None,
     regions=None,
-    thick_cds=False,
     text=None,
     legend=False,
     title_chr=None,
@@ -253,7 +252,7 @@ def plot(
         ``plot(annotation, "mRNA")`` renders GTF/GFF-like mRNA structure with
         thin exon/UTR regions and thick CDS regions. For a list of PyRanges,
         pass one adapter per object, such as ``plot([transcripts, variants],
-        adapter=["mRNA", "SNP"])``. Use ``pre.adapters.describe()`` to list
+        adapter=["mRNA", "SNP"])``. Use ``pe.adapters.describe()`` to list
         available adapters.
 
     id_col: str, default None
@@ -302,22 +301,6 @@ def plot(
         Quantitative ``colors`` may be a named continuous colormap, a list of gradient colors, or
         normalized stops such as ``[(0, "blue"), (0.5, "white"), (1, "red")]``.
 
-    height_col: str, default None
-        Numeric column defining interval heights. Values must range from 0 to 1,
-        where 1 uses the full ``interval_height`` and smaller values are rendered
-        proportionally shorter. If provided, this parameter overrides the default
-        uniform interval height.
-        Note that if 'thick_cds' is set to True, this parameter will be ignored
-        and height will be determined from transcript structure instead.
-
-    depth_col: str, default None
-        Numeric column defining interval draw order for overlapping intervals. Lower values are drawn first;
-        higher values are drawn later, on top of lower-depth intervals. No range constraint is applied.
-
-    shape_col: str, default None
-        Column defining interval shapes. Supported values are ``"rectangle"`` and ``"diamond"``.
-        Usually this is set by adapters rather than provided directly.
-
     shrink: bool, default False
         Whether to compress the intron ranges to facilitate visualization or not.
 
@@ -339,11 +322,6 @@ def plot(
         If provided, panels are exactly these regions in order and ``limits`` is ignored.
         Use a list of ``(chromosome, start, end)`` tuples and/or PyRanges objects,
         a PyRanges object (one row per panel), or a column name whose values define panels.
-
-    thick_cds: bool, default False
-        Display differentially transcript regions belonging and not belonging to CDS. The CDS/exon information
-        must be stored in the 'Feature' column of the PyRanges object or the dataframe. Note that any other
-        Feature value other than exon and CDS will be discarded for plotting.
 
     text: {None, bool, str, dict}, default None
         Controls interval text annotations. If None, text is enabled for packed
@@ -389,6 +367,23 @@ def plot(
         If False, the default, unpacked plots preserve the first-seen order of rows/groups in the input.
         If True, interval groups are ordered by the internal genomic sorting behavior.
 
+    height_col: str, default None
+        Numeric column defining interval heights. Values must range from 0 to 1,
+        where 1 uses the full ``interval_height`` and smaller values are rendered
+        proportionally shorter. If provided, this parameter overrides the default
+        uniform interval height. Usually this is set by adapters rather than
+        provided directly.
+
+    depth_col: str, default None
+        Numeric column defining interval draw order for overlapping intervals. Lower values are drawn first;
+        higher values are drawn later, on top of lower-depth intervals. No range constraint is applied.
+        Usually this is set by adapters rather than provided directly.
+
+    shape_col: str, default None
+        Column defining interval shapes. Supported values are ``"rectangle"``,
+        ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, and ``"circle"``.
+        Usually this is set by adapters rather than provided directly.
+
     **kargs
         Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
         nomenclature, description and default values. Adapter options can also be passed here when ``adapter``
@@ -399,9 +394,9 @@ def plot(
     Examples
     --------
 
-    >>> import pyranges as pr, pyrangeyes as pre
+    >>> import pyranges as pr, pyrangeyes as pe
 
-    >>> pre.set_engine('plotly')
+    >>> pe.set_engine('plotly')
 
     >>> p = pr.PyRanges({"Chromosome": [1]*5, "Strand": ["+"]*3 + ["-"]*2, "Start": [10,20,30,25,40], "End": [15,25,35,30,50], "transcript_id": ["t1"]*3 + ["t2"]*2}, "feature1": ["A", "B", "C", "A", "B"])
 
@@ -544,14 +539,6 @@ def plot(
                     "Please define a correct name of the ID column using either set_id_col() function or plot_generic parameter as plot_generic(..., id_col = 'your_id_col')"
                 )
             # Avoid Nan in id column
-
-    # Deal with transcript structure
-    if thick_cds:
-        for df_item in data:
-            if "Feature" not in df_item.columns:
-                raise Exception(
-                    "The transcript structure information must be stored in 'Feature' column of the data."
-                )
 
     # Deal with warnings
     if warnings is None:
@@ -716,17 +703,6 @@ def plot(
         subdf[depth_col] = depth_values
 
     # Deal with height_col
-    # prioritize transcript structure
-    if thick_cds:
-        # keep only the "exon" and "CDS"
-        subdf = subdf[subdf["Feature"].isin(["exon", "CDS"])]
-        if subdf.empty:
-            raise Exception(
-                "The provided data does not contain any interval containing 'exon' or 'CDS' in the Feature column, no data wil be plotted using 'thick_cds'."
-            )
-        # set proper height column
-        height_col = "Feature"
-
     # set proper height values
     if height_col:
         # Is it present in data?
@@ -735,32 +711,17 @@ def plot(
                 f"The provided height_col {height_col!r} is not present in the given data."
             )
 
-        # If using thick_cds (categorical mode)
-        if thick_cds:
-            # keep existing categorical mapping logic
-            thick_tags_l = sorted(
-                list(subdf[height_col].drop_duplicates()), reverse=True
+        height_values = pd.to_numeric(subdf[height_col], errors="coerce")
+        if height_values.isna().any():
+            raise ValueError(
+                f"height_col {height_col!r} must contain only numeric, non-missing values."
             )
-            if len(thick_tags_l) == 1:
-                thick_tags_l = 2 * thick_tags_l
-            thick_tags_d = {
-                thick_tags_l[0]: feat_dict["transcript_utr_width"],
-                thick_tags_l[1]: feat_dict["interval_height"],
-            }
-            subdf[THICK_COL] = subdf[height_col].map(thick_tags_d)
-
-        else:
-            height_values = pd.to_numeric(subdf[height_col], errors="coerce")
-            if height_values.isna().any():
-                raise ValueError(
-                    f"height_col {height_col!r} must contain only numeric, non-missing values."
-                )
-            if ((height_values < 0) | (height_values > 1)).any():
-                raise ValueError(
-                    f"height_col {height_col!r} values must range from 0 to 1; "
-                    "1 is rendered at the full interval_height."
-                )
-            subdf[THICK_COL] = height_values * feat_dict["interval_height"]
+        if ((height_values < 0) | (height_values > 1)).any():
+            raise ValueError(
+                f"height_col {height_col!r} values must range from 0 to 1; "
+                "1 is rendered at the full interval_height."
+            )
+        subdf[THICK_COL] = height_values * feat_dict["interval_height"]
 
     else:
         subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
@@ -1028,7 +989,7 @@ def plot(
                     ts_data=ts_data,
                     max_shown=max_shown,
                     id_col=ID_COL,
-                    transcript_str=thick_cds,
+                    transcript_str=False,
                     tooltip=tooltip,
                     legend=legend,
                     return_plot=return_plot,
@@ -1061,7 +1022,7 @@ def plot(
                     ts_data=ts_data,
                     max_shown=max_shown,
                     id_col=ID_COL,
-                    transcript_str=thick_cds,
+                    transcript_str=False,
                     tooltip=tooltip,
                     legend=legend,
                     return_plot=return_plot,
@@ -1098,7 +1059,7 @@ def plot(
                     ts_data=ts_data,
                     max_shown=max_shown,
                     id_col=ID_COL,
-                    transcript_str=thick_cds,
+                    transcript_str=False,
                     tooltip=tooltip,
                     legend=legend,
                     return_plot=return_plot,
@@ -1129,7 +1090,7 @@ def plot(
                     ts_data=ts_data,
                     max_shown=max_shown,
                     id_col=ID_COL,
-                    transcript_str=thick_cds,
+                    transcript_str=False,
                     tooltip=tooltip,
                     legend=legend,
                     return_plot=return_plot,
