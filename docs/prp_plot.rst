@@ -3,7 +3,4 @@ Plot function
 
 Pyrangeyes main function.
 
-.. automodule:: pyrangeyes
-    :members:
-    :imported-members:  # Ensure this is set to include imported members
-    :exclude-members: set_engine, get_engine, set_id_col, get_id_col, set_theme, get_theme, set_warnings, get_warnings, register_plot, print_options, set_options, reset_options, ncbi_gff, ncbi_vcf, make_scatter
+.. autofunction:: pyrangeyes.plot

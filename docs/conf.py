@@ -35,14 +35,9 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
-    "autoapi.extension",
 ]
 autosummary_generate = True  # Enable summary table generation
 
-# AutoAPI settings
-autoapi_type = "python"
-autoapi_dirs = ["../src/pyrangeyes"]  # Adjust the path as necessary
-autoapi_generate_api_docs = False
 
 autodoc_default_options = {
     "members": True,

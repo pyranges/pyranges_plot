@@ -5,6 +5,8 @@ Functions related to loading, processing, and transforming VCF (Variant Call For
 reading of VCF files into PyRanges objects and flexible manipulation of their fields. For further explanation check the 
 **Dealing with VCF files** section of the :ref:`tutorial <tutorial>`.
 
-.. automodule:: pyrangeyes.vcf
-    :members:
-    :imported-members: 
+.. autofunction:: pyrangeyes.vcf.read_vcf
+
+.. autofunction:: pyrangeyes.vcf.split_fields
+
+.. autofunction:: pyrangeyes.ncbi_vcf
