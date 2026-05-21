@@ -801,14 +801,15 @@ Here's how you can do it:
 
 In the figure above, the text displaying the ID of each variant may be misinterpreted due to overlapping with other SNP 
 labels. To address this, you can create an artificial column that selectively displays this text only for annotation data 
-while omitting it for VCF data. The ``text`` argument also accepts a dictionary for label templates, position, style, and
-packing behavior; use ``avoid_overlaps=False`` when labels should not reserve extra horizontal space during row packing:
+while omitting it for VCF data. The ``text`` argument accepts ``True``/``False`` or a row-value format template;
+use global text options such as ``text_position`` and ``text_fit`` for placement and packing behavior. Set
+``text_fit=False`` when labels should not reserve extra horizontal space during row packing:
 
 .. code-block::
 
     >>> reg["Text_col"]=reg["Parent"]
     >>> coord_vcf['Text_col'] = ''
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text={'label': '{Text_col}', 'position': 'right', 'avoid_overlaps': False})
+    >>> pe.plot([reg,coord_vcf],id_col='ID',text='{Text_col}', text_position='right', text_fit=False)
 
 .. image:: images/prp_rtd_22.png
 
@@ -1035,7 +1036,8 @@ figure layout with per-panel view controls::
     fig = pe.browse(
         annotation,
         adapter="mRNA",
-        text={"label": "{transcript_id}", "position": "right"},
+        text="{transcript_id}",
+        text_position="right",
         color_col="Feature",
         colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
     )

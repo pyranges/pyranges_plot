@@ -1409,11 +1409,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "A>T",
-        "textangle": -20,
+        "textangle": -20.0,
         "x": 80.5,
         "xanchor": "center",
         "xref": "x",
@@ -1423,11 +1424,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "G>A",
-        "textangle": -20,
+        "textangle": -20.0,
         "x": 145.5,
         "xanchor": "center",
         "xref": "x",
@@ -1437,11 +1439,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "C>G",
-        "textangle": -20,
+        "textangle": -20.0,
         "x": 12.5,
         "xanchor": "center",
         "xref": "x2",
@@ -1451,11 +1454,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "T>C",
-        "textangle": -20,
+        "textangle": -20.0,
         "x": 44.5,
         "xanchor": "center",
         "xref": "x2",
@@ -1465,11 +1469,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "A>G",
-        "textangle": -20,
+        "textangle": -20.0,
         "x": 35.5,
         "xanchor": "center",
         "xref": "x3",

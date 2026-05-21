@@ -994,15 +994,17 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t4",
-        "textangle": 0,
-        "x": 5997.9,
+        "textangle": 0.0,
+        "x": 5993.0,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

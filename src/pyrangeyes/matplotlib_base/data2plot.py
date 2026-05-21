@@ -11,6 +11,7 @@ from ..names import (
     EXON_IX_COL,
     TEXT_PAD_COL,
     TEXT_LABEL_COL,
+    TEXT_COLOR_COL,
     TEXT_START_COL,
     TEXT_END_COL,
     TEXT_MID_COL,
@@ -251,29 +252,26 @@ def plot_row(
         if isinstance(text, dict):
             ann = row.get(TEXT_LABEL_COL, genename)
             position = text.get("position", "left")
-            color = text.get("color") or plot_border
+            color = row.get(TEXT_COLOR_COL) or plot_border
             angle = text.get("angle", 0)
-            font_size = text.get("size") or text_size
-            raw_pad = text.get("pad")
+            font_size = text_size
         elif isinstance(text, bool):
             ann = genename
             position = "left"
-            color = plot_border
+            color = row.get(TEXT_COLOR_COL) or plot_border
             angle = 0
             font_size = text_size
-            raw_pad = None
+
         else:
             row_dict = row.to_dict()
             ann = text.format_map(row_dict)
             position = "left"
-            color = plot_border
+            color = row.get(TEXT_COLOR_COL) or plot_border
             angle = 0
             font_size = text_size
-            raw_pad = None
 
-        vertical_pad = 0.04
-        if raw_pad is not None:
-            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+
+        vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
         group_start = row.get(TEXT_START_COL, start)
         group_end = row.get(TEXT_END_COL, stop)

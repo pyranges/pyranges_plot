@@ -35,6 +35,8 @@ from .names import (
     OUTLINE_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     OUTLINE_LEGEND_TITLE_COL,
+    TEXT_COLOR_COL,
+    TEXT_COLOR_TAG_COL,
     PANEL_SEP,
 )
 from .core import cumdelting, get_engine, get_warnings, check4dependency
@@ -178,7 +180,9 @@ def get_plycolormap(colormap_string):
 
 
 def _is_channel_colormap(colormap):
-    return isinstance(colormap, dict) and ("color" in colormap or "outline" in colormap)
+    return isinstance(colormap, dict) and any(
+        channel in colormap for channel in ("color", "outline", "text")
+    )
 
 
 def _is_quantitative_colormap(colormap):
@@ -213,17 +217,24 @@ def _validate_colormap_spec(colormap, context="colormap"):
 
     if isinstance(colormap, dict):
         if _is_channel_colormap(colormap):
-            allowed = {"color", "outline"}
+            allowed = {"color", "outline", "text"}
             extra = set(colormap) - allowed
             if extra:
                 raise ValueError(
                     f"{context} with channel-specific colors only accepts keys "
-                    f"'color' and 'outline'; found {sorted(extra)!r}."
+                    f"'color', 'outline', and 'text'; found {sorted(extra)!r}."
                 )
-            if "color" in colormap:
-                _validate_colormap_spec(colormap["color"], f"{context}['color']")
+            if "color" not in colormap:
+                raise ValueError(f"{context} channel mapping requires a 'color' entry.")
+            _validate_colormap_spec(colormap["color"], f"{context}['color']")
             if "outline" in colormap:
-                _validate_colormap_spec(colormap["outline"], f"{context}['outline']")
+                outline = colormap["outline"]
+                if outline != "color":
+                    _validate_colormap_spec(outline, f"{context}['outline']")
+            if "text" in colormap:
+                text = colormap["text"]
+                if text not in (None, "color", "outline"):
+                    _validate_colormap_spec(text, f"{context}['text']")
             return
 
         if "type" in colormap:
@@ -444,21 +455,18 @@ def _legend_title(cols, fallback):
     return ", ".join(cols)
 
 
-def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, warnings):
-    """Add fill and outline color information to data."""
+def subdf_assigncolor(
+    subdf,
+    colormap,
+    color_col,
+    outline_col,
+    outline_color,
+    text_color,
+    text_color_col,
+    warnings,
+):
+    """Add fill, outline, and text color information to data."""
     _validate_colormap_spec(colormap)
-    if _is_channel_colormap(colormap) and "outline" in colormap:
-        if outline_color is not None:
-            raise ValueError(
-                "Do not provide both colormap['outline'] and outline_color. "
-                "Use outline_color for one fixed outline color, or outline_col "
-                "with colormap['outline'] for mapped outlines."
-            )
-        if outline_col is None:
-            raise ValueError(
-                "colormap['outline'] requires outline_col. For one fixed outline "
-                "color, use outline_color='black'."
-            )
 
     # Create COLOR_COL column
     if len(color_col) > 1:
@@ -473,25 +481,76 @@ def subdf_assigncolor(subdf, colormap, color_col, outline_col, outline_color, wa
     subdf[COLOR_LEGEND_KIND_COL] = _legend_kind(color_cmap)
     subdf[COLOR_LEGEND_TITLE_COL] = _legend_title(color_col, "color")
 
+    outline_spec = (
+        _channel_colormap(colormap, "outline", fallback="color")
+        if _is_channel_colormap(colormap)
+        else "color"
+    )
+    if outline_color is not None and _is_channel_colormap(colormap) and "outline" in colormap:
+        raise ValueError(
+            "Do not provide both colormap['outline'] and outline_color. "
+            "Use outline_color for one fixed outline color, or outline_col "
+            "with colormap['outline'] for mapped outlines."
+        )
+
     if outline_color is not None:
         subdf[BORDER_COLOR_COL] = [outline_color] * len(subdf)
         subdf[OUTLINE_LEGEND_KIND_COL] = "fixed"
         subdf[OUTLINE_LEGEND_TITLE_COL] = "outline"
+        resolved_outline_cmap = None
     elif outline_col is None:
+        if outline_spec != "color":
+            raise ValueError(
+                "Mapped colormap['outline'] requires outline_col. For one fixed "
+                "outline color, use outline_color='black'."
+            )
         subdf[BORDER_COLOR_COL] = subdf[COLOR_INFO]
         subdf[OUTLINE_LEGEND_KIND_COL] = "same"
         subdf[OUTLINE_LEGEND_TITLE_COL] = subdf[COLOR_LEGEND_TITLE_COL]
+        resolved_outline_cmap = color_cmap
     else:
         if len(outline_col) > 1:
             subdf[OUTLINE_TAG_COL] = list(zip(*[subdf[c] for c in outline_col]))
         else:
             subdf[OUTLINE_TAG_COL] = subdf[outline_col[0]]
-        outline_cmap = _channel_colormap(colormap, "outline", fallback=color_cmap)
+        resolved_outline_cmap = color_cmap if outline_spec == "color" else outline_spec
         subdf = _assign_color_channel(
-            subdf, OUTLINE_TAG_COL, BORDER_COLOR_COL, outline_cmap, warnings
+            subdf, OUTLINE_TAG_COL, BORDER_COLOR_COL, resolved_outline_cmap, warnings
         )
-        subdf[OUTLINE_LEGEND_KIND_COL] = _legend_kind(outline_cmap)
+        subdf[OUTLINE_LEGEND_KIND_COL] = _legend_kind(resolved_outline_cmap)
         subdf[OUTLINE_LEGEND_TITLE_COL] = _legend_title(outline_col, "outline")
+
+    text_spec = (
+        _channel_colormap(colormap, "text", fallback=None)
+        if _is_channel_colormap(colormap)
+        else None
+    )
+    if text_color_col is None:
+        if text_spec is None:
+            subdf[TEXT_COLOR_COL] = [text_color] * len(subdf)
+        elif text_spec == "color":
+            subdf[TEXT_COLOR_COL] = subdf[COLOR_INFO]
+        elif text_spec == "outline":
+            subdf[TEXT_COLOR_COL] = subdf[BORDER_COLOR_COL]
+        else:
+            raise ValueError(
+                "colormap['text'] requires text_color_col unless it is None, "
+                "'color', or 'outline'."
+            )
+    else:
+        if len(text_color_col) > 1:
+            subdf[TEXT_COLOR_TAG_COL] = list(zip(*[subdf[c] for c in text_color_col]))
+        else:
+            subdf[TEXT_COLOR_TAG_COL] = subdf[text_color_col[0]]
+        if text_spec in (None, "color"):
+            text_cmap = color_cmap
+        elif text_spec == "outline":
+            text_cmap = resolved_outline_cmap or color_cmap
+        else:
+            text_cmap = text_spec
+        subdf = _assign_color_channel(
+            subdf, TEXT_COLOR_TAG_COL, TEXT_COLOR_COL, text_cmap, warnings
+        )
 
     return subdf
 

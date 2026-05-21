@@ -11,6 +11,7 @@ from ..names import (
     EXON_IX_COL,
     TEXT_PAD_COL,
     TEXT_LABEL_COL,
+    TEXT_COLOR_COL,
     TEXT_START_COL,
     TEXT_END_COL,
     TEXT_MID_COL,
@@ -283,33 +284,23 @@ def plot_row(
         if isinstance(text, dict):
             ann = str(row.get(TEXT_LABEL_COL, genename))
             position = text.get("position", "left")
-            color = text.get("color")
+            color = row.get(TEXT_COLOR_COL)
             angle = text.get("angle", 0)
-            font_size = text.get("size") or text_size
-            raw_pad = text.get("pad")
+            font_size = text_size
         elif isinstance(text, bool):
             ann = str(genename)
             position = "left"
-            color = None
+            color = row.get(TEXT_COLOR_COL)
             angle = 0
             font_size = text_size
-            is_text_dict = False
-            raw_pad = None
         else:
             row_dict = row.to_dict()
             ann = text.format(**row_dict)
             position = "left"
-            color = None
+            color = row.get(TEXT_COLOR_COL)
             angle = 0
             font_size = text_size
-            is_text_dict = False
-            raw_pad = None
-        if isinstance(text, dict):
-            is_text_dict = text.get("is_options_dict", False)
-
-        vertical_pad = 0.04
-        if raw_pad is not None:
-            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+        vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
         group_start = row.get(TEXT_START_COL, x0)
         group_end = row.get(TEXT_END_COL, x1)
@@ -350,8 +341,7 @@ def plot_row(
             textangle=-angle,
             xanchor=xanchor,
         )
-        if is_text_dict:
-            annotation["yanchor"] = yanchor
+        annotation["yanchor"] = yanchor
 
         fig.add_annotation(
             annotation,

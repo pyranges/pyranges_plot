@@ -1320,11 +1320,11 @@
         60
       ],
       "y": [
-        0.49625,
-        0.49625,
-        0.50375,
-        0.50375,
-        0.49625
+        1.49625,
+        1.49625,
+        1.50375,
+        1.50375,
+        1.49625
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1344,8 +1344,8 @@
         80
       ],
       "y": [
-        0.5,
-        0.5
+        1.5,
+        1.5
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1370,11 +1370,11 @@
         60
       ],
       "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
+        1.2,
+        1.2,
+        1.8,
+        1.8,
+        1.2
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1399,11 +1399,11 @@
         80
       ],
       "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
+        1.2,
+        1.2,
+        1.8,
+        1.8,
+        1.2
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2560,93 +2560,107 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 60.34,
+        "textangle": 0.0,
+        "x": 58.8,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t2",
-        "textangle": 0,
-        "x": 8.34,
+        "textangle": 0.0,
+        "x": 6.8,
         "xanchor": "right",
         "xref": "x",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t3",
-        "textangle": 0,
-        "x": 150.34,
+        "textangle": 0.0,
+        "x": 148.8,
         "xanchor": "right",
         "xref": "x",
         "y": 2.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t4",
-        "textangle": 0,
-        "x": 4.733,
+        "textangle": 0.0,
+        "x": 4.11,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t5",
-        "textangle": 0,
-        "x": 0.733,
+        "textangle": 0.0,
+        "x": 0.10999999999999999,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t6",
-        "textangle": 0,
-        "x": 59.733,
+        "textangle": 0.0,
+        "x": 59.11,
         "xanchor": "right",
         "xref": "x2",
-        "y": 0.5,
+        "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t7",
-        "textangle": 0,
-        "x": 19.91,
+        "textangle": 0.0,
+        "x": 19.7,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y3"
       }
     ],

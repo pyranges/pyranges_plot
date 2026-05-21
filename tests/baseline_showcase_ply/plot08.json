@@ -1427,11 +1427,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx1",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 99.6,
         "xanchor": "right",
         "xref": "x",
@@ -1441,11 +1442,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx2",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 105.6,
         "xanchor": "right",
         "xref": "x",
@@ -1455,11 +1457,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx3",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 111.6,
         "xanchor": "right",
         "xref": "x",
@@ -1469,11 +1472,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx4",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 117.6,
         "xanchor": "right",
         "xref": "x",
@@ -1483,11 +1487,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx5",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 123.6,
         "xanchor": "right",
         "xref": "x",
@@ -1497,11 +1502,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx6",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 129.6,
         "xanchor": "right",
         "xref": "x",
@@ -1511,11 +1517,12 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "tx7",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 135.6,
         "xanchor": "right",
         "xref": "x",

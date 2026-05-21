@@ -15,18 +15,16 @@ def _data():
     )
 
 
-def test_text_dict_formats_plotly_annotations():
+def test_text_template_formats_plotly_annotations():
     pre.set_engine("ply")
     fig = pre.plot(
         _data(),
         id_col="id",
-        text={
-            "label": "{kind}:{id}",
-            "position": "right",
-            "avoid_overlaps": False,
-            "color": "red",
-            "size": 13,
-        },
+        text="{kind}:{id}",
+        text_position="right",
+        text_fit=False,
+        text_color="red",
+        text_size=13,
         return_plot="fig",
     )
     anns = [ann for ann in fig.layout.annotations if ann.text in {"exon:a", "CDS:b"}]
@@ -36,25 +34,26 @@ def test_text_dict_formats_plotly_annotations():
     assert all(ann.font.size == 13 for ann in anns)
 
 
-def test_text_dict_position_center():
+def test_text_position_center():
     pre.set_engine("ply")
     fig = pre.plot(
         _data(),
         id_col="id",
-        text={"label": "{id}", "position": "center"},
+        text="{id}",
+        text_position="center",
         return_plot="fig",
     )
     anns = [ann for ann in fig.layout.annotations if ann.text in {"a", "b"}]
     assert all(ann.xanchor == "center" for ann in anns)
 
 
-def test_text_dict_rejects_unknown_options():
+def test_text_rejects_dict_options():
     pre.set_engine("ply")
-    with pytest.raises(ValueError, match="Unknown text option"):
-        pre.plot(_data(), id_col="id", text={"unknown": True}, return_plot="fig")
+    with pytest.raises(TypeError, match="text must be None, bool, or a format string"):
+        pre.plot(_data(), id_col="id", text={"label": "{id}"}, return_plot="fig")
 
 
-def test_text_dict_uses_group_span_for_positioning():
+def test_text_uses_group_span_for_positioning():
     pre.set_engine("ply")
     grouped = pr.PyRanges(
         {
@@ -68,7 +67,9 @@ def test_text_dict_uses_group_span_for_positioning():
     centered = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "center", "pad": 0},
+        text="{id}",
+        text_position="center",
+        text_pad=0,
         return_plot="fig",
     )
     ann = next(ann for ann in centered.layout.annotations if ann.text == "tx1")
@@ -77,7 +78,9 @@ def test_text_dict_uses_group_span_for_positioning():
     right = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 0},
+        text="{id}",
+        text_position="right",
+        text_pad=0,
         return_plot="fig",
     )
     ann = next(ann for ann in right.layout.annotations if ann.text == "tx1")
@@ -98,29 +101,38 @@ def test_text_pad_moves_group_labels_in_both_engines():
     fig0 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 0},
+        text="{id}",
+        text_position="right",
+        text_pad=0,
         return_plot="fig",
     )
     fig1 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 10},
+        text="{id}",
+        text_position="right",
+        text_pad=10,
         return_plot="fig",
     )
     x0 = next(ann.x for ann in fig0.layout.annotations if ann.text == "tx1")
     x1 = next(ann.x for ann in fig1.layout.annotations if ann.text == "tx1")
     assert x1 > x0
+    assert x1 == 43
 
     fig0 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "above", "pad": 0},
+        text="{id}",
+        text_position="above",
+        text_pad=0,
         return_plot="fig",
     )
     fig1 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "above", "pad": 10},
+        text="{id}",
+        text_position="above",
+        text_pad=10,
         return_plot="fig",
     )
     y0 = next(ann.y for ann in fig0.layout.annotations if ann.text == "tx1")
@@ -131,13 +143,17 @@ def test_text_pad_moves_group_labels_in_both_engines():
     mpl0 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 0},
+        text="{id}",
+        text_position="right",
+        text_pad=0,
         return_plot="fig",
     )
     mpl1 = pre.plot(
         grouped,
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 10},
+        text="{id}",
+        text_position="right",
+        text_pad=10,
         return_plot="fig",
     )
     x0 = next(t.get_position()[0] for t in mpl0.axes[0].texts if t.get_text() == "tx1")
@@ -157,7 +173,9 @@ def test_text_pad_percentage_is_panel_specific_for_list_inputs():
     fig = pre.plot(
         [wide, narrow],
         id_col="id",
-        text={"label": "{id}", "position": "right", "pad": 10},
+        text="{id}",
+        text_position="right",
+        text_pad=10,
         return_plot="fig",
     )
     annotations = {ann.text: ann for ann in fig.layout.annotations}
@@ -183,7 +201,9 @@ def test_plotly_above_below_pad_zero_uses_full_row_height():
         id_col="id",
         height_col="height",
         interval_height=0.8,
-        text={"label": "{id}", "position": "above", "pad": 0},
+        text="{id}",
+        text_position="above",
+        text_pad=0,
         return_plot="fig",
     )
     below = pre.plot(
@@ -191,7 +211,9 @@ def test_plotly_above_below_pad_zero_uses_full_row_height():
         id_col="id",
         height_col="height",
         interval_height=0.8,
-        text={"label": "{id}", "position": "below", "pad": 0},
+        text="{id}",
+        text_position="below",
+        text_pad=0,
         return_plot="fig",
     )
 
@@ -218,7 +240,9 @@ def test_matplotlib_above_below_pad_zero_uses_full_row_height():
         id_col="id",
         height_col="height",
         interval_height=0.8,
-        text={"label": "{id}", "position": "above", "pad": 0},
+        text="{id}",
+        text_position="above",
+        text_pad=0,
         return_plot="fig",
     )
     text = next(t for t in fig.axes[0].texts if t.get_text() == "utr")
@@ -230,7 +254,9 @@ def test_plotly_text_angle_matches_matplotlib_direction():
     fig = pre.plot(
         _data(),
         id_col="id",
-        text={"label": "{id}", "position": "above", "angle": 25},
+        text="{id}",
+        text_position="above",
+        text_angle=25,
         return_plot="fig",
     )
     anns = [ann for ann in fig.layout.annotations if ann.text in {"a", "b"}]

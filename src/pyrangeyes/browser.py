@@ -79,10 +79,7 @@ def _mode_kwargs(mode, base_kwargs, base_text, base_interval_height):
             v_spacer=min(kwargs.get("v_spacer", 0.2), 0.08),
         )
     elif mode == "packed":
-        packed_text = base_text
-        if packed_text is None or packed_text is True:
-            packed_text = {"enabled": True, "avoid_overlaps": True}
-        kwargs.update(packed=True, text=packed_text)
+        kwargs.update(packed=True, text=base_text)
     elif mode == "full":
         kwargs.update(packed=False, text=False, y_labels=kwargs.get("y_labels", None))
     else:

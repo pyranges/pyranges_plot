@@ -1427,11 +1427,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_1_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 104.4,
         "xanchor": "left",
         "xref": "x",
@@ -1441,11 +1442,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_2_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 110.4,
         "xanchor": "left",
         "xref": "x",
@@ -1455,11 +1457,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_3_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 116.4,
         "xanchor": "left",
         "xref": "x",
@@ -1469,11 +1472,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_4_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 122.4,
         "xanchor": "left",
         "xref": "x",
@@ -1483,11 +1487,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_5_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 128.4,
         "xanchor": "left",
         "xref": "x",
@@ -1497,11 +1502,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_6_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 134.4,
         "xanchor": "left",
         "xref": "x",
@@ -1511,11 +1517,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "long_label_7_overlap_demo",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 140.4,
         "xanchor": "left",
         "xref": "x",
