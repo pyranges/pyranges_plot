@@ -486,7 +486,11 @@ def subdf_assigncolor(
         if _is_channel_colormap(colormap)
         else "color"
     )
-    if outline_color is not None and _is_channel_colormap(colormap) and "outline" in colormap:
+    if (
+        outline_color is not None
+        and _is_channel_colormap(colormap)
+        and "outline" in colormap
+    ):
         raise ValueError(
             "Do not provide both colormap['outline'] and outline_color. "
             "Use outline_color for one fixed outline color, or outline_col "

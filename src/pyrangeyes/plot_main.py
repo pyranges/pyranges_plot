@@ -74,6 +74,7 @@ def _normalize_text_spec(text, packed, *, text_position, text_fit, text_angle):
         "use_label_for_fit": isinstance(text, str),
     }
 
+
 def _format_text_label(row, text_spec, genename):
     if not text_spec["enabled"]:
         return ""

@@ -270,7 +270,6 @@ def plot_row(
             angle = 0
             font_size = text_size
 
-
         vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
         group_start = row.get(TEXT_START_COL, start)
