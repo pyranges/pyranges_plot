@@ -32,8 +32,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -61,8 +61,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -90,8 +90,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -119,8 +119,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -148,8 +148,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -177,8 +177,8 @@
       "y": [
         -0.8,
         -0.8,
-        8.0,
-        8.0,
+        9.0,
+        9.0,
         -0.8
       ],
       "type": "scatter",
@@ -2760,11 +2760,11 @@
         2227.0
       ],
       "y": [
-        5.69625,
-        5.69625,
-        5.70375,
-        5.70375,
-        5.69625
+        7.69625,
+        7.69625,
+        7.70375,
+        7.70375,
+        7.69625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2784,8 +2784,8 @@
         2427.0
       ],
       "y": [
-        5.7,
-        5.7
+        7.7,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2805,8 +2805,8 @@
         2493
       ],
       "y": [
-        5.7,
-        5.7
+        7.7,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2826,8 +2826,8 @@
         2471.9592
       ],
       "y": [
-        5.41,
-        5.7
+        7.41,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2847,8 +2847,8 @@
         2448.0408
       ],
       "y": [
-        5.7,
-        5.99
+        7.7,
+        7.99
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2868,8 +2868,8 @@
         2693.0
       ],
       "y": [
-        5.7,
-        5.7
+        7.7,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2889,8 +2889,8 @@
         2759
       ],
       "y": [
-        5.7,
-        5.7
+        7.7,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2910,8 +2910,8 @@
         2737.9592
       ],
       "y": [
-        5.41,
-        5.7
+        7.41,
+        7.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2931,8 +2931,8 @@
         2714.0408
       ],
       "y": [
-        5.7,
-        5.99
+        7.7,
+        7.99
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2957,11 +2957,11 @@
         2227
       ],
       "y": [
-        5.4,
-        5.4,
-        6.0,
-        6.0,
-        5.4
+        7.4,
+        7.4,
+        8.0,
+        8.0,
+        7.4
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2986,11 +2986,11 @@
         2493
       ],
       "y": [
-        5.4,
-        5.4,
-        6.0,
-        6.0,
-        5.4
+        7.4,
+        7.4,
+        8.0,
+        8.0,
+        7.4
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3015,11 +3015,11 @@
         2759
       ],
       "y": [
-        5.4,
-        5.4,
-        6.0,
-        6.0,
-        5.4
+        7.4,
+        7.4,
+        8.0,
+        8.0,
+        7.4
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3194,11 +3194,11 @@
         2925.0
       ],
       "y": [
-        6.69625,
-        6.69625,
-        6.70375,
-        6.70375,
-        6.69625
+        5.69625,
+        5.69625,
+        5.70375,
+        5.70375,
+        5.69625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3218,8 +3218,8 @@
         NaN
       ],
       "y": [
-        6.7,
-        6.7
+        5.7,
+        5.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3244,11 +3244,11 @@
         2925
       ],
       "y": [
-        6.4,
-        6.4,
-        7.0,
-        7.0,
-        6.4
+        5.4,
+        5.4,
+        6.0,
+        6.0,
+        5.4
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3268,8 +3268,8 @@
         3286.9592
       ],
       "y": [
-        6.7,
-        6.99
+        5.7,
+        5.99
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -3289,8 +3289,8 @@
         3263.0408
       ],
       "y": [
-        6.41,
-        6.7
+        5.41,
+        5.7
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -5221,16 +5221,16 @@
     "yaxis": {
       "anchor": "x",
       "domain": [
-        0.7439024390243902,
+        0.7241379310344829,
         1.0
       ],
       "range": [
         -0.3,
-        7.5
+        8.5
       ],
       "fixedrange": true,
       "tickvals": [
-        6.2,
+        6.7,
         3.1,
         0.65
       ],
@@ -5287,8 +5287,8 @@
     "yaxis2": {
       "anchor": "x2",
       "domain": [
-        0.4463414634146342,
-        0.6439024390243904
+        0.4379310344827587,
+        0.6241379310344829
       ],
       "range": [
         -0.3,
@@ -5365,8 +5365,8 @@
     "yaxis3": {
       "anchor": "x3",
       "domain": [
-        0.3170731707317074,
-        0.34634146341463423
+        0.3103448275862069,
+        0.33793103448275863
       ],
       "range": [
         -0.3,
@@ -5431,8 +5431,8 @@
     "yaxis4": {
       "anchor": "x4",
       "domain": [
-        0.12926829268292683,
-        0.21707317073170734
+        0.12758620689655173,
+        0.21034482758620693
       ],
       "range": [
         -0.3,
@@ -5504,7 +5504,7 @@
       "anchor": "x5",
       "domain": [
         0.0,
-        0.029268292682926834
+        0.027586206896551727
       ],
       "range": [
         -0.3,
@@ -5552,7 +5552,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.6439024390243904,
+        "y": 0.6241379310344829,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -5567,7 +5567,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.34634146341463423,
+        "y": 0.33793103448275863,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -5582,7 +5582,7 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.21707317073170734,
+        "y": 0.21034482758620693,
         "yanchor": "bottom",
         "yref": "paper"
       },
@@ -5597,229 +5597,263 @@
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
-        "y": 0.029268292682926834,
+        "y": 0.027586206896551727,
         "yanchor": "bottom",
         "yref": "paper"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T2",
-        "textangle": 0,
-        "x": 9.664,
+        "textangle": 0.0,
+        "x": 8.879999999999999,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T3",
-        "textangle": 0,
-        "x": 69.664,
+        "textangle": 0.0,
+        "x": 68.88,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T4",
-        "textangle": 0,
-        "x": 139.964,
+        "textangle": 0.0,
+        "x": 139.88,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y3"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T5",
-        "textangle": 0,
-        "x": 4.4030000000000005,
+        "textangle": 0.0,
+        "x": 3.01,
         "xanchor": "right",
         "xref": "x4",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y4"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T6",
-        "textangle": 0,
-        "x": 99.7,
+        "textangle": 0.0,
+        "x": 99.0,
         "xanchor": "right",
         "xref": "x5",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y5"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 485.01,
+        "textangle": 0.0,
+        "x": 461.7,
         "xanchor": "right",
         "xref": "x",
         "y": 5.7,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 60.34,
+        "textangle": 0.0,
+        "x": 58.8,
         "xanchor": "right",
         "xref": "x",
         "y": 2.1,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 0.823,
+        "textangle": 0.0,
+        "x": 0.41000000000000003,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t2",
-        "textangle": 0,
-        "x": 285.01,
+        "textangle": 0.0,
+        "x": 261.7,
         "xanchor": "right",
         "xref": "x",
         "y": 6.7,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t2",
-        "textangle": 0,
-        "x": 8.34,
+        "textangle": 0.0,
+        "x": 6.8,
         "xanchor": "right",
         "xref": "x",
         "y": 3.1,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t3",
-        "textangle": 0,
-        "x": 2217.01,
+        "textangle": 0.0,
+        "x": 2193.7,
         "xanchor": "right",
         "xref": "x",
-        "y": 5.7,
+        "y": 7.7,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t3",
-        "textangle": 0,
-        "x": 150.34,
+        "textangle": 0.0,
+        "x": 148.8,
         "xanchor": "right",
         "xref": "x",
         "y": 4.1,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t4",
-        "textangle": 0,
-        "x": 2915.01,
+        "textangle": 0.0,
+        "x": 2891.7,
         "xanchor": "right",
         "xref": "x",
-        "y": 6.7,
+        "y": 5.7,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t4",
-        "textangle": 0,
-        "x": 4.778,
+        "textangle": 0.0,
+        "x": 4.26,
         "xanchor": "right",
         "xref": "x2",
         "y": 3.1,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t5",
-        "textangle": 0,
-        "x": 0.778,
+        "textangle": 0.0,
+        "x": 0.26,
         "xanchor": "right",
         "xref": "x2",
         "y": 4.1,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t6",
-        "textangle": 0,
-        "x": 44.778,
+        "textangle": 0.0,
+        "x": 44.26,
         "xanchor": "right",
         "xref": "x2",
         "y": 5.1,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t7",
-        "textangle": 0,
-        "x": 19.91,
+        "textangle": 0.0,
+        "x": 19.7,
         "xanchor": "right",
         "xref": "x4",
         "y": 2.1,
+        "yanchor": "middle",
         "yref": "y4"
       }
     ],
@@ -5834,8 +5868,8 @@
         "x0": 0,
         "x1": 1,
         "xref": "x domain",
-        "y0": 7.5,
-        "y1": 7.5,
+        "y0": 8.5,
+        "y1": 8.5,
         "yref": "y"
       },
       {

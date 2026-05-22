@@ -1428,11 +1428,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx1:exon",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 102.0,
         "xanchor": "center",
         "xref": "x",
@@ -1443,11 +1443,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx2:CDS",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 108.0,
         "xanchor": "center",
         "xref": "x",
@@ -1458,11 +1458,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx3:UTR",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 114.0,
         "xanchor": "center",
         "xref": "x",
@@ -1473,11 +1473,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx4:SNP",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 120.0,
         "xanchor": "center",
         "xref": "x",
@@ -1488,11 +1488,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx5:motif",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 126.0,
         "xanchor": "center",
         "xref": "x",
@@ -1503,11 +1503,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx6:peak",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 132.0,
         "xanchor": "center",
         "xref": "x",
@@ -1518,11 +1518,11 @@
       {
         "font": {
           "color": "white",
-          "size": 8
+          "size": 8.0
         },
         "showarrow": false,
         "text": "tx7:repeat",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 138.0,
         "xanchor": "center",
         "xref": "x",

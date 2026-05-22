@@ -253,35 +253,6 @@
       "mode": "lines",
       "name": "t1",
       "showlegend": false,
-      "text": "<br>[+] (90, 92)<br>ID: t1",
-      "x": [
-        90,
-        92,
-        92,
-        90,
-        90
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#f05f89",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#f05f89"
-      },
-      "mode": "lines",
-      "name": "t1",
-      "showlegend": false,
       "text": "<br>[+] (61, 64)<br>ID: t1",
       "x": [
         61,
@@ -354,6 +325,35 @@
         0.59,
         0.59,
         0.41000000000000003
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#f05f89",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#f05f89"
+      },
+      "mode": "lines",
+      "name": "t1",
+      "showlegend": false,
+      "text": "<br>[+] (90, 92)<br>ID: t1",
+      "x": [
+        90,
+        92,
+        92,
+        90,
+        90
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -2812,93 +2812,107 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 60.34,
+        "textangle": 0.0,
+        "x": 58.8,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 8.34,
+        "textangle": 0.0,
+        "x": 6.8,
         "xanchor": "right",
         "xref": "x",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 150.34,
+        "textangle": 0.0,
+        "x": 148.8,
         "xanchor": "right",
         "xref": "x",
         "y": 2.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 4.733,
+        "textangle": 0.0,
+        "x": 4.11,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 0.733,
+        "textangle": 0.0,
+        "x": 0.10999999999999999,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 59.733,
+        "textangle": 0.0,
+        "x": 59.11,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
-        "x": 19.91,
+        "textangle": 0.0,
+        "x": 19.7,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y3"
       }
     ],

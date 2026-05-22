@@ -6,28 +6,27 @@
       "type": "scatter",
       "xaxis": "x",
       "yaxis": "y",
-      "customdata": {
-        "dtype": "i1",
-        "bdata": "AAAA"
-      }
+      "customdata": [
+        "no warnings"
+      ]
     },
     {
       "fill": "toself",
-      "fillcolor": "grey",
+      "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#3366CC",
+        "color": "#d9e8ff",
         "width": 0
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "(10, 60)<br>ID: 1",
+      "text": "(100, 104)<br>ID: tx1",
       "x": [
-        10,
-        60,
-        60,
-        10,
-        10
+        100,
+        104,
+        104,
+        100,
+        100
       ],
       "y": [
         0.49625,
@@ -43,7 +42,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#3366CC",
+        "color": "#d9e8ff",
         "dash": "solid",
         "width": 0.7
       },
@@ -63,21 +62,21 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#3366CC",
+      "fillcolor": "#d9e8ff",
       "hoverinfo": "text",
       "line": {
-        "color": "#3366CC"
+        "color": "#d9e8ff"
       },
       "mode": "lines",
-      "name": "0",
+      "name": "exon",
       "showlegend": false,
-      "text": "<br>0",
+      "text": "<br>(100, 104)<br>ID: tx1",
       "x": [
-        10,
-        40,
-        40,
-        10,
-        10
+        100,
+        104,
+        104,
+        100,
+        100
       ],
       "y": [
         0.2,
@@ -92,57 +91,28 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#DC3912",
+      "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#DC3912"
-      },
-      "mode": "lines",
-      "name": "1",
-      "showlegend": false,
-      "text": "<br>1",
-      "x": [
-        30,
-        60,
-        60,
-        30,
-        30
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "grey",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#DC3912",
+        "color": "#f6bd16",
         "width": 0
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "(10, 60)<br>ID: 1",
+      "text": "(106, 110)<br>ID: tx2",
       "x": [
-        10,
-        60,
-        60,
-        10,
-        10
+        106,
+        110,
+        110,
+        106,
+        106
       ],
       "y": [
-        2.09625,
-        2.09625,
-        2.1037500000000002,
-        2.1037500000000002,
-        2.09625
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -151,7 +121,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#DC3912",
+        "color": "#f6bd16",
         "dash": "solid",
         "width": 0.7
       },
@@ -162,8 +132,8 @@
         NaN
       ],
       "y": [
-        2.1,
-        2.1
+        0.5,
+        0.5
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -171,28 +141,28 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#3366CC",
+      "fillcolor": "#f6bd16",
       "hoverinfo": "text",
       "line": {
-        "color": "#3366CC"
+        "color": "#f6bd16"
       },
       "mode": "lines",
-      "name": "0",
+      "name": "CDS",
       "showlegend": false,
-      "text": "<br>0",
+      "text": "<br>(106, 110)<br>ID: tx2",
       "x": [
-        30,
-        60,
-        60,
-        30,
-        30
+        106,
+        110,
+        110,
+        106,
+        106
       ],
       "y": [
-        1.8,
-        1.8,
-        2.4,
-        2.4,
-        1.8
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -200,28 +170,394 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#DC3912",
+      "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#DC3912"
+        "color": "#b7eb8f",
+        "width": 0
       },
       "mode": "lines",
-      "name": "1",
       "showlegend": false,
-      "text": "<br>1",
+      "text": "(112, 116)<br>ID: tx3",
       "x": [
-        10,
-        40,
-        40,
-        10,
-        10
+        112,
+        116,
+        116,
+        112,
+        112
       ],
       "y": [
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#b7eb8f",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        0.5,
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#b7eb8f",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#b7eb8f"
+      },
+      "mode": "lines",
+      "name": "UTR",
+      "showlegend": false,
+      "text": "<br>(112, 116)<br>ID: tx3",
+      "x": [
+        112,
+        116,
+        116,
+        112,
+        112
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "white",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#ffadd2",
+        "width": 0
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "text": "(118, 122)<br>ID: tx4",
+      "x": [
+        118,
+        122,
+        122,
+        118,
+        118
+      ],
+      "y": [
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#ffadd2",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        0.5,
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#ffadd2",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#ffadd2"
+      },
+      "mode": "lines",
+      "name": "SNP",
+      "showlegend": false,
+      "text": "<br>(118, 122)<br>ID: tx4",
+      "x": [
+        118,
+        122,
+        122,
+        118,
+        118
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "white",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#d3adf7",
+        "width": 0
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "text": "(124, 128)<br>ID: tx5",
+      "x": [
+        124,
+        128,
+        128,
+        124,
+        124
+      ],
+      "y": [
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#d3adf7",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        0.5,
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#d3adf7",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#d3adf7"
+      },
+      "mode": "lines",
+      "name": "motif",
+      "showlegend": false,
+      "text": "<br>(124, 128)<br>ID: tx5",
+      "x": [
+        124,
+        128,
+        128,
+        124,
+        124
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "white",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#87e8de",
+        "width": 0
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "text": "(130, 134)<br>ID: tx6",
+      "x": [
+        130,
+        134,
+        134,
+        130,
+        130
+      ],
+      "y": [
+        1.49625,
+        1.49625,
+        1.50375,
+        1.50375,
+        1.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#87e8de",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        1.5,
+        1.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#87e8de",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#87e8de"
+      },
+      "mode": "lines",
+      "name": "peak",
+      "showlegend": false,
+      "text": "<br>(130, 134)<br>ID: tx6",
+      "x": [
+        130,
+        134,
+        134,
+        130,
+        130
+      ],
+      "y": [
+        1.2,
+        1.2,
         1.8,
         1.8,
-        2.4,
-        2.4,
-        1.8
+        1.2
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "white",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#ffd591",
+        "width": 0
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "text": "(136, 140)<br>ID: tx7",
+      "x": [
+        136,
+        140,
+        140,
+        136,
+        136
+      ],
+      "y": [
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#ffd591",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        0.5,
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#ffd591",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#ffd591"
+      },
+      "mode": "lines",
+      "name": "repeat",
+      "showlegend": false,
+      "text": "<br>(136, 140)<br>ID: tx7",
+      "x": [
+        136,
+        140,
+        140,
+        136,
+        136
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -1012,45 +1348,45 @@
         1.0
       ],
       "range": [
-        7.5,
-        62.5
+        98.0,
+        142.0
       ],
       "tickformat": "d",
       "showgrid": true,
-      "gridcolor": "darkgrey",
+      "gridcolor": "lightgrey",
       "griddash": "dot",
       "zeroline": false,
       "tickvals": [
-        10,
-        15,
-        20,
-        25,
-        30,
-        35,
-        40,
-        45,
-        50,
-        55,
-        60
+        100,
+        104,
+        108,
+        112,
+        116,
+        120,
+        124,
+        128,
+        132,
+        136,
+        140
       ],
       "ticktext": [
-        10,
-        15,
-        20,
-        25,
-        30,
-        35,
-        40,
-        45,
-        50,
-        55,
-        60
+        100,
+        104,
+        108,
+        112,
+        116,
+        120,
+        124,
+        128,
+        132,
+        136,
+        140
       ],
       "showline": true,
       "linewidth": 1,
-      "linecolor": "white",
+      "linecolor": "black",
       "mirror": true,
-      "color": "white"
+      "color": "black"
     },
     "yaxis": {
       "anchor": "x",
@@ -1060,7 +1396,7 @@
       ],
       "range": [
         -0.3,
-        2.9000000000000004
+        2.3
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1069,19 +1405,19 @@
       "zeroline": false,
       "showline": true,
       "linewidth": 1,
-      "linecolor": "white",
+      "linecolor": "black",
       "mirror": true,
-      "color": "white"
+      "color": "black"
     },
     "annotations": [
       {
         "font": {
-          "color": "goldenrod",
+          "color": "black",
           "family": "Arial",
           "size": 18
         },
         "showarrow": false,
-        "text": "Chromosome 1",
+        "text": "Chromosome chr1",
         "x": 0.5,
         "xanchor": "center",
         "xref": "paper",
@@ -1091,14 +1427,14 @@
       },
       {
         "font": {
-          "color": "white",
-          "size": 10.0
+          "color": "#262626",
+          "size": 8.0
         },
         "showarrow": false,
-        "text": "1",
+        "text": "exon",
         "textangle": 0.0,
-        "x": 9.5,
-        "xanchor": "right",
+        "x": 102.0,
+        "xanchor": "center",
         "xref": "x",
         "y": 0.5,
         "yanchor": "middle",
@@ -1106,55 +1442,108 @@
       },
       {
         "font": {
-          "color": "white",
-          "size": 10.0
+          "color": "#262626",
+          "size": 8.0
         },
         "showarrow": false,
-        "text": "1",
+        "text": "CDS",
         "textangle": 0.0,
-        "x": 9.5,
-        "xanchor": "right",
+        "x": 108.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 2.1,
+        "y": 0.5,
+        "yanchor": "middle",
+        "yref": "y"
+      },
+      {
+        "font": {
+          "color": "#262626",
+          "size": 8.0
+        },
+        "showarrow": false,
+        "text": "UTR",
+        "textangle": 0.0,
+        "x": 114.0,
+        "xanchor": "center",
+        "xref": "x",
+        "y": 0.5,
+        "yanchor": "middle",
+        "yref": "y"
+      },
+      {
+        "font": {
+          "color": "#262626",
+          "size": 8.0
+        },
+        "showarrow": false,
+        "text": "SNP",
+        "textangle": 0.0,
+        "x": 120.0,
+        "xanchor": "center",
+        "xref": "x",
+        "y": 0.5,
+        "yanchor": "middle",
+        "yref": "y"
+      },
+      {
+        "font": {
+          "color": "#262626",
+          "size": 8.0
+        },
+        "showarrow": false,
+        "text": "motif",
+        "textangle": 0.0,
+        "x": 126.0,
+        "xanchor": "center",
+        "xref": "x",
+        "y": 0.5,
+        "yanchor": "middle",
+        "yref": "y"
+      },
+      {
+        "font": {
+          "color": "#262626",
+          "size": 8.0
+        },
+        "showarrow": false,
+        "text": "peak",
+        "textangle": 0.0,
+        "x": 132.0,
+        "xanchor": "center",
+        "xref": "x",
+        "y": 1.5,
+        "yanchor": "middle",
+        "yref": "y"
+      },
+      {
+        "font": {
+          "color": "#262626",
+          "size": 8.0
+        },
+        "showarrow": false,
+        "text": "repeat",
+        "textangle": 0.0,
+        "x": 138.0,
+        "xanchor": "center",
+        "xref": "x",
+        "y": 0.5,
         "yanchor": "middle",
         "yref": "y"
       }
     ],
-    "shapes": [
-      {
-        "line": {
-          "color": "white",
-          "dash": "solid",
-          "width": 1
-        },
-        "type": "line",
-        "x0": 0,
-        "x1": 1,
-        "xref": "x domain",
-        "y0": 2.9000000000000004,
-        "y1": 2.9000000000000004,
-        "yref": "y"
-      },
-      {
-        "line": {
-          "color": "white",
-          "dash": "solid",
-          "width": 1
-        },
-        "type": "line",
-        "x0": 0,
-        "x1": 1,
-        "xref": "x domain",
-        "y0": 1.3,
-        "y1": 1.3,
-        "yref": "y"
-      }
-    ],
     "font": {
-      "color": "white"
+      "color": "black"
     },
-    "plot_bgcolor": "grey",
+    "plot_bgcolor": "white",
     "showlegend": false,
-    "paper_bgcolor": "#1f1f1f"
+    "paper_bgcolor": "white",
+    "margin": {
+      "l": 25,
+      "r": 25,
+      "t": 45,
+      "b": 35
+    },
+    "width": 1700,
+    "height": 700
   }
 }

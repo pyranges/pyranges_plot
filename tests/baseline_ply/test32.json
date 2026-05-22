@@ -1113,11 +1113,11 @@
       {
         "font": {
           "color": "white",
-          "size": 9
+          "size": 9.0
         },
         "showarrow": false,
         "text": "a",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 17.5,
         "xanchor": "center",
         "xref": "x",
@@ -1128,11 +1128,11 @@
       {
         "font": {
           "color": "white",
-          "size": 9
+          "size": 9.0
         },
         "showarrow": false,
         "text": "b",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 37.5,
         "xanchor": "center",
         "xref": "x",
@@ -1143,11 +1143,11 @@
       {
         "font": {
           "color": "white",
-          "size": 9
+          "size": 9.0
         },
         "showarrow": false,
         "text": "c",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 57.5,
         "xanchor": "center",
         "xref": "x",

@@ -35,20 +35,18 @@ def transcript_list_data():
 SIMPLE_CASES = [
     dict(
         data=overlapping_data,
-        kwargs=dict(id_col="id", packed=True, text={"label": "{id}"}),
+        kwargs=dict(id_col="id", packed=True, text="{id}"),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
             packed=True,
-            text={
-                "label": "{label}",
-                "position": "right",
-                "avoid_overlaps": False,
-                "pad": 1,
-                "size": 8,
-            },
+            text="{label}",
+            text_position="right",
+            text_fit=False,
+            text_pad=1,
+            text_size=8,
         ),
     ),
     dict(
@@ -56,13 +54,11 @@ SIMPLE_CASES = [
         kwargs=dict(
             id_col="id",
             packed=True,
-            text={
-                "label": "{label}",
-                "position": "right",
-                "avoid_overlaps": True,
-                "pad": 1,
-                "size": 8,
-            },
+            text="{label}",
+            text_position="right",
+            text_fit=True,
+            text_pad=1,
+            text_size=8,
         ),
     ),
     dict(
@@ -70,7 +66,9 @@ SIMPLE_CASES = [
         kwargs=dict(
             id_col="id",
             packed=True,
-            text={"label": "{kind}", "position": "above", "size": 9},
+            text="{kind}",
+            text_position="above",
+            text_size=9,
         ),
     ),
     dict(
@@ -78,7 +76,9 @@ SIMPLE_CASES = [
         kwargs=dict(
             id_col="id",
             packed=True,
-            text={"label": "{kind}", "position": "below", "size": 9},
+            text="{kind}",
+            text_position="below",
+            text_size=9,
         ),
     ),
     dict(
@@ -90,12 +90,10 @@ SIMPLE_CASES = [
             outline_col="outline",
             colormap="direct",
             interval_height=0.7,
-            text={
-                "label": "{id}:{kind}",
-                "position": "center",
-                "color": "white",
-                "size": 8,
-            },
+            text="{id}:{kind}",
+            text_position="center",
+            text_color="white",
+            text_size=8,
         ),
     ),
     dict(
@@ -109,7 +107,10 @@ SIMPLE_CASES = [
             colormap={
                 "color": {"type": "quantitative", "colors": ["#d9f7be", "#237804"]}
             },
-            text={"label": "{score}", "position": "above", "angle": 25, "size": 8},
+            text="{score}",
+            text_position="above",
+            text_angle=25,
+            text_size=8,
         ),
     ),
 ]
@@ -121,6 +122,63 @@ POSITION_PADS = {
     "below": [0, 1, 5],
     "center": [0, 1, 5],
 }
+
+
+TEXT_COLORMAP_CASES = [
+    dict(
+        data=overlapping_data,
+        kwargs=dict(
+            id_col="id",
+            packed=True,
+            color_col="kind",
+            colormap={
+                "color": {
+                    "exon": "#d9e8ff",
+                    "CDS": "#f6bd16",
+                    "UTR": "#b7eb8f",
+                    "SNP": "#ffadd2",
+                    "motif": "#d3adf7",
+                    "peak": "#87e8de",
+                    "repeat": "#ffd591",
+                },
+                "text": {
+                    "exon": "#003a8c",
+                    "CDS": "#ad4e00",
+                    "UTR": "#237804",
+                    "SNP": "#c41d7f",
+                    "motif": "#531dab",
+                    "peak": "#006d75",
+                    "repeat": "#ad6800",
+                },
+            },
+            text="{kind}",
+            text_position="above",
+            text_size=9,
+            text_color_col="kind",
+        ),
+    ),
+    dict(
+        data=overlapping_data,
+        kwargs=dict(
+            id_col="id",
+            packed=True,
+            color_col="kind",
+            colormap={
+                "exon": "#d9e8ff",
+                "CDS": "#f6bd16",
+                "UTR": "#b7eb8f",
+                "SNP": "#ffadd2",
+                "motif": "#d3adf7",
+                "peak": "#87e8de",
+                "repeat": "#ffd591",
+            },
+            text="{kind}",
+            text_position="center",
+            text_size=8,
+            text_color="#262626",
+        ),
+    ),
+]
 
 
 def iter_showcase_cases(engine):
@@ -138,12 +196,10 @@ def iter_showcase_cases(engine):
                 dict(
                     adapter="mRNA",
                     packed=True,
-                    text={
-                        "label": "{transcript_id}",
-                        "position": position,
-                        "pad": pad,
-                        "size": 12,
-                    },
+                    text="{transcript_id}",
+                    text_position=position,
+                    text_pad=pad,
+                    text_size=12,
                     color_col="Feature",
                     colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
                     sort_ranges=True,
@@ -159,15 +215,18 @@ def iter_showcase_cases(engine):
             dict(
                 adapter=["mRNA", "mRNA"],
                 packed=True,
-                text={
-                    "label": "{transcript_id}",
-                    "position": position,
-                    "pad": pad,
-                    "size": 12,
-                },
+                text="{transcript_id}",
+                text_position=position,
+                text_pad=pad,
+                text_size=12,
                 color_col="Feature",
                 colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
                 sort_ranges=True,
             ),
         )
+        plot_no += 1
+
+    plot_no = 60 if engine == "plt" else 70
+    for case in TEXT_COLORMAP_CASES:
+        yield plot_no, case["data"](), case["kwargs"]
         plot_no += 1

@@ -388,6 +388,128 @@ def test_colormap_outline_and_outline_color_are_mutually_exclusive():
         )
 
 
+def test_colormap_text_channel_maps_text_from_color_col():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "text": {"x": "purple", "y": "green"},
+        },
+        text=True,
+        text_color_col="kind",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    label_texts = [text for text in fig.axes[0].texts if text.get_text() in {"a", "b"}]
+    assert [_hex(text.get_color()) for text in label_texts] == [
+        "#800080",
+        "#008000",
+    ]
+
+
+def test_text_color_defaults_to_global_option_not_fill_color():
+    pre.set_engine("matplotlib")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        colormap={"x": "skyblue", "y": "gold"},
+        text=True,
+        text_color="crimson",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    label_texts = [text for text in fig.axes[0].texts if text.get_text() in {"a", "b"}]
+    assert [_hex(text.get_color()) for text in label_texts] == [
+        "#dc143c",
+        "#dc143c",
+    ]
+
+
+def test_plotly_colormap_text_channel_sets_annotation_font_colors():
+    pre.set_engine("plotly")
+
+    fig = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "text": {"x": "purple", "y": "green"},
+        },
+        text=True,
+        text_color_col="kind",
+        return_plot="fig",
+        warnings=False,
+    )
+
+    label_annotations = [
+        annotation for annotation in fig.layout.annotations if annotation.text in {"a", "b"}
+    ]
+    assert [annotation.font.color for annotation in label_annotations] == [
+        "purple",
+        "green",
+    ]
+
+
+def test_colormap_text_spec_requires_text_color_col():
+    pre.set_engine("matplotlib")
+
+    with pytest.raises(ValueError, match="requires text_color_col"):
+        pre.plot(
+            _style_data(),
+            id_col="id",
+            color_col="kind",
+            colormap={
+                "color": {"x": "skyblue", "y": "gold"},
+                "text": {"x": "purple", "y": "green"},
+            },
+            text=True,
+            return_plot="fig",
+            warnings=False,
+        )
+
+
+def test_colormap_text_aliases_reuse_resolved_channels():
+    pre.set_engine("matplotlib")
+
+    fill = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        colormap={"color": {"x": "skyblue", "y": "gold"}, "text": "color"},
+        text=True,
+        return_plot="fig",
+        warnings=False,
+    )
+    fill_texts = [text for text in fill.axes[0].texts if text.get_text() in {"a", "b"}]
+    assert [_hex(text.get_color()) for text in fill_texts] == ["#87ceeb", "#ffd700"]
+
+    outline = pre.plot(
+        _style_data(),
+        id_col="id",
+        color_col="kind",
+        outline_col="status",
+        colormap={
+            "color": {"x": "skyblue", "y": "gold"},
+            "outline": {"ok": "purple", "warn": "green"},
+            "text": "outline",
+        },
+        text=True,
+        return_plot="fig",
+        warnings=False,
+    )
+    outline_texts = [text for text in outline.axes[0].texts if text.get_text() in {"a", "b"}]
+    assert [_hex(text.get_color()) for text in outline_texts] == ["#800080", "#008000"]
+
+
 @pytest.mark.parametrize(
     "colormap, message",
     [

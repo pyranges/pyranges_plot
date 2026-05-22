@@ -1530,11 +1530,11 @@
         60
       ],
       "y": [
-        0.49625,
-        0.49625,
-        0.50375,
-        0.50375,
-        0.49625
+        1.49625,
+        1.49625,
+        1.50375,
+        1.50375,
+        1.49625
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1554,8 +1554,8 @@
         80
       ],
       "y": [
-        0.5,
-        0.5
+        1.5,
+        1.5
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1575,8 +1575,8 @@
         75.2937
       ],
       "y": [
-        0.21000000000000002,
-        0.5
+        1.21,
+        1.5
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1596,8 +1596,8 @@
         74.7063
       ],
       "y": [
-        0.5,
-        0.79
+        1.5,
+        1.79
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1622,11 +1622,11 @@
         60
       ],
       "y": [
-        0.41000000000000003,
-        0.41000000000000003,
-        0.59,
-        0.59,
-        0.41000000000000003
+        1.41,
+        1.41,
+        1.59,
+        1.59,
+        1.41
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -1651,11 +1651,11 @@
         80
       ],
       "y": [
-        0.41000000000000003,
-        0.41000000000000003,
-        0.59,
-        0.59,
-        0.41000000000000003
+        1.41,
+        1.41,
+        1.59,
+        1.59,
+        1.41
       ],
       "type": "scatter",
       "xaxis": "x2",
@@ -2812,93 +2812,107 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 60.34,
+        "textangle": 0.0,
+        "x": 58.8,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t2",
-        "textangle": 0,
-        "x": 8.34,
+        "textangle": 0.0,
+        "x": 6.8,
         "xanchor": "right",
         "xref": "x",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t3",
-        "textangle": 0,
-        "x": 150.34,
+        "textangle": 0.0,
+        "x": 148.8,
         "xanchor": "right",
         "xref": "x",
         "y": 2.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t4",
-        "textangle": 0,
-        "x": 4.733,
+        "textangle": 0.0,
+        "x": 4.11,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t5",
-        "textangle": 0,
-        "x": 0.733,
+        "textangle": 0.0,
+        "x": 0.10999999999999999,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t6",
-        "textangle": 0,
-        "x": 59.733,
+        "textangle": 0.0,
+        "x": 59.11,
         "xanchor": "right",
         "xref": "x2",
-        "y": 0.5,
+        "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t7",
-        "textangle": 0,
-        "x": 19.91,
+        "textangle": 0.0,
+        "x": 19.7,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y3"
       }
     ],

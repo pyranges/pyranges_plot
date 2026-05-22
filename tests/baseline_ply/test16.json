@@ -1091,28 +1091,32 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "1",
-        "textangle": 0,
-        "x": 9.85,
+        "textangle": 0.0,
+        "x": 9.5,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "1",
-        "textangle": 0,
-        "x": 9.85,
+        "textangle": 0.0,
+        "x": 9.5,
         "xanchor": "right",
         "xref": "x",
         "y": 2.1,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

@@ -3763,11 +3763,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367694",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173948019.83,
         "xanchor": "left",
         "xref": "x",
@@ -3777,11 +3778,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367696",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173948019.83,
         "xanchor": "left",
         "xref": "x",
@@ -3791,11 +3793,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367698",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173917764.83,
         "xanchor": "left",
         "xref": "x",
@@ -3805,11 +3808,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000479099",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173941886.83,
         "xanchor": "left",
         "xref": "x",
@@ -3819,11 +3823,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000487183",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173915102.83,
         "xanchor": "left",
         "xref": "x",
@@ -3833,11 +3838,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000494024",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173917753.83,
         "xanchor": "left",
         "xref": "x",

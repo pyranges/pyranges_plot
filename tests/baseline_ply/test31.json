@@ -1630,11 +1630,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "t1:mRNA",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 3764.0,
         "xanchor": "left",
         "xref": "x",
@@ -1644,11 +1645,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "t2:mRNA",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 3964.0,
         "xanchor": "left",
         "xref": "x",
@@ -1658,11 +1660,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "t3:mRNA",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 5764.0,
         "xanchor": "left",
         "xref": "x",
@@ -1672,11 +1675,12 @@
       },
       {
         "font": {
-          "size": 8
+          "color": "black",
+          "size": 8.0
         },
         "showarrow": false,
         "text": "t4:mRNA",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 6764.0,
         "xanchor": "left",
         "xref": "x",

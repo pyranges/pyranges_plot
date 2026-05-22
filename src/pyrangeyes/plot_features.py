@@ -27,10 +27,9 @@ plot_features_dict = {
     ),
     "colormap": (
         "popart",
-        "Colors to assign to intervals. Use 'direct' when color_col/outline_col already contain literal colors. "
-        "Otherwise provide a Matplotlib/Plotly colormap name, color list, value-to-color mapping, "
-        "channel mapping {'color': color_map, 'outline': outline_map}, or quantitative spec "
-        "{'type': 'quantitative', 'colors': color_map, 'range': (min, max)}.",
+        "Colors to assign to interval fills. Use 'direct' when color_col/outline_col/text_color_col already contain literal colors. "
+        "A dict channel mapping must have 'color' and may also have 'outline' and 'text'; 'color'/'outline' aliases reuse channels. "
+        "Values may be Matplotlib/Plotly colormap names, color lists, value-to-color mappings, or quantitative specs.",
         " ",
     ),
     "outline_color": (
@@ -70,11 +69,27 @@ plot_features_dict = {
         " ",
     ),
     "text_pad": (
-        0.003,
-        "Space where the id annotation is placed beside the interval. When text_pad is float, it represents the percentage of the plot space, while an int pad represents number of positions or base pairs.",
+        1,
+        "Space, in percent of the visible plot span, between interval labels and intervals. For example, text_pad=1 means 1%.",
         " ",
     ),
     "text_size": (10, "Fontsize of the text annotation beside the intervals.", " "),
+    "text_color": (
+        "black",
+        "Fixed color of interval text annotations unless text_color_col or colormap['text'] maps them.",
+        " ",
+    ),
+    "text_angle": (0, "Rotation angle of interval text annotations, in degrees.", " "),
+    "text_position": (
+        "left",
+        "Position of interval text annotations: 'left', 'right', 'center', 'above', or 'below'.",
+        " ",
+    ),
+    "text_fit": (
+        True,
+        "Whether text labels reserve space during packed layout to reduce overlaps.",
+        " ",
+    ),
     "title_color": ("black", "Color of the plots' titles.", " "),
     "title_size": (18, "Size of the plots' titles.", " "),
     "title_font": ("Arial", "Font of the plots' titles.", " "),
@@ -97,6 +112,7 @@ theme_dark = {
     "colormap": "G10",
     "fig_bkg": "#1f1f1f",
     "plot_border": "white",
+    "text_color": "white",
     "title_color": "goldenrod",
     "plot_bkg": "grey",
     "grid_color": "darkgrey",

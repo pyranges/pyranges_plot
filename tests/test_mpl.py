@@ -7,6 +7,12 @@ import matplotlib
 matplotlib.use("Agg")
 matplotlib.rcParams["savefig.dpi"] = 400
 
+
+@pytest.fixture(autouse=True)
+def _use_matplotlib_engine():
+    pre.set_engine("plt")
+
+
 data1 = pr.PyRanges(
     {
         "Chromosome": ["1"] * 9,
@@ -465,13 +471,11 @@ def test28():
         data1,
         id_col="transcript_id",
         color_col="transcript_id",
-        text={
-            "label": "{transcript_id}:{Feature}",
-            "position": "right",
-            "avoid_overlaps": False,
-            "pad": 1,
-            "size": 8,
-        },
+        text="{transcript_id}:{Feature}",
+        text_position="right",
+        text_fit=False,
+        text_pad=1,
+        text_size=8,
         sort_ranges=True,
     )
     fig = plt.gcf()
@@ -485,7 +489,10 @@ def test29():
         id_col="id",
         color_col="fill",
         colormap="direct",
-        text={"label": "{id}", "position": "center", "color": "white", "size": 9},
+        text="{id}",
+        text_position="center",
+        text_color="white",
+        text_size=9,
     )
     fig = plt.gcf()
     return fig
@@ -497,7 +504,10 @@ def test30():
         data8,
         "SNP",
         color_col="ALT",
-        text={"label": "{REF}>{ALT}", "position": "above", "angle": 20, "size": 8},
+        text="{REF}>{ALT}",
+        text_position="above",
+        text_angle=20,
+        text_size=8,
         sort_ranges=True,
     )
     fig = plt.gcf()

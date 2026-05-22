@@ -1207,15 +1207,17 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t2",
-        "textangle": 0,
-        "x": 296.484,
+        "textangle": 0.0,
+        "x": 288.28,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

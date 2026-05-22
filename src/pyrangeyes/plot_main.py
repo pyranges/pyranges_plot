@@ -50,69 +50,28 @@ from .names import (
 )
 
 
-def _normalize_text_spec(text, packed):
+def _normalize_text_spec(text, packed, *, text_position, text_fit, text_angle):
     """Normalize the public ``text=`` argument into a rendering spec."""
     if text is None:
         text = bool(packed)
-    if isinstance(text, bool):
-        return {
-            "enabled": text,
-            "label": None,
-            "position": "left",
-            "avoid_overlaps": text,
-            "use_label_for_overlap_avoidance": False,
-            "is_options_dict": False,
-        }
-    if isinstance(text, str):
-        return {
-            "enabled": True,
-            "label": text,
-            "position": "left",
-            "avoid_overlaps": True,
-            "use_label_for_overlap_avoidance": False,
-            "is_options_dict": False,
-        }
-    if not isinstance(text, dict):
-        raise TypeError("text must be None, bool, str, or a dict of text options.")
+    if not isinstance(text, (bool, str)):
+        raise TypeError("text must be None, bool, or a format string.")
 
-    allowed = {
-        "enabled",
-        "label",
-        "position",
-        "avoid_overlaps",
-        "pad",
-        "size",
-        "color",
-        "angle",
-    }
-    extra = set(text) - allowed
-    if extra:
-        raise ValueError(f"Unknown text option(s): {sorted(extra)}")
-
-    enabled = text.get("enabled", True)
-    label = text.get("label")
-    if isinstance(label, bool):
-        enabled = label
-        label = None
-
-    position = text.get("position", "left")
     allowed_positions = {"left", "right", "center", "above", "below"}
-    if position not in allowed_positions:
+    if text_position not in allowed_positions:
         raise ValueError(
-            f"text position must be one of {sorted(allowed_positions)}; got {position!r}."
+            f"text_position must be one of {sorted(allowed_positions)}; "
+            f"got {text_position!r}."
         )
 
+    enabled = bool(text)
     return {
-        "enabled": bool(enabled),
-        "label": label,
-        "position": position,
-        "avoid_overlaps": bool(text.get("avoid_overlaps", bool(enabled))),
-        "use_label_for_overlap_avoidance": True,
-        "is_options_dict": True,
-        "pad": text.get("pad", 1),
-        "size": text.get("size"),
-        "color": text.get("color"),
-        "angle": text.get("angle", 0),
+        "enabled": enabled,
+        "label": text if isinstance(text, str) else None,
+        "position": text_position,
+        "angle": text_angle,
+        "fit": bool(text_fit),
+        "use_label_for_fit": isinstance(text, str),
     }
 
 
@@ -223,6 +182,7 @@ def plot(
     add_aligned_plots=None,
     color_col=None,
     outline_col=None,
+    text_color_col=None,
     shrink=False,
     limits=None,
     regions=None,
@@ -276,20 +236,27 @@ def plot(
         Name of the column used to color interval outlines. If not specified, interval outlines use the
         resolved fill colors. For one fixed outline color, use ``outline_color="black"``.
 
+    text_color_col: str, default None
+        Name of the column used to color text labels. If provided, values are mapped through
+        ``colormap["text"]`` when present, otherwise through the fill colormap. This overrides
+        the fixed ``text_color`` option.
+
     colormap: str, list, dict, or "direct", default "popart"
-        Colors used for interval fills and, optionally, mapped outlines.
+        Colors used for interval fills and, optionally, mapped outlines and text.
 
         If ``"direct"``, values in ``color_col`` and ``outline_col`` are interpreted as literal colors.
         If a string, use the named Matplotlib/Plotly colormap or color sequence.
         If a list, assign colors from the list to distinct values.
-        If a dict, map column values to colors; unmapped values are colored black with a warning.
-
-        For one fixed outline color, use ``outline_color="black"``. To map outlines from a column,
-        provide ``outline_col`` and a channel mapping with ``"color"`` and ``"outline"`` entries::
+        If a dict, use a channel mapping with required ``"color"`` and optional ``"outline"``
+        and ``"text"`` entries. ``"outline": "color"`` reuses the fill mapping.
+        ``"text": None`` or an omitted ``"text"`` entry uses fixed ``text_color`` unless
+        ``text_color_col`` is provided; ``"text": "color"`` and ``"text": "outline"`` reuse
+        those channels. Other text colormap specs require ``text_color_col``::
 
             colormap={
                 "color": {"exon": "skyblue", "CDS": "orange"},
-                "outline": {"+": "green", "-": "red"},
+                "outline": "color",
+                "text": {"low": "black", "high": "white"},
             }
 
         For quantitative coloring, use ``type="quantitative"``. Values are normalized to the observed
@@ -323,16 +290,13 @@ def plot(
         Use a list of ``(chromosome, start, end)`` tuples and/or PyRanges objects,
         a PyRanges object (one row per panel), or a column name whose values define panels.
 
-    text: {None, bool, str, dict}, default None
+    text: {None, bool, str}, default None
         Controls interval text annotations. If None, text is enabled for packed
         plots and disabled for unpacked plots to avoid duplicated row labels.
         If True, the id/index is used; if False, labels are disabled. A string
-        is interpreted as a format template such as ``"{Feature}"``.
-        A dictionary accepts ``label``, ``position`` (``"left"``,
-        ``"right"``, ``"center"``, ``"above"``,
-        ``"below"``), ``avoid_overlaps`` (reserve label space while packing),
-        ``pad`` (percentage of the visible span; ``pad=1`` means 1%; default 1),
-        ``size``, ``color``, and ``angle``.
+        is interpreted as a row-value format template such as ``"{Feature}: {id}"``.
+        Use ``text_pad``, ``text_size``, ``text_color``, ``text_angle``,
+        ``text_position``, and ``text_fit`` to control label appearance and layout.
 
     legend: bool, default False
         Whether the legend should appear in the plot.
@@ -426,8 +390,6 @@ def plot(
 
     >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
-
-    text = _normalize_text_spec(text, packed)
 
     # Treat input data as list
     if not isinstance(data, list):
@@ -595,7 +557,11 @@ def plot(
         "transcript_utr_width": 0.3 * float(getvalue("interval_height")),
         "v_spacer": getvalue("v_spacer"),
         "text_size": float(getvalue("text_size")),
-        "text_pad": getvalue("text_pad"),
+        "text_color": getvalue("text_color"),
+        "text_angle": float(getvalue("text_angle")),
+        "text_position": getvalue("text_position"),
+        "text_fit": getvalue("text_fit"),
+        "text_pad": float(getvalue("text_pad")) / 100,
         "plotly_port": getvalue("plotly_port"),
         "arrow_line_width": float(getvalue("arrow_line_width")),
         "arrow_color": getvalue("arrow_color"),
@@ -604,10 +570,13 @@ def plot(
         "shrunk_bkg": getvalue("shrunk_bkg"),
         "x_ticks": getvalue("x_ticks"),
     }
-    if text.get("pad") is not None:
-        feat_dict["text_pad"] = float(text["pad"]) / 100
-    if text.get("size") is not None:
-        feat_dict["text_size"] = float(text["size"])
+    text = _normalize_text_spec(
+        text,
+        packed,
+        text_position=feat_dict["text_position"],
+        text_fit=feat_dict["text_fit"],
+        text_angle=feat_dict["text_angle"],
+    )
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
     if colormap == "popart":
@@ -767,8 +736,24 @@ def plot(
                     f"The provided outline_col {outline_str} is not present in the given data."
                 )
 
+    if text_color_col is not None:
+        if isinstance(text_color_col, str):
+            text_color_col = [text_color_col]
+        for text_color_str in text_color_col:
+            if text_color_str not in subdf.columns:
+                raise Exception(
+                    f"The provided text_color_col {text_color_str} is not present in the given data."
+                )
+
     subdf = subdf_assigncolor(
-        subdf, colormap, color_col, outline_col, feat_dict["outline_color"], warnings
+        subdf,
+        colormap,
+        color_col,
+        outline_col,
+        feat_dict["outline_color"],
+        feat_dict["text_color"],
+        text_color_col,
+        warnings,
     )
 
     # This is needed to maintain the order of the rows when adding multiple pr
@@ -810,10 +795,8 @@ def plot(
         packed=packed,
         sort_ranges=sort_ranges,
         plot_limits=None,  # You can pass limits if needed
-        text_label_col=TEXT_LABEL_COL
-        if text.get("use_label_for_overlap_avoidance")
-        else None,
-        text_avoid=text["enabled"] and text["avoid_overlaps"],
+        text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
+        text_avoid=text["enabled"] and text["fit"],
     )
 
     # Create chromosome metadata DataFrame
@@ -883,10 +866,8 @@ def plot(
             packed=packed,
             sort_ranges=sort_ranges,
             plot_limits=None,  # You can pass limits if needed
-            text_label_col=TEXT_LABEL_COL
-            if text.get("use_label_for_overlap_avoidance")
-            else None,
-            text_avoid=text["enabled"] and text["avoid_overlaps"],
+            text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
+            text_avoid=text["enabled"] and text["fit"],
         )
 
         # recompute limits
@@ -924,11 +905,8 @@ def plot(
 
     # Deal with text_pad
     text_pad = feat_dict["text_pad"]
-    if isinstance(text_pad, int):
-        subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
-    elif isinstance(text_pad, float):
-        subdf[TEXT_PAD_FRAC_COL] = [text_pad] * len(subdf)
-        subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
+    subdf[TEXT_PAD_FRAC_COL] = [text_pad] * len(subdf)
+    subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
     subdf = subdf.groupby([CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True)[
         subdf.columns
     ].apply(lambda x: _assign_text_pad_fraction(x, chrmd_df))

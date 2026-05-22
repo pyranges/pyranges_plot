@@ -1852,28 +1852,32 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "a",
-        "textangle": 0,
-        "x": 290.04,
+        "textangle": 0.0,
+        "x": 266.8,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "b",
-        "textangle": 0,
-        "x": 1754.04,
+        "textangle": 0.0,
+        "x": 1730.8,
         "xanchor": "right",
         "xref": "x",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

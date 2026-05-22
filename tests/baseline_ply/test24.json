@@ -1204,41 +1204,47 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "a",
-        "textangle": 0,
-        "x": 9.835,
+        "textangle": 0.0,
+        "x": 9.45,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "b",
-        "textangle": 0,
-        "x": 29.835,
+        "textangle": 0.0,
+        "x": 29.45,
         "xanchor": "right",
         "xref": "x",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "c",
-        "textangle": 0,
-        "x": 49.835,
+        "textangle": 0.0,
+        "x": 49.45,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

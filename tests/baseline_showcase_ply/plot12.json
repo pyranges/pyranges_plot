@@ -1427,11 +1427,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "exon",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 102.0,
         "xanchor": "center",
         "xref": "x",
@@ -1441,11 +1442,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "CDS",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 108.0,
         "xanchor": "center",
         "xref": "x",
@@ -1455,11 +1457,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "UTR",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 114.0,
         "xanchor": "center",
         "xref": "x",
@@ -1469,11 +1472,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "SNP",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 120.0,
         "xanchor": "center",
         "xref": "x",
@@ -1483,11 +1487,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "motif",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 126.0,
         "xanchor": "center",
         "xref": "x",
@@ -1497,11 +1502,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "peak",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 132.0,
         "xanchor": "center",
         "xref": "x",
@@ -1511,11 +1517,12 @@
       },
       {
         "font": {
-          "size": 9
+          "color": "black",
+          "size": 9.0
         },
         "showarrow": false,
         "text": "repeat",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 138.0,
         "xanchor": "center",
         "xref": "x",

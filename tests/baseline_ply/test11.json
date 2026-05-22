@@ -2261,80 +2261,92 @@
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T2",
-        "textangle": 0,
-        "x": 9.49,
+        "textangle": 0.0,
+        "x": 8.3,
         "xanchor": "right",
         "xref": "x2",
         "y": 1.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T3",
-        "textangle": 0,
-        "x": 84.49,
+        "textangle": 0.0,
+        "x": 83.3,
         "xanchor": "right",
         "xref": "x2",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y2"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T4",
-        "textangle": 0,
-        "x": 139.964,
+        "textangle": 0.0,
+        "x": 139.88,
         "xanchor": "right",
         "xref": "x3",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y3"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T5",
-        "textangle": 0,
-        "x": 4.235,
+        "textangle": 0.0,
+        "x": 2.4499999999999997,
         "xanchor": "right",
         "xref": "x4",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y4"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "T6",
-        "textangle": 0,
-        "x": 99.7,
+        "textangle": 0.0,
+        "x": 99.0,
         "xanchor": "right",
         "xref": "x5",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y5"
       },
       {
         "font": {
+          "color": "black",
           "size": 10.0
         },
         "showarrow": false,
         "text": "t1",
-        "textangle": 0,
-        "x": 0.823,
+        "textangle": 0.0,
+        "x": 0.41000000000000003,
         "xanchor": "right",
         "xref": "x",
         "y": 0.5,
+        "yanchor": "middle",
         "yref": "y"
       }
     ],

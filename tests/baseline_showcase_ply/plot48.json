@@ -5213,11 +5213,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367694",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173942996.0,
         "xanchor": "center",
         "xref": "x",
@@ -5227,11 +5228,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367694",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173942996.0,
         "xanchor": "center",
         "xref": "x",
@@ -5241,11 +5243,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367696",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173939332.5,
         "xanchor": "center",
         "xref": "x",
@@ -5255,11 +5258,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367696",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173939332.5,
         "xanchor": "center",
         "xref": "x",
@@ -5269,11 +5273,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000367698",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173910563.0,
         "xanchor": "center",
         "xref": "x",
@@ -5283,11 +5288,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000479099",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173940012.0,
         "xanchor": "center",
         "xref": "x",
@@ -5297,11 +5303,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000479099",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173940012.0,
         "xanchor": "center",
         "xref": "x",
@@ -5311,11 +5318,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000487183",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173912197.0,
         "xanchor": "center",
         "xref": "x",
@@ -5325,11 +5333,12 @@
       },
       {
         "font": {
-          "size": 12
+          "color": "black",
+          "size": 12.0
         },
         "showarrow": false,
         "text": "transcript:ENST00000494024",
-        "textangle": 0,
+        "textangle": 0.0,
         "x": 173914647.5,
         "xanchor": "center",
         "xref": "x",
