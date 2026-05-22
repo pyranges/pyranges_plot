@@ -137,6 +137,28 @@ Explicit regions are also supported with ``(chromosome, start, end)`` tuples or 
 
     >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
+Reversing panel direction
+-------------------------
+
+Use ``reverse`` to display selected panels in mirrored coordinates.
+This is useful for showing negative-strand loci in transcript direction while keeping original genomic
+coordinates in ticks and tooltips.
+
+    >>> pe.plot(p, reverse=True)             # reverse all panels
+    >>> pe.plot(p, reverse="auto")           # reverse panels whose known strands are all negative
+    >>> pe.plot(p, reverse=[2])              # reverse selected chromosome/panel names
+    >>> pe.plot(p, reverse={2: True, 1: False})
+
+With explicit ``regions``, selectors may also be region tuples:
+
+    >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190)], reverse=[(2, 140, 190)])
+
+The ``title_chr`` template can include ``{orientation}`` (``"fwd"`` or ``"rev"``) and
+``{rev_flag}`` (empty or ``"(rev)"``):
+
+    >>> pe.plot(p, reverse="auto", title_chr="{chrom} ({orientation})")
+    >>> pe.plot(p, reverse="auto", title_chr="Chromosome {chrom} {rev_flag}")
+
 Coloring
 --------
 By default, the intervals are **colored** according to the ID column
