@@ -47,6 +47,7 @@ from .names import (
     THICK_COL,
     SHAPE_COL,
     MARKER_SIZE_COL,
+    REVERSE_COL,
 )
 
 
@@ -170,6 +171,172 @@ def _attach_panel_display(chrmd_df_grouped, panel_display):
         chrmd_df_grouped["display_end"] = [mm[1] for mm in chrmd_df_grouped["min_max"]]
 
 
+def _panel_matches_selector(panel_id, row, selector):
+    """Return whether a reverse selector refers to a panel."""
+    display_chrom = row.get("display_chrom", panel_id)
+    display_start = row.get("display_start")
+    display_end = row.get("display_end")
+
+    if selector == panel_id or selector == display_chrom:
+        return True
+    if isinstance(selector, tuple) and len(selector) == 3:
+        return (
+            selector[0] == display_chrom
+            and selector[1] == display_start
+            and selector[2] == display_end
+        )
+    return False
+
+
+def _auto_reverse_flags(subdf, panels):
+    """Reverse panels where all intervals with known strand are negative."""
+    flags = {}
+    for panel_id in panels:
+        if STRAND_COL not in subdf.columns:
+            flags[panel_id] = False
+            continue
+        strands = subdf.loc[subdf[CHROM_COL] == panel_id, STRAND_COL].dropna()
+        strands = [s for s in strands if s in {"+", "-"}]
+        flags[panel_id] = bool(strands) and all(s == "-" for s in strands)
+    return flags
+
+
+def _normalize_reverse(reverse, subdf, chrmd_df_grouped):
+    """Normalize public reverse= input into one bool per panel."""
+    panels = list(chrmd_df_grouped.index)
+    if isinstance(reverse, bool):
+        return {panel_id: reverse for panel_id in panels}
+    if reverse is None:
+        return {panel_id: False for panel_id in panels}
+    if isinstance(reverse, str) and reverse == "auto":
+        return _auto_reverse_flags(subdf, panels)
+
+    if isinstance(reverse, dict):
+        flags = {panel_id: False for panel_id in panels}
+        for selector, value in reverse.items():
+            matched = False
+            for panel_id, row in chrmd_df_grouped.iterrows():
+                if _panel_matches_selector(panel_id, row, selector):
+                    flags[panel_id] = bool(value)
+                    matched = True
+            if not matched:
+                raise ValueError(
+                    f"reverse selector {selector!r} did not match any panel."
+                )
+        return flags
+
+    if isinstance(reverse, tuple) and len(reverse) == 3:
+        selectors = [reverse]
+    elif isinstance(reverse, (list, tuple, set)):
+        selectors = list(reverse)
+    else:
+        selectors = [reverse]
+
+    flags = {panel_id: False for panel_id in panels}
+    for selector in selectors:
+        matched = False
+        for panel_id, row in chrmd_df_grouped.iterrows():
+            if _panel_matches_selector(panel_id, row, selector):
+                flags[panel_id] = True
+                matched = True
+        if not matched:
+            raise ValueError(f"reverse selector {selector!r} did not match any panel.")
+    return flags
+
+
+def _reverse_limits(limits, reverse_flags):
+    """Mirror per-panel limits for reversed panels."""
+    if limits is None:
+        return None
+    if isinstance(limits, dict):
+        out = {}
+        for panel, value in limits.items():
+            if value is None or not reverse_flags.get(panel, False):
+                out[panel] = value
+            else:
+                start, end = value
+                out[panel] = (
+                    None if end is None else -end,
+                    None if start is None else -start,
+                )
+        return out
+    if isinstance(limits, tuple):
+        # Tuple limits apply globally. Mirror only when every panel is reversed;
+        # mixed manual reversal with tuple limits would be ambiguous.
+        if all(reverse_flags.values()):
+            start, end = limits
+            return (None if end is None else -end, None if start is None else -start)
+    return limits
+
+
+def _apply_reverse_transform(subdf, reverse_flags):
+    """Mirror coordinates and strand for panels selected by reverse=."""
+    if not any(reverse_flags.values()):
+        return subdf
+
+    subdf = subdf.copy()
+    mask = subdf[CHROM_COL].map(reverse_flags).fillna(False).astype(bool)
+    if not mask.any():
+        return subdf
+
+    old_start = subdf.loc[mask, START_COL].copy()
+    old_end = subdf.loc[mask, END_COL].copy()
+    subdf.loc[mask, START_COL] = -old_end
+    subdf.loc[mask, END_COL] = -old_start
+
+    if STRAND_COL in subdf.columns:
+        subdf.loc[mask, "__oriStrand__"] = subdf.loc[mask, STRAND_COL]
+        subdf.loc[mask, STRAND_COL] = subdf.loc[mask, STRAND_COL].replace(
+            {"+": "__pyrangeyes_plus__", "-": "+"}
+        )
+        subdf.loc[mask, STRAND_COL] = subdf.loc[mask, STRAND_COL].replace(
+            {"__pyrangeyes_plus__": "-"}
+        )
+    return subdf
+
+
+def _reverse_ts_data_for_plot(ts_data, reverse_flags):
+    """Mirror shrink metadata for selected panels after shrink coordinates exist."""
+    if not any(reverse_flags.values()):
+        return ts_data
+    out = {}
+    for chrom, df in ts_data.items():
+        if df.empty or not reverse_flags.get(chrom, False):
+            out[chrom] = df
+            continue
+        r = df.copy()
+        r[ORISTART_COL] = r[START_COL]
+        r[ORIEND_COL] = r[END_COL]
+        cum_start = r[CUM_DELTA_COL].shift(periods=1, fill_value=0)
+        adj_start = r[START_COL] - cum_start
+        adj_end = r[END_COL] - r[CUM_DELTA_COL]
+        r[START_COL] = -adj_end
+        r[END_COL] = -adj_start
+        r[ADJSTART_COL] = r[START_COL]
+        r[ADJEND_COL] = r[END_COL]
+        r[CUM_DELTA_COL] = 0
+        out[chrom] = r
+    return out
+
+
+def _assign_custom_tooltip_column(subdf, tooltip):
+    """Render user tooltip templates before coordinate transforms are applied."""
+    if tooltip is None:
+        return subdf, tooltip
+
+    rendered = []
+    for _, row in subdf.iterrows():
+        template = tooltip
+        if isinstance(template, str) and template.startswith("$"):
+            col = template[1:]
+            if col in row.index:
+                template = row[col]
+        rendered.append(str(template).format_map(row.to_dict()))
+    subdf = subdf.copy()
+    subdf["__tooltip__"] = rendered
+    return subdf, "{__tooltip__}"
+
+
 def plot(
     data,
     adapter=None,
@@ -186,6 +353,7 @@ def plot(
     shrink=False,
     limits=None,
     regions=None,
+    reverse=False,
     text=None,
     legend=False,
     title_chr=None,
@@ -290,6 +458,13 @@ def plot(
         Use a list of ``(chromosome, start, end)`` tuples and/or PyRanges objects,
         a PyRanges object (one row per panel), or a column name whose values define panels.
 
+    reverse: {bool, "auto", str, tuple, list, dict}, default False
+        Mirror selected panels for transcript-direction views while keeping tick labels,
+        titles, and tooltips in original genomic coordinates. Use ``True`` to reverse all
+        panels; ``"auto"`` to reverse panels whose known strands are all negative; a panel
+        name, ``(chromosome, start, end)`` region tuple, or list of these to reverse selected
+        panels; or a dict mapping selectors to booleans.
+
     text: {None, bool, str}, default None
         Controls interval text annotations. If None, text is enabled for packed
         plots and disabled for unpacked plots to avoid duplicated row labels.
@@ -302,7 +477,8 @@ def plot(
         Whether the legend should appear in the plot.
 
     title_chr: {None, str}, default None
-        Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``.
+        Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``,
+        ``{orientation}`` (``"fwd"``/``"rev"``), and ``{rev_flag}`` (``""``/``"(rev)"``).
         If None, pyrangeyes chooses ``"Chromosome {chrom}"`` normally,
         ``"{chrom}:{start}-{end}"`` for explicit ``regions``, and ``"{chrom}"``
         when ``regions`` is a column name.
@@ -812,12 +988,15 @@ def plot(
         chrmd_df, genesmd_df, feat_dict["interval_height"]
     )
     _attach_panel_display(chrmd_df_grouped, panel_display)
+    reverse_flags = _normalize_reverse(reverse, subdf, chrmd_df_grouped)
+    plot_limits = limits
 
     # Deal with introns off
     # adapt coordinates to shrunk
     ts_data = {}
     subdf[ORISTART_COL] = subdf[START_COL]
     subdf[ORIEND_COL] = subdf[END_COL]
+    subdf, tooltip = _assign_custom_tooltip_column(subdf, tooltip)
     tick_pos_d = {}
     ori_tick_pos_d = {}
 
@@ -841,58 +1020,67 @@ def plot(
         subdf[START_COL] = subdf[ADJSTART_COL]
         subdf[END_COL] = subdf[ADJEND_COL]
 
-        genesmd_df = get_genes_metadata(
-            subdf,
-            ID_COL,
-            color_col,
-            packed,
-            feat_dict["interval_height"],
-            feat_dict["v_spacer"],
-            order,
-            sort_ranges,
-        )
+    else:
+        subdf[CUM_DELTA_COL] = [0] * len(subdf)
 
-        if text["enabled"]:
-            labels = subdf.groupby(
-                [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
-            )[TEXT_LABEL_COL].first()
-            genesmd_df = genesmd_df.join(labels.rename(TEXT_LABEL_COL))
+    if any(reverse_flags.values()):
+        subdf = _apply_reverse_transform(subdf, reverse_flags)
+        ts_data = _reverse_ts_data_for_plot(ts_data, reverse_flags)
+        plot_limits = _reverse_limits(limits, reverse_flags)
 
-        genesmd_df = assign_label_rows(
-            genesmd_df,
-            ID_COL,
-            PR_INDEX_COL,
-            text_pad=feat_dict["text_pad"],
-            packed=packed,
-            sort_ranges=sort_ranges,
-            plot_limits=None,  # You can pass limits if needed
-            text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
-            text_avoid=text["enabled"] and text["fit"],
-        )
+    genesmd_df = get_genes_metadata(
+        subdf,
+        ID_COL,
+        color_col,
+        packed,
+        feat_dict["interval_height"],
+        feat_dict["v_spacer"],
+        order,
+        sort_ranges,
+    )
 
-        # recompute limits
-        chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
-            subdf,
-            limits,
-            genesmd_df,
-            packed,
-            feat_dict["v_spacer"],
-            feat_dict["interval_height"],
-            ts_data=ts_data,
-        )
-        chrmd_df = _attach_panel_y_height(
-            chrmd_df, genesmd_df, feat_dict["interval_height"]
-        )
-        _attach_panel_display(chrmd_df_grouped, panel_display)
+    if text["enabled"]:
+        labels = subdf.groupby(
+            [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
+        )[TEXT_LABEL_COL].first()
+        genesmd_df = genesmd_df.join(labels.rename(TEXT_LABEL_COL))
 
+    genesmd_df = assign_label_rows(
+        genesmd_df,
+        ID_COL,
+        PR_INDEX_COL,
+        text_pad=feat_dict["text_pad"],
+        packed=packed,
+        sort_ranges=sort_ranges,
+        plot_limits=None,  # You can pass limits if needed
+        text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
+        text_avoid=text["enabled"] and text["fit"],
+    )
+
+    chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
+        subdf,
+        plot_limits,
+        genesmd_df,
+        packed,
+        feat_dict["v_spacer"],
+        feat_dict["interval_height"],
+        ts_data=ts_data if shrink else None,
+    )
+    chrmd_df = _attach_panel_y_height(
+        chrmd_df, genesmd_df, feat_dict["interval_height"]
+    )
+    _attach_panel_display(chrmd_df_grouped, panel_display)
+    chrmd_df_grouped[REVERSE_COL] = [
+        reverse_flags[chrom] for chrom in chrmd_df_grouped.index
+    ]
+    chrmd_df[REVERSE_COL] = [reverse_flags[chrom] for chrom, _ in chrmd_df.index]
+
+    if shrink:
         # compute new axis values and positions if needed
         if ts_data:
             tick_pos_d, ori_tick_pos_d = recalc_axis(
                 ts_data, tick_pos_d, ori_tick_pos_d
             )
-
-    else:
-        subdf[CUM_DELTA_COL] = [0] * len(subdf)
 
     subdf.sort_values([CHROM_COL, PR_INDEX_COL] + ID_COL + [START_COL], inplace=True)
     chrmd_df.sort_values([CHROM_COL, PR_INDEX_COL], inplace=True)
@@ -927,7 +1115,7 @@ def plot(
         subdf["__tooltip__"] = ""
         for index, row in subdf.iterrows():
             if STRAND_COL in subdf.columns:
-                strand = row.get(STRAND_COL)
+                strand = row.get("__oriStrand__", row.get(STRAND_COL))
             else:
                 strand = ""
             if "REF" in subdf.columns:

@@ -4,7 +4,13 @@ import numpy as np
 import pandas as pd
 from pyranges1.core.names import START_COL, END_COL
 from pyrangeyes.core import cumdelting
-from pyrangeyes.names import PR_INDEX_COL, CUM_DELTA_COL
+from pyrangeyes.names import (
+    PR_INDEX_COL,
+    CUM_DELTA_COL,
+    REVERSE_COL,
+    ORISTART_COL,
+    ORIEND_COL,
+)
 
 
 def _format_coord(v):
@@ -68,6 +74,8 @@ def create_fig(
             chrom=row.get("display_chrom", fallback_chrom),
             start=_format_coord(row.get("display_start")),
             end=_format_coord(row.get("display_end")),
+            orientation="rev" if bool(row.get(REVERSE_COL, False)) else "fwd",
+            rev_flag="(rev)" if bool(row.get(REVERSE_COL, False)) else "",
         )
 
     titles = [
@@ -150,6 +158,7 @@ def create_fig(
             # set x axis limits
             x_min, x_max = chrmd_df_grouped.loc[chrom]["min_max"]
             x_rang = x_max - x_min
+            reverse_x = bool(chrmd_df_grouped.loc[chrom].get(REVERSE_COL, False))
             fig.update_xaxes(
                 range=[x_min - 0.05 * x_rang, x_max + 0.05 * x_rang],
                 tickformat="d",
@@ -200,9 +209,12 @@ def create_fig(
                     x_ticks_name = x_ticks_val
 
             # adjust names, must fall within limits
+            if reverse_x:
+                x_ticks_name = list(x_ticks_val)
+                x_ticks_val = [-abs(i) for i in x_ticks_val]
             fig.update_xaxes(
                 tickvals=[int(i) for i in x_ticks_val],
-                ticktext=[int(i) for i in x_ticks_name],
+                ticktext=[int(abs(i)) if reverse_x else int(i) for i in x_ticks_name],
                 row=i + 1,
                 col=1,
             )
@@ -251,7 +263,9 @@ def create_fig(
                 # set new ticks
                 fig.update_xaxes(
                     tickvals=[int(i) for i in x_ticks_val],
-                    ticktext=[int(i) for i in x_ticks_name],
+                    ticktext=[
+                        int(abs(i)) if reverse_x else int(i) for i in x_ticks_name
+                    ],
                     row=i + 1,
                     col=1,
                 )
@@ -271,7 +285,9 @@ def create_fig(
 
             # Add shrink rectangles
             if ts_data:
-                rects_df = ts_data[chrom]
+                rects_df = ts_data[chrom].copy()
+                label_start = rects_df.get(ORISTART_COL, rects_df[START_COL]).copy()
+                label_end = rects_df.get(ORIEND_COL, rects_df[END_COL]).copy()
                 rects_df["cumdelta_end"] = rects_df[CUM_DELTA_COL]
                 rects_df["cumdelta_start"] = rects_df[CUM_DELTA_COL].shift(
                     periods=1, fill_value=0
@@ -279,11 +295,13 @@ def create_fig(
                 rects_df[START_COL] -= rects_df["cumdelta_start"]
                 rects_df[END_COL] -= rects_df["cumdelta_end"]
 
-                for a, b, c, d in zip(
+                for a, b, c, d, label_a, label_b in zip(
                     rects_df[START_COL],
                     rects_df[END_COL],
                     rects_df["cumdelta_start"],
                     rects_df["cumdelta_end"],
+                    label_start,
+                    label_end,
                 ):
                     x0, x1 = a, b
                     y0, y1 = y_min - 1, y_max + 1
@@ -295,7 +313,7 @@ def create_fig(
                             fillcolor=shrunk_bkg,
                             mode="lines",
                             line={"color": "lightyellow"},
-                            text=f"Shrinked region:\n[{x0 + c} - {x1 + d}]",
+                            text=f"Shrinked region:\n[{label_a} - {label_b}]",
                             hoverinfo="text",
                             line_width=0,
                             showlegend=False,

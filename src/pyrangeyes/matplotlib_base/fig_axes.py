@@ -8,7 +8,7 @@ from matplotlib.patches import Rectangle
 from pyranges1.core.names import START_COL, END_COL
 from pyrangeyes.core import cumdelting
 from .core import make_annotation
-from ..names import CUM_DELTA_COL, PR_INDEX_COL
+from ..names import CUM_DELTA_COL, PR_INDEX_COL, REVERSE_COL, ORISTART_COL, ORIEND_COL
 
 
 def _format_coord(v):
@@ -57,16 +57,20 @@ def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_backg
     """Add shrunk regions rectangles to the plot."""
 
     rects_df = ts_data[chrom].copy()
+    label_start = rects_df.get(ORISTART_COL, rects_df[START_COL]).copy()
+    label_end = rects_df.get(ORIEND_COL, rects_df[END_COL]).copy()
     rects_df["cumdelta_end"] = rects_df[CUM_DELTA_COL]
     rects_df["cumdelta_start"] = rects_df[CUM_DELTA_COL].shift(periods=1, fill_value=0)
     rects_df[START_COL] -= rects_df["cumdelta_start"]
     rects_df[END_COL] -= rects_df["cumdelta_end"]
 
-    for a, b, c, d in zip(
+    for a, b, c, d, label_a, label_b in zip(
         rects_df[START_COL],
         rects_df[END_COL],
         rects_df["cumdelta_start"],
         rects_df["cumdelta_end"],
+        label_start,
+        label_end,
     ):
         ts_range = Rectangle(
             (a, y_min - 1),
@@ -83,7 +87,7 @@ def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_backg
             ts_range,
             fig,
             ax,
-            f"Shrinked region:\n[{a + c} - {b + d}]",
+            f"Shrinked region:\n[{label_a} - {label_b}]",
             tag_background,
         )
 
@@ -125,6 +129,8 @@ def create_fig(
             chrom=row.get("display_chrom", fallback_chrom),
             start=_format_coord(row.get("display_start")),
             end=_format_coord(row.get("display_end")),
+            orientation="rev" if bool(row.get(REVERSE_COL, False)) else "fwd",
+            rev_flag="(rev)" if bool(row.get(REVERSE_COL, False)) else "",
         )
 
     titles = [
@@ -198,6 +204,7 @@ def create_fig(
             # set x axis limits
             x_min, x_max = chrmd_df_grouped.loc[chrom]["min_max"]
             x_rang = x_max - x_min
+            reverse_x = bool(chrmd_df_grouped.loc[chrom].get(REVERSE_COL, False))
             ax_limits(ax, x_min, x_max, x_rang, grid_color)
 
             # Work with x labels
@@ -239,6 +246,9 @@ def create_fig(
                     x_ticks_name = x_ticks_val
 
             # adjust names, must fall within limits
+            if reverse_x:
+                x_ticks_name = list(x_ticks_val)
+                x_ticks_val = [-abs(i) for i in x_ticks_val]
             ax.set_xticks(
                 [
                     int(i)
@@ -246,13 +256,12 @@ def create_fig(
                     if (x_min - 0.05 * x_rang) < i < x_max + 0.05 * x_rang
                 ]
             )
-            ax.set_xticklabels(
-                [
-                    int(i)
-                    for i in x_ticks_name
-                    if (x_min - 0.05 * x_rang) < i < (x_max + 0.05 * x_rang)
-                ]
-            )
+            tick_labels = [
+                int(abs(i)) if reverse_x else int(i)
+                for i in x_ticks_name
+                if (x_min - 0.05 * x_rang) < i < (x_max + 0.05 * x_rang)
+            ]
+            ax.set_xticklabels(tick_labels)
 
             # consider introns off
             if tick_pos_d:
@@ -299,7 +308,9 @@ def create_fig(
 
                 # adjust names
                 ax.set_xticks([int(i) for i in x_ticks_val])
-                ax.set_xticklabels([int(i) for i in x_ticks_name])
+                ax.set_xticklabels(
+                    [int(abs(i)) if reverse_x else int(i) for i in x_ticks_name]
+                )
 
             # set y axis limits
             y_min = 0.5 - exon_height / 2

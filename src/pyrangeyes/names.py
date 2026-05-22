@@ -36,6 +36,7 @@ TEXT_HEIGHT_COL = "__text_height__"
 THICK_COL = "__thickness_col__"
 SHAPE_COL = "__shape_col__"
 MARKER_SIZE_COL = "__marker_size_col__"
+REVERSE_COL = "__reverse_x__"
 
 # Panel/region splitting (multi-window per chromosome)
 PANEL_SEP = (

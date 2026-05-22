@@ -322,14 +322,18 @@ def gby_plot_exons(
 
     ax = axes[chr_ix]
     if STRAND_COL in df.columns:
-        strand = df[STRAND_COL].unique()[0]
+        draw_strand = df[STRAND_COL].unique()[0]
     else:
-        strand = ""
+        draw_strand = ""
+    if "__oriStrand__" in df.columns and len(df["__oriStrand__"].dropna()):
+        display_strand = df["__oriStrand__"].dropna().unique()[0]
+    else:
+        display_strand = draw_strand
 
     # Make gene annotation
     # get the gene information to print on hover
-    if strand:
-        geneinfo = f"[{strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})\nID: {geneid}"  # default with strand
+    if display_strand:
+        geneinfo = f"[{display_strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})\nID: {geneid}"  # default with strand
     else:
         geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})\nID: {geneid}"  # default without strand
 
@@ -361,7 +365,7 @@ def gby_plot_exons(
         tag_bkg,
         gene_ix,
         intron_color,
-        strand,
+        draw_strand,
         exon_height,
         arrow_color,
         arrow_style,
@@ -377,7 +381,7 @@ def gby_plot_exons(
         df,
         fig,
         ax,
-        strand,
+        draw_strand,
         gene_ix,
         tag_bkg,
         plot_border,

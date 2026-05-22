@@ -337,9 +337,13 @@ def gby_plot_exons(
     chrom_ix = chrmd_df_grouped.loc[chrom]["chrom_ix"]
 
     if STRAND_COL in df.columns:
-        strand = df[STRAND_COL].unique()[0]
+        draw_strand = df[STRAND_COL].unique()[0]
     else:
-        strand = ""
+        draw_strand = ""
+    if "__oriStrand__" in df.columns and len(df["__oriStrand__"].dropna()):
+        display_strand = df["__oriStrand__"].dropna().unique()[0]
+    else:
+        display_strand = draw_strand
 
     # Get the gene information to print on hover
     # default
@@ -347,8 +351,8 @@ def gby_plot_exons(
         tooltip_col = df["Tooltip_col"]
         geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {genename}<br>{tooltip_col}"
     else:
-        if strand:
-            geneinfo = f"[{strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {geneid}"  # default with strand
+        if display_strand:
+            geneinfo = f"[{display_strand}] ({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {geneid}"  # default with strand
         else:
             geneinfo = f"({min(df.__oriStart__)}, {max(df.__oriEnd__)})<br>ID: {geneid}"  # default without strand
 
@@ -398,7 +402,7 @@ def gby_plot_exons(
         gene_ix,
         intron_color,
         chrom_ix,
-        strand,
+        draw_strand,
         geneid,
         exon_height,
         arrow_color,
@@ -413,7 +417,7 @@ def gby_plot_exons(
         text_size,
         df,
         fig,
-        strand,
+        draw_strand,
         geneid,
         gene_ix,
         chrom_ix,
