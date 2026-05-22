@@ -1,4 +1,5 @@
 import pandas as pd
+import textwrap
 import importlib
 from pyranges1.core.names import END_COL
 
@@ -354,17 +355,7 @@ def reset_options(varname="all", *, adapter=None):
 
 def divide_desc(desc, cutoff):
     """Divide long feature description in lines."""
-
-    lines_l = []
-    while len(desc) > cutoff:
-        for i in range(59, -1, -1):
-            if desc[i] == " ":
-                lines_l.append(desc[:i])
-                desc = desc[i + 1 :]
-                break
-    lines_l.append(desc)
-
-    return lines_l
+    return textwrap.wrap(str(desc), width=cutoff, break_long_words=False) or [""]
 
 
 def _format_options_table(options_dict, *, feature_label="Feature"):
@@ -378,18 +369,13 @@ def _format_options_table(options_dict, *, feature_label="Feature"):
     )
 
     name_sz = max([len(val) for val in options_dict] + [len(feature_label)])
-    value_sz = max([len(str(val)) for val in feat_df["Value"]])
-    if value_sz < 5:
-        value_sz = 5
+    value_sz = max([len(str(val)) for val in feat_df["Value"]] + [len("Value")])
     mod_sz = 7
     desc_sz = 60
 
     def format_row(key, value):
-        if len(value.iloc[1]) <= 60:
-            return f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {value.iloc[1]:<{desc_sz}} |"
-
         lines_l = divide_desc(value.iloc[1], cutoff=desc_sz)
-        fstr = f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {lines_l[0]:<{desc_sz}} |"
+        fstr = f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {str(value.iloc[2]):^{mod_sz}} | {lines_l[0]:<{desc_sz}} |"
         empty = " "
         for i in range(1, len(lines_l)):
             fstr += f"\n| {empty:^{name_sz}} | {empty:^{value_sz}} | {empty:^{mod_sz}} | {lines_l[i]:<{desc_sz}} |"
@@ -435,107 +421,7 @@ def print_options(return_keys=False, *, adapter=None):
 
     # prepare data to print
     if not return_keys:
-        feat_df = pd.DataFrame.from_dict(
-            plot_features_dict_in_use,
-            orient="index",
-            columns=["Value", "Description", "Modified"],
-        )
-
-        # Calculate column sizes
-        name_sz = max([len(val) for val in plot_features_dict_in_use])
-        value_sz = max([len(str(val)) for val in feat_df["Value"]])
-        if value_sz < 5:  # value has a minimum of 5
-            value_sz = 5
-        mod_sz = 7  # according to "Edited?" length
-        desc_sz = 60
-
-        # Function to format row
-        def format_row(key, value):
-            if len(value.iloc[1]) <= 60:
-                return f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {value.iloc[1]:<{desc_sz}} |"
-
-            else:
-                lines_l = divide_desc(value.iloc[1], cutoff=desc_sz)
-                fstr = f"| {key:^{name_sz}} | {str(value.iloc[0]):^{value_sz}} | {value.iloc[2]:^{mod_sz}} | {lines_l[0]:<{desc_sz}} |"
-                empty = " "
-                for i in range(1, len(lines_l)):
-                    fstr += f"\n| {empty:^{name_sz}} | {empty:^{value_sz}} | {empty:^{mod_sz}} | {lines_l[i]:<{desc_sz}} |"
-
-                return fstr
-
-        # Create table header
-        header = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+\n"
-        header += f"| {'Feature':^{name_sz}} | {'Value':^{value_sz}} | {'Edited?':^{mod_sz}} | {'Description':^{desc_sz}} |\n"
-        header += f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
-
-        # Divide features
-        extragen_feat_df = feat_df[
-            feat_df.index.isin(
-                [
-                    "colormap",
-                    "tag_bkg",
-                    "fig_bkg",
-                    "plot_bkg",
-                    "plot_border",
-                    "title_size",
-                    "title_color",
-                    "title_font",
-                    "grid_color",
-                    "outline_color",
-                    "shrunk_bkg",
-                    "x_ticks",
-                ]
-            )
-        ].copy()
-
-        intragen_feat_df = feat_df[
-            feat_df.index.isin(
-                [
-                    "interval_height",
-                    "v_spacer",
-                    "text_size",
-                    "text_pad",
-                    "text_color",
-                    "text_angle",
-                    "text_position",
-                    "text_fit",
-                    "arrow_line_width",
-                    "arrow_color",
-                    "arrow_size",
-                    "intron_color",
-                ]
-            )
-        ].copy()
-
-        other_feat_df = feat_df[
-            feat_df.index.isin(["shrink_threshold", "plotly_port"])
-        ].copy()
-
-        # Create table rows
-        rows_eg = "\n".join(
-            [format_row(key, value) for key, value in extragen_feat_df.iterrows()]
-        )
-        rows_ig = "\n".join(
-            [format_row(key, value) for key, value in intragen_feat_df.iterrows()]
-        )
-        rows_o = "\n".join(
-            [format_row(key, value) for key, value in other_feat_df.iterrows()]
-        )
-
-        # Print table
-        print(header)
-        print(rows_eg)
-        print(
-            f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
-        )
-        print(rows_ig)
-        print(
-            f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
-        )
-        print(rows_o)
-        print(
-            f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
-        )
+        _format_options_table(plot_features_dict_in_use)
 
     if return_keys:
         return set(plot_features_dict_in_use.keys())

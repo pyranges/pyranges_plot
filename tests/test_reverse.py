@@ -146,8 +146,8 @@ def test_reverse_title_chr_exposes_orientation_and_rev_flag():
         _strand_data(),
         id_col="tx",
         reverse=["chr2"],
-        title_chr="{chrom} {orientation} {rev_flag}",
+        title_chr="{chrom} {orientation}{rev_flag}",
         return_plot="fig",
     )
     titles = [ann.text for ann in fig.layout.annotations[:2]]
-    assert titles == ["chr1 fwd ", "chr2 rev (rev)"]
+    assert titles == ["chr1 fwd", "chr2 rev (rev)"]

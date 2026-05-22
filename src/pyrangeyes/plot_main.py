@@ -357,6 +357,7 @@ def plot(
     text=None,
     legend=False,
     title_chr=None,
+    track_labels=None,
     y_labels=None,
     tooltip=None,
     to_file=None,
@@ -373,13 +374,13 @@ def plot(
     Parameters
     ----------
     data: {pyranges.PyRanges or list of pyranges.PyRanges}
-        Pyranges, derived dataframe or list of them with annotation data.
+        One PyRanges object, or a list of PyRanges objects displayed as separate tracks.
 
     adapter: {None, str, list}, default None
         Optional shortcut for a pre-configured visualization. For example,
         ``plot(annotation, "mRNA")`` renders GTF/GFF-like mRNA structure with
         thin exon/UTR regions and thick CDS regions. For a list of PyRanges,
-        pass one adapter per object, such as ``plot([transcripts, variants],
+        pass one adapter per track, such as ``plot([transcripts, variants],
         adapter=["mRNA", "SNP"])``. Use ``pe.adapters.describe()`` to list
         available adapters.
 
@@ -395,6 +396,12 @@ def plot(
     packed: bool, default True
         Disposition of the genes in the plot. Use True for a packed disposition (genes in the same line if
         they do not overlap) and False for unpacked (one row per gene).
+
+    return_plot: {None, "fig", "app"}, default None
+        Return the backend figure/app instead of only displaying or saving it.
+
+    add_aligned_plots: list, default None
+        Extra backend traces/axes aligned below the genomic x-axis. Currently accepts one panel/chromosome.
 
     color_col: str, default None
         Name of the column used to color the interval fill. If not specified, id_col will be used.
@@ -478,13 +485,16 @@ def plot(
 
     title_chr: {None, str}, default None
         Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``,
-        ``{orientation}`` (``"fwd"``/``"rev"``), and ``{rev_flag}`` (``""``/``"(rev)"``).
-        If None, pyrangeyes chooses ``"Chromosome {chrom}"`` normally,
-        ``"{chrom}:{start}-{end}"`` for explicit ``regions``, and ``"{chrom}"``
-        when ``regions`` is a column name.
+        ``{orientation}`` (``"fwd"``/``"rev"``), and ``{rev_flag}`` (``""``/``" (rev)"``).
+        If None, pyrangeyes chooses ``"Chromosome {chrom}{rev_flag}"`` normally
+        (identical to the old default unless reversed), ``"{chrom}:{start}-{end}"``
+        for explicit ``regions``, and ``"{chrom}"`` when ``regions`` is a column name.
+
+    track_labels: list, default None
+        Track labels shown when plotting multiple PyRanges objects.
 
     y_labels: list, default None
-        Name to identify the PyRanges object/s in the plot.
+        Deprecated alias for ``track_labels``.
 
     tooltip: str, default None
         Dataframe information to show in a tooltip when placing the mouse over a gene, the given
@@ -564,7 +574,7 @@ def plot(
 
     >>> plot([p, p], id_col="transcript_id", shrink=True, tooltip = "Feature1: {feature1}")
 
-    >>> plot([p, p], id_col="transcript_id", y_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
+    >>> plot([p, p], id_col="transcript_id", track_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
     """
 
     # Treat input data as list
@@ -578,7 +588,7 @@ def plot(
             adapter_names = list(adapter)
             if len(adapter_names) != len(data):
                 raise ValueError(
-                    "When adapter is a list, provide exactly one adapter per PyRanges object."
+                    "When adapter is a list, provide exactly one adapter per track."
                 )
 
         plot_arg_values = {
@@ -624,11 +634,18 @@ def plot(
         if shape_col is None and "shape_col" in default_plot_args:
             shape_col = default_plot_args["shape_col"]
 
-    # Ensure correct y_labels
-    if y_labels:
-        if len(y_labels) != len(data):
+    if track_labels is not None and y_labels is not None:
+        raise ValueError(
+            "Use either track_labels or its deprecated alias y_labels, not both."
+        )
+    if track_labels is None:
+        track_labels = y_labels
+
+    # Ensure correct track_labels
+    if track_labels:
+        if len(track_labels) != len(data):
             raise Exception(
-                f"The number of provided y_labels {y_labels} does not match the number of PyRanges objects ({len(data)})."
+                f"The number of provided track_labels {track_labels} does not match the number of tracks ({len(data)})."
             )
 
     # Deal with export
@@ -808,7 +825,7 @@ def plot(
         elif regions is not None:
             title_chr = "{chrom}:{start}-{end}"
         else:
-            title_chr = "Chromosome {chrom}"
+            title_chr = "Chromosome {chrom}{rev_flag}"
 
     if regions is not None:
         subdf, limits, panel_display = _normalize_regions_to_panels(subdf, regions)
@@ -1160,7 +1177,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=y_labels,
+                    y_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1193,7 +1210,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=y_labels,
+                    y_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1230,7 +1247,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=y_labels,
+                    y_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1261,7 +1278,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=y_labels,
+                    y_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,

@@ -207,11 +207,11 @@ def test08():
         [data1, data2, data3],
         id_col="transcript_id",
         color_col="Feature",
-        y_labels=[1, 2, 3],
+        track_labels=[1, 2, 3],
         shrink=True,
         sort_ranges=True,
         # to_file="tests/baseline_mpl/test08.png"
-    )  # shrink and y_labels
+    )  # shrink and track_labels
     fig = plt.gcf()
     return fig
 
