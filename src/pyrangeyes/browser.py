@@ -74,14 +74,16 @@ def _mode_kwargs(mode, base_kwargs, base_text, base_interval_height):
         kwargs.update(
             packed=True,
             text=False,
-            y_labels=False,
+            track_labels=False,
             interval_height=min(base_interval_height, 0.25),
             v_spacer=min(kwargs.get("v_spacer", 0.2), 0.08),
         )
     elif mode == "packed":
         kwargs.update(packed=True, text=base_text)
     elif mode == "full":
-        kwargs.update(packed=False, text=False, y_labels=kwargs.get("y_labels", None))
+        kwargs.update(
+            packed=False, text=False, track_labels=kwargs.get("track_labels", None)
+        )
     else:
         raise ValueError(
             f"Unknown browser mode {mode!r}; expected one of {BROWSER_MODES}."

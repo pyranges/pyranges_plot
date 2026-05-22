@@ -358,7 +358,6 @@ def plot(
     legend=False,
     title_chr=None,
     track_labels=None,
-    y_labels=None,
     tooltip=None,
     to_file=None,
     theme=None,
@@ -493,8 +492,6 @@ def plot(
     track_labels: list, default None
         Track labels shown when plotting multiple PyRanges objects.
 
-    y_labels: list, default None
-        Deprecated alias for ``track_labels``.
 
     tooltip: str, default None
         Dataframe information to show in a tooltip when placing the mouse over a gene, the given
@@ -534,8 +531,8 @@ def plot(
         ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, and ``"circle"``.
         Usually this is set by adapters rather than provided directly.
 
-    **kargs
-        Customizable plot features can be defined using kargs. Use print_options() function to check the variables'
+    kwargs
+        Customizable plot features can be defined using keyword arguments. Use print_options() function to check the variables'
         nomenclature, description and default values. Adapter options can also be passed here when ``adapter``
         is set; inspect them with, for example, ``print_options(adapter="mRNA")``.
 
@@ -633,13 +630,6 @@ def plot(
             depth_col = default_plot_args["depth_col"]
         if shape_col is None and "shape_col" in default_plot_args:
             shape_col = default_plot_args["shape_col"]
-
-    if track_labels is not None and y_labels is not None:
-        raise ValueError(
-            "Use either track_labels or its deprecated alias y_labels, not both."
-        )
-    if track_labels is None:
-        track_labels = y_labels
 
     # Ensure correct track_labels
     if track_labels:
@@ -1177,7 +1167,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=track_labels,
+                    track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1210,7 +1200,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=track_labels,
+                    track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1247,7 +1237,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=track_labels,
+                    track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,
@@ -1278,7 +1268,7 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    y_labels=track_labels,
+                    track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
                     packed=packed,

@@ -30,20 +30,12 @@ To that end, we will use some example data included in the Pyrangeyes package.
 Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
 
     >>> p = pe.example_data.p1
-    >>> print(p)
-      index  |      Chromosome  Strand      Start      End  transcript_id    feature1    feature2
-      int64  |           int64  object      int64    int64  object           object      object
-    -------  ---  ------------  --------  -------  -------  ---------------  ----------  ----------
-          0  |               1  +               1       11  t1               a           A
-          1  |               1  +              40       60  t1               a           A
-          2  |               2  -              10       25  t2               b           B
-          3  |               2  -              70       80  t2               b           B
-          4  |               2  +              85      100  t3               c           C
-          5  |               2  +             110      115  t3               c           C
-          6  |               2  +             150      180  t3               c           C
-          7  |               3  +             140      152  t4               d           D
-    PyRanges with 8 rows, 7 columns, and 1 index columns.
+    >>> print(p)  # doctest: +ELLIPSIS
+      index  |      Chromosome  Strand      Start      End  transcript_id    ...
+    ...
+    PyRanges with 8 rows, 7 columns, and 1 index columns...
     Contains 3 chromosomes and 2 strands.
+
 
 By default, :func:`plot <pyrangeyes.plot>` produces an interactive plot. If the Matplotlib engine is selected,
 a window appears. If the Plotly engine is selected, a server is automatically opened, and
@@ -268,7 +260,7 @@ Use ``text`` to place labels next to intervals. The value can be a column templa
 including fixed text and column values in braces. Control placement with ``text_position``
 and distance from intervals with ``text_pad``.
 
-.. code-block::
+.. testcode::
 
     pe.plot(
         p,
@@ -282,7 +274,7 @@ and distance from intervals with ``text_pad``.
 Text can also be styled independently from interval fill colors. Use a channel
 ``colormap`` to provide separate mappings for ``"color"`` and ``"text"``.
 
-.. code-block::
+.. testcode::
 
     pe.plot(
         p,
@@ -313,6 +305,7 @@ set as default beforehand. Let's see an example of providing them as parameters:
 
 To instead set these options as default, use the :func:`set_options <pyrangeyes.set_options>` function:
 
+    >>> pe.reset_options()
     >>> pe.set_options('plot_bkg', 'rgb(173, 216, 230)')
     >>> pe.set_options('plot_border', '#808080')
     >>> pe.set_options('title_color', 'magenta')
@@ -385,7 +378,7 @@ Note that any modified values from the built-in defaults will be marked with an 
 To reset options to built-in defaults,  use :func:`reset_options <pyrangeyes.reset_options>`.
 By default, it will reset all options. Providing arguments, you can select which options to reset:
 
-    >>> pe.reset_options('plot_background')  # reset one feature
+    >>> pe.reset_options('plot_bkg')  # reset one feature
     >>> pe.reset_options(['plot_border', 'title_color'])  # reset a few features
     >>> pe.reset_options()  # reset all features
 
@@ -428,7 +421,7 @@ By default, pyrangeyes tries to save as much vertical space as possible,
 so the transcripts are placed one beside the other, in a "packed" disposition.
 To instead display one transcript per row, set the ``packed`` parameter as ``False``:
 
-.. code-block::
+.. testcode::
 
     pe.plot(p, packed=False)
 
@@ -439,7 +432,7 @@ This is useful when a PyRanges object was assembled by concatenating groups in a
 or when the order of rows already carries meaning. To instead let pyrangeyes order groups by
 its genomic sorting behavior, pass ``sort_ranges=True``:
 
-.. code-block::
+.. testcode::
 
     pe.plot(p, packed=False, sort_ranges=True)
 
@@ -450,37 +443,21 @@ The  ``shrink_threshold`` determines the minimum length of a region without visi
 When a float is provided, it will be interpreted as a fraction of the visible coordinate limits,
 while when an int is given it will be interpreted as number of base pairs.
 
-.. code-block::
-
-    ppp = pe.example_data.p3
-    print(ppp)
-
-
-.. code-block::
-
+    >>> ppp = pe.example_data.p3
+    >>> print(ppp)  # doctest: +ELLIPSIS
     index    |    Chromosome    Strand    Start    End      transcript_id
-    int64    |    object        object    int64    int64    object
-    -------  ---  ------------  --------  -------  -------  ---------------
-    0        |    1             +         90       92       t1
-    1        |    1             +         61       64       t1
-    2        |    1             +         104      113      t1
-    3        |    1             +         228      229      t1
-    ...      |    ...           ...       ...      ...      ...
-    16       |    2             -         42       46       t5
-    17       |    2             -         37       40       t5
-    18       |    2             +         60       70       t6
-    19       |    2             +         80       90       t6
+    ...
     PyRanges with 20 rows, 5 columns, and 1 index columns.
     Contains 2 chromosomes and 2 strands.
 
 
-.. code-block::
+.. testcode::
 
     pe.plot(ppp, shrink=True)
 
 .. image:: images/prp_rtd_13.png
 
-.. code-block::
+.. testcode::
 
     pe.plot(ppp, shrink=True, shrink_threshold=0.2)
 
@@ -493,7 +470,7 @@ Displaying multiple tracks
 Pass a list of PyRanges objects to display them as separate tracks.
 Use different IDs when tracks should get different default colors.
 
-.. code-block::
+.. testcode::
 
     enhancers = pr.PyRanges(
         {
@@ -517,7 +494,7 @@ Use different IDs when tracks should get different default colors.
 
 The same pattern works with more tracks. Use ``track_labels`` to name them on the y-axis:
 
-.. code-block::
+.. testcode::
 
     insulators = pr.PyRanges(
         {
@@ -545,7 +522,7 @@ inputs with sensible defaults before plotting.
 The ``mRNA`` adapter shows CDS regions thicker than UTR/exon regions. Here,
 ``tx1`` and ``tx2`` are coding transcripts, while ``lnc1`` is exon-only:
 
-.. code-block::
+.. testcode::
 
     mrna = pr.PyRanges(
         {
@@ -563,7 +540,7 @@ The ``mRNA`` adapter shows CDS regions thicker than UTR/exon regions. Here,
 
 The ``SNP`` adapter draws fixed-size markers for single-position variants:
 
-.. code-block::
+.. testcode::
 
     snps = pr.PyRanges(
         {
@@ -581,7 +558,7 @@ The ``SNP`` adapter draws fixed-size markers for single-position variants:
 
 Adapters can be combined across tracks:
 
-.. code-block::
+.. testcode::
 
     pe.plot([mrna, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
 
@@ -597,7 +574,7 @@ Tooltips and panel titles
 In interactive plots, hover over intervals to see their coordinates, strand, and ID.
 Add columns with ``tooltip`` templates, and customize panel titles with ``title_chr``:
 
-.. code-block::
+.. testcode::
 
     pe.plot(
         p,
@@ -615,7 +592,7 @@ Use ``add_aligned_plots`` to add Plotly traces aligned to the genomic x-axis.
 Here an mRNA track and SNP track are shown with a scatter plot of SNP scores.
 See :func:`make_scatter() <pyrangeyes.make_scatter>` for scatter helper options.
 
-.. code-block::
+.. testcode::
 
     snps1 = pr.PyRanges(
         {
@@ -639,7 +616,7 @@ Integrating Pyrangeyes with External Visualizations
 For custom dashboards, return the Plotly/Dash object with ``return_plot="app"``
 and compose it with other Dash components.
 
-.. code-block::
+.. testcode::
 
     from dash import dcc, html
     import plotly.graph_objects as go

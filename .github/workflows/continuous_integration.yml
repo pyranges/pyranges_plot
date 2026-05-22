@@ -35,6 +35,11 @@ jobs:
       run: |
         ./venv/bin/python -m playwright install --with-deps chromium
 
+    - name: Run tutorial doctest
+      run: |
+        export MPLBACKEND=Agg
+        ./venv/bin/sphinx-build -b doctest docs docs/_build/doctest -W --keep-going docs/tutorial.rst
+
     - name: Run tests MPL backend Agg
       run: |
         export MPLBACKEND=Agg

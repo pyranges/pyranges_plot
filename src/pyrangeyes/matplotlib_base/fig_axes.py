@@ -108,7 +108,7 @@ def create_fig(
     grid_color,
     packed,
     legend,
-    y_labels,
+    track_labels,
     x_ticks,
     tick_pos_d,
     ori_tick_pos_d,
@@ -316,10 +316,10 @@ def create_fig(
             y_min = 0.5 - exon_height / 2
             y_max = chrmd_df_grouped.loc[chrom]["y_height"]
             ax.set_ylim(y_min - v_spacer, y_max + v_spacer)
-            # gene name as y labels if not packed and not y_labels
+            # gene name as y labels if not packed and not track_labels
             y_ticks_val = []
             y_ticks_name = []
-            if not packed and not y_labels:
+            if not packed and not track_labels:
                 y_ticks_val = genesmd_df.loc[chrom]["ycoord"] + 0.5
                 y_ticks_val.reset_index(PR_INDEX_COL, drop=True, inplace=True)
                 y_ticks_name = y_ticks_val.index
@@ -361,7 +361,7 @@ def create_fig(
                         )
 
                         # add y_label in the middle of the subplot if needed
-                        if y_labels and j < len(present_pr_l):
+                        if track_labels and j < len(present_pr_l):
                             next_pr_line = (
                                 pr_line_y_l[j + 1] if j + 1 < len(pr_line_y_l) else 0
                             )
@@ -369,7 +369,7 @@ def create_fig(
                                 y_ticks_val.append(((pr_line_y) + next_pr_line) / 2)
                             else:
                                 y_ticks_val.append((pr_line_y) / 2)
-                            y_ticks_name.append(y_labels[int(present_pr_l[j])])
+                            y_ticks_name.append(track_labels[int(present_pr_l[j])])
 
             ax.set_yticks(y_ticks_val)
             ax.set_yticklabels(list(y_ticks_name))
