@@ -492,7 +492,8 @@ Use different IDs when tracks should get different default colors.
 
 .. image:: images/prp_rtd_17.png
 
-The same pattern works with more tracks. Use ``track_labels`` to name them on the y-axis:
+The same pattern works with more tracks. Use ``track_labels`` to name them on the y-axis.
+The first PyRanges object in the list is rendered as the top track:
 
 .. testcode::
 
@@ -511,6 +512,23 @@ The same pattern works with more tracks. Use ``track_labels`` to name them on th
     )
 
 .. image:: images/prp_rtd_18.png
+
+For dense multi-track views, use ``squish`` to draw selected tracks more compactly.
+Both ``squish`` and ``packed`` accept either a single boolean for all tracks or a
+list with one boolean per track:
+
+.. testcode::
+
+    pe.plot(
+        [enhancers, promoters, insulators],
+        id_col="id",
+        track_labels=["Enhancers", "Promoters", "Insulators"],
+        squish=[False, True, True],
+        packed=[True, True, False],
+        text=False,
+    )
+
+.. image:: images/prp_rtd_41.png
 
 
 mRNA, SNPs, and other adapter views

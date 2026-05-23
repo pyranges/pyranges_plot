@@ -30,114 +30,6 @@
         10
       ],
       "y": [
-        0.49625,
-        0.49625,
-        0.50375,
-        0.50375,
-        0.49625
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "hoverinfo": "skip",
-      "line": {
-        "color": "#3366CC",
-        "dash": "solid",
-        "width": 0.7
-      },
-      "mode": "lines",
-      "showlegend": false,
-      "x": [
-        NaN,
-        NaN
-      ],
-      "y": [
-        0.5,
-        0.5
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#3366CC",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#3366CC"
-      },
-      "mode": "lines",
-      "name": "0",
-      "showlegend": false,
-      "text": "<br>0",
-      "x": [
-        10,
-        40,
-        40,
-        10,
-        10
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "#DC3912",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#DC3912"
-      },
-      "mode": "lines",
-      "name": "1",
-      "showlegend": false,
-      "text": "<br>1",
-      "x": [
-        30,
-        60,
-        60,
-        30,
-        30
-      ],
-      "y": [
-        0.2,
-        0.2,
-        0.8,
-        0.8,
-        0.2
-      ],
-      "type": "scatter",
-      "xaxis": "x",
-      "yaxis": "y"
-    },
-    {
-      "fill": "toself",
-      "fillcolor": "grey",
-      "hoverinfo": "text",
-      "line": {
-        "color": "#DC3912",
-        "width": 0
-      },
-      "mode": "lines",
-      "showlegend": false,
-      "text": "(10, 60)<br>ID: 1",
-      "x": [
-        10,
-        60,
-        60,
-        10,
-        10
-      ],
-      "y": [
         2.09625,
         2.09625,
         2.1037500000000002,
@@ -151,7 +43,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#DC3912",
+        "color": "#3366CC",
         "dash": "solid",
         "width": 0.7
       },
@@ -181,11 +73,11 @@
       "showlegend": false,
       "text": "<br>0",
       "x": [
-        30,
-        60,
-        60,
-        30,
-        30
+        10,
+        40,
+        40,
+        10,
+        10
       ],
       "y": [
         1.8,
@@ -210,11 +102,11 @@
       "showlegend": false,
       "text": "<br>1",
       "x": [
-        10,
-        40,
-        40,
-        10,
-        10
+        30,
+        60,
+        60,
+        30,
+        30
       ],
       "y": [
         1.8,
@@ -222,6 +114,114 @@
         2.4,
         2.4,
         1.8
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "grey",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#DC3912",
+        "width": 0
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "text": "(10, 60)<br>ID: 1",
+      "x": [
+        10,
+        60,
+        60,
+        10,
+        10
+      ],
+      "y": [
+        0.49625,
+        0.49625,
+        0.50375,
+        0.50375,
+        0.49625
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "hoverinfo": "skip",
+      "line": {
+        "color": "#DC3912",
+        "dash": "solid",
+        "width": 0.7
+      },
+      "mode": "lines",
+      "showlegend": false,
+      "x": [
+        NaN,
+        NaN
+      ],
+      "y": [
+        0.5,
+        0.5
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#3366CC",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#3366CC"
+      },
+      "mode": "lines",
+      "name": "0",
+      "showlegend": false,
+      "text": "<br>0",
+      "x": [
+        30,
+        60,
+        60,
+        30,
+        30
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
+      ],
+      "type": "scatter",
+      "xaxis": "x",
+      "yaxis": "y"
+    },
+    {
+      "fill": "toself",
+      "fillcolor": "#DC3912",
+      "hoverinfo": "text",
+      "line": {
+        "color": "#DC3912"
+      },
+      "mode": "lines",
+      "name": "1",
+      "showlegend": false,
+      "text": "<br>1",
+      "x": [
+        10,
+        40,
+        40,
+        10,
+        10
+      ],
+      "y": [
+        0.2,
+        0.2,
+        0.8,
+        0.8,
+        0.2
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -1100,7 +1100,7 @@
         "x": 9.5,
         "xanchor": "right",
         "xref": "x",
-        "y": 0.5,
+        "y": 2.1,
         "yanchor": "middle",
         "yref": "y"
       },
@@ -1115,7 +1115,7 @@
         "x": 9.5,
         "xanchor": "right",
         "xref": "x",
-        "y": 2.1,
+        "y": 0.5,
         "yanchor": "middle",
         "yref": "y"
       }

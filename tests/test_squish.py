@@ -136,6 +136,116 @@ def test_squish_list_must_match_tracks():
         pe.plot([DATA, DATA], id_col="transcript_id", squish=[True], return_plot="fig")
 
 
+def test_track_labels_must_match_tracks():
+    with pytest.raises(ValueError, match="track_labels"):
+        pe.plot(
+            [DATA, DATA, DATA, DATA],
+            id_col="transcript_id",
+            track_labels=["one", "two", "three"],
+            return_plot="fig",
+        )
+
+
+def test_all_track_labels_render_for_squished_multitrack():
+    fig = pe.plot(
+        [DATA, DATA, DATA, DATA],
+        id_col="transcript_id",
+        track_labels=["one", "two", "three", "four"],
+        squish=[False, True, False, True],
+        return_plot="fig",
+    )
+
+    assert list(fig.layout.yaxis.ticktext) == ["one", "two", "three", "four"]
+
+
+def test_first_track_renders_on_top():
+    fig = pe.plot(
+        [DATA, DATA, DATA],
+        id_col="transcript_id",
+        track_labels=["first", "second", "third"],
+        return_plot="fig",
+    )
+
+    top_to_bottom_labels = [
+        label
+        for _, label in sorted(
+            zip(fig.layout.yaxis.tickvals, fig.layout.yaxis.ticktext), reverse=True
+        )
+    ]
+
+    assert top_to_bottom_labels == ["first", "second", "third"]
+
+
+def test_packed_list_must_match_tracks():
+    with pytest.raises(ValueError, match="one bool per track"):
+        pe.plot([DATA, DATA], id_col="transcript_id", packed=[True], return_plot="fig")
+
+
+def test_packed_list_entries_must_be_bool():
+    with pytest.raises(TypeError, match="list entries"):
+        pe.plot(
+            [DATA, DATA],
+            id_col="transcript_id",
+            packed=[True, "no"],
+            return_plot="fig",
+        )
+
+
+def test_packed_list_controls_track_layout():
+    fig = pe.plot(
+        [DATA, DATA],
+        id_col="transcript_id",
+        track_labels=["packed", "unpacked"],
+        packed=[True, False],
+        text=False,
+        return_plot="fig",
+    )
+
+    filled_centers_by_track = {}
+    for trace in fig.data:
+        if getattr(trace, "fill", None) != "toself" or not trace.y:
+            continue
+        y_values = [float(y) for y in trace.y if y is not None]
+        center = round((min(y_values) + max(y_values)) / 2, 4)
+        if trace.fillcolor == "white":
+            continue
+        filled_centers_by_track.setdefault(center, 0)
+        filled_centers_by_track[center] += 1
+
+    divider = min(shape.y0 for shape in fig.layout.shapes if shape.y0 != 0)
+    packed_centers = [center for center in filled_centers_by_track if center > divider]
+    unpacked_centers = [center for center in filled_centers_by_track if center < divider]
+
+    assert len(packed_centers) == 2
+    assert len(unpacked_centers) == 3
+
+
+def test_mixed_squish_compacts_panel_height():
+    unsquished_fig = pe.plot(
+        [DATA, DATA, DATA, DATA],
+        id_col="transcript_id",
+        track_labels=["one", "two", "three", "four"],
+        squish=False,
+        return_plot="fig",
+    )
+    squished_fig = pe.plot(
+        [DATA, DATA, DATA, DATA],
+        id_col="transcript_id",
+        track_labels=["one", "two", "three", "four"],
+        squish=[False, True, False, True],
+        return_plot="fig",
+    )
+
+    unsquished_span = (
+        unsquished_fig.layout.yaxis.range[1] - unsquished_fig.layout.yaxis.range[0]
+    )
+    squished_span = (
+        squished_fig.layout.yaxis.range[1] - squished_fig.layout.yaxis.range[0]
+    )
+
+    assert squished_span < unsquished_span
+
+
 def test_squish_list_entries_must_be_bool():
     with pytest.raises(TypeError, match="list entries"):
         pe.plot(

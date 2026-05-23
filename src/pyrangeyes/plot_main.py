@@ -416,9 +416,10 @@ def plot(
     max_shown: int, default 20
         Maximum number of genes plotted in the dataframe order.
 
-    packed: bool, default True
+    packed: bool or list of bool, default True
         Disposition of the genes in the plot. Use True for a packed disposition (genes in the same line if
-        they do not overlap) and False for unpacked (one row per gene).
+        they do not overlap) and False for unpacked (one row per gene). When a list is provided, it must
+        contain one bool per track.
 
     return_plot: {None, "fig", "app"}, default None
         Return the backend figure/app instead of only displaying or saving it.
@@ -503,7 +504,8 @@ def plot(
 
     text: {None, bool, str}, default None
         Controls interval text annotations. If None, text is enabled for packed
-        plots and disabled for unpacked plots to avoid duplicated row labels.
+        plots and disabled for unpacked plots to avoid duplicated row labels. If
+        ``packed`` is a list, the default is enabled only when all tracks are packed.
         If True, the id/index is used; if False, labels are disabled. A string
         is interpreted as a row-value format template such as ``"{Feature}: {id}"``.
         Use ``text_pad``, ``text_size``, ``text_color``, ``text_angle``,
@@ -608,6 +610,7 @@ def plot(
     if not isinstance(data, list):
         data = [data]
     squish_flags = _normalize_track_flags(squish, len(data), name="squish")
+    packed_flags = _normalize_track_flags(packed, len(data), name="packed")
 
     if adapter is not None:
         if isinstance(adapter, str):
@@ -663,9 +666,9 @@ def plot(
             shape_col = default_plot_args["shape_col"]
 
     # Ensure correct track_labels
-    if track_labels:
+    if track_labels is not None and track_labels is not False:
         if len(track_labels) != len(data):
-            raise Exception(
+            raise ValueError(
                 f"The number of provided track_labels {track_labels} does not match the number of tracks ({len(data)})."
             )
 
@@ -793,11 +796,13 @@ def plot(
     }
     text = _normalize_text_spec(
         text,
-        packed,
+        all(packed_flags),
         text_position=feat_dict["text_position"],
         text_fit=feat_dict["text_fit"],
         text_angle=feat_dict["text_angle"],
     )
+    packed_by_track = dict(enumerate(packed_flags))
+    packed_for_axes = all(packed_flags)
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
     if colormap == "popart":
@@ -1029,10 +1034,13 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
+        interval_height=feat_dict["layout_interval_height"],
+        v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
         text_avoid=text["enabled"] and text["fit"],
         track_scales=track_scales,
+        packed_by_track=packed_by_track,
     )
 
     # Create chromosome metadata DataFrame
@@ -1112,10 +1120,13 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
+        interval_height=feat_dict["layout_interval_height"],
+        v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
         text_avoid=text["enabled"] and text["fit"],
         track_scales=track_scales,
+        packed_by_track=packed_by_track,
     )
 
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
@@ -1224,7 +1235,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1257,7 +1268,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1294,7 +1305,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1325,7 +1336,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,

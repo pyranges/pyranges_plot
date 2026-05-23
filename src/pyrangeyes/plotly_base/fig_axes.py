@@ -271,8 +271,13 @@ def create_fig(
                 )
 
             # set y axis limits
-            y_min = 0.5 - exon_height / 2
-            y_max = chrmd_df_grouped.loc[chrom]["y_height"]
+            y_pad = chrmd_df_grouped.loc[chrom].get("y_pad", v_spacer)
+            if bool(chrmd_df_grouped.loc[chrom].get("use_render_y_limits", False)):
+                y_min = chrmd_df_grouped.loc[chrom]["y_min"]
+                y_max = chrmd_df_grouped.loc[chrom]["y_max"]
+            else:
+                y_min = 0.5 - exon_height / 2
+                y_max = chrmd_df_grouped.loc[chrom]["y_height"]
             y_ticks_val = []
             y_ticks_name = []
 
@@ -327,7 +332,11 @@ def create_fig(
                 pr_line_y_l = chrmd_df.loc[chrom]["pr_line"].tolist()
                 if isinstance(pr_line_y_l, int):
                     pr_line_y_l = [pr_line_y_l]
-                pr_line_y_l = [y_max + v_spacer] + pr_line_y_l
+                pr_line_y_l = sorted(
+                    [pr_line_y for pr_line_y in pr_line_y_l if pr_line_y != 0],
+                    reverse=True,
+                )
+                pr_line_y_l = [y_max + y_pad] + pr_line_y_l + [0]
                 present_pr_l = chrmd_df_grouped.loc[chrom]["present_pr"]
 
                 # separate items with horizontal lines
@@ -353,7 +362,7 @@ def create_fig(
                             y_ticks_name.append(track_labels[int(present_pr_l[j])])
 
             fig.update_yaxes(
-                range=[y_min - v_spacer, y_max + v_spacer],
+                range=[y_min - y_pad, y_max + y_pad],
                 fixedrange=True,
                 tickvals=y_ticks_val,
                 ticktext=y_ticks_name,

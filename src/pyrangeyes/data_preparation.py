@@ -927,6 +927,28 @@ def get_chromosome_metadata(
         0.5 + exon_height / 2
     )  # the middle of the rectangle is +.5 of ycoord
 
+    panel_edges = chrmd_df.groupby(CHROM_COL, group_keys=False, observed=True).agg(
+        y_min=("__render_bottom__", "min"),
+        y_max=("__render_top__", "max"),
+    )
+    chrmd_df_grouped = chrmd_df_grouped.join(panel_edges)
+    has_squish = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].agg(
+        lambda s: bool((s < 1).any())
+    )
+    chrmd_df_grouped = chrmd_df_grouped.join(has_squish.rename("use_render_y_limits"))
+    squished_panel = chrmd_df_grouped["use_render_y_limits"]
+    panel_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].min()
+    chrmd_df_grouped = chrmd_df_grouped.join(panel_scale.rename("y_pad_scale"))
+    chrmd_df_grouped["y_pad"] = v_spacer
+    chrmd_df_grouped.loc[squished_panel, "y_pad"] = (
+        v_spacer * chrmd_df_grouped.loc[squished_panel, "y_pad_scale"]
+    )
+    chrmd_df_grouped.loc[squished_panel, "y_height"] = (
+        chrmd_df_grouped.loc[squished_panel, "y_max"]
+        - chrmd_df_grouped.loc[squished_panel, "y_min"]
+        + 2 * chrmd_df_grouped.loc[squished_panel, "y_pad"]
+    )
+
     # Obtain the positions of lines separating pr objects. For squished tracks,
     # use the actual rendered edges of adjacent tracks so dividers stay between
     # condensed glyphs instead of crossing them.
@@ -986,10 +1008,13 @@ def assign_label_rows(
     text_pad,
     packed,
     sort_ranges,
+    interval_height=None,
+    v_spacer=0.3,
     plot_limits=None,
     text_label_col=None,
     text_avoid=True,
     track_scales=None,
+    packed_by_track=None,
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -1018,12 +1043,21 @@ def assign_label_rows(
     s = s.reset_index(level=PR_INDEX_COL, drop=True)
 
     ycoord_map = {}
+    interval_height = 0.6 if interval_height is None else interval_height
+    compact_tracks = track_scales is not None and any(
+        float(scale) < 1 for scale in track_scales.values()
+    )
+    compact_scale = (
+        min(float(scale) for scale in track_scales.values()) if compact_tracks else 1.0
+    )
+    compact_track_gap = 2 * v_spacer * compact_scale
 
     # Iterating in sorted cromosomes if sort_ranges == True else in original order
     chrom_iter = sorted(s["chrix"].unique()) if sort_ranges else pd.unique(s["chrix"])
 
     for chrom in chrom_iter:
         current_base = 0  # reiniciate per each chromosome
+        next_track_bottom = None
         chrom_df = s[s["chrix"] == chrom]
 
         # Compute plot limits
@@ -1046,17 +1080,23 @@ def assign_label_rows(
             .reset_index()
         )
 
-        pr_iter = (
-            sorted(chrom_df[PR_INDEX_COL].unique(), reverse=True)
-            if sort_ranges
-            else pd.unique(chrom_df[PR_INDEX_COL])
-        )
+        pr_values = list(pd.unique(chrom_df[PR_INDEX_COL]))
+        pr_iter = sorted(pr_values, reverse=True) if sort_ranges else pr_values[::-1]
         # iterate PR_INDEX_COL in ascending order (if sort_ranges == True)
         pr_gap = 0
         for pr_val in pr_iter:
             track_scale = (
                 1.0 if track_scales is None else float(track_scales.get(pr_val, 1.0))
             )
+            track_packed = (
+                packed
+                if packed_by_track is None
+                else bool(packed_by_track.get(pr_val, packed))
+            )
+            effective_text_avoid = text_avoid and track_scale >= 1
+            track_height = interval_height * track_scale
+            if compact_tracks and next_track_bottom is None:
+                next_track_bottom = 0.5 - track_height / 2
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
             # In case sort_ranges is true we reorder the df by start
             if sort_ranges:
@@ -1099,9 +1139,9 @@ def assign_label_rows(
 
             rows = []  # each element = row interval
             for _, g in gdf.iterrows():
-                if packed:
+                if track_packed:
                     label_len = 0
-                    if text_avoid:
+                    if effective_text_avoid:
                         if text_label_col and text_label_col in g:
                             label_len = len(str(g[text_label_col]))
                         else:
@@ -1126,8 +1166,8 @@ def assign_label_rows(
                             no_overlap(
                                 interval,
                                 (s0, e0),
-                                pad=0 if not text_avoid else 2,
-                                pw=None if not text_avoid else plot_width,
+                                pad=0 if not effective_text_avoid else 2,
+                                pw=None if not effective_text_avoid else plot_width,
                             )
                             for s0, e0 in row_intervals
                         ):
@@ -1141,9 +1181,16 @@ def assign_label_rows(
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
                     if key not in ycoord_map:
-                        ycoord_map[key] = round(
-                            current_base + pr_gap + assigned_row * track_scale, 10
-                        )
+                        if compact_tracks:
+                            ycoord = (
+                                next_track_bottom
+                                - 0.5
+                                + track_height / 2
+                                + assigned_row * track_scale
+                            )
+                        else:
+                            ycoord = current_base + pr_gap + assigned_row * track_scale
+                        ycoord_map[key] = round(ycoord, 10)
 
                 else:
                     interval = (
@@ -1154,12 +1201,27 @@ def assign_label_rows(
                     rows.append([interval])
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
-                    ycoord_map[key] = round(
-                        current_base + pr_gap + assigned_row * track_scale, 10
-                    )
+                    if compact_tracks:
+                        ycoord = (
+                            next_track_bottom
+                            - 0.5
+                            + track_height / 2
+                            + assigned_row * track_scale
+                        )
+                    else:
+                        ycoord = current_base + pr_gap + assigned_row * track_scale
+                    ycoord_map[key] = round(ycoord, 10)
 
-            current_base += len(rows) * track_scale
-            pr_gap += 0.6 * track_scale
+            if compact_tracks:
+                track_top = (
+                    next_track_bottom
+                    + (max(len(rows), 1) - 1) * track_scale
+                    + track_height
+                )
+                next_track_bottom = track_top + compact_track_gap
+            else:
+                current_base += len(rows) * track_scale
+                pr_gap += 0.6 * track_scale
 
     # Assign ycoord back to all rows
     def _assign_y(r):
