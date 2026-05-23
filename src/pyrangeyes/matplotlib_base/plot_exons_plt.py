@@ -16,6 +16,8 @@ from ..names import (
     COLOR_INFO,
     COLOR_LEGEND_TITLE_COL,
     OUTLINE_LEGEND_TITLE_COL,
+    SQUISH_COL,
+    THICK_COL,
 )
 from ..legend import (
     categorical_fill_items,
@@ -356,6 +358,11 @@ def gby_plot_exons(
     if intron_color is None:
         intron_color = df[COLOR_INFO].iloc[0]
 
+    gene_height = (
+        float(df[THICK_COL].max())
+        if SQUISH_COL in df.columns and bool(df[SQUISH_COL].iloc[0])
+        else exon_height
+    )
     dir_flag = plot_introns(
         introns,
         ts_chrom,
@@ -366,7 +373,7 @@ def gby_plot_exons(
         gene_ix,
         intron_color,
         draw_strand,
-        exon_height,
+        gene_height,
         arrow_color,
         arrow_style,
         arrow_line_width,

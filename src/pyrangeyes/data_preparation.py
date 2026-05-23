@@ -37,6 +37,8 @@ from .names import (
     OUTLINE_LEGEND_TITLE_COL,
     TEXT_COLOR_COL,
     TEXT_COLOR_TAG_COL,
+    SQUISH_FACTOR_COL,
+    THICK_COL,
     PANEL_SEP,
 )
 from .core import cumdelting, get_engine, get_warnings, check4dependency
@@ -873,6 +875,27 @@ def get_chromosome_metadata(
         [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
     )["ycoord"].max()
     chrmd_df = chrmd_df.join(pr_top_y.rename("pr_top_y"))
+    if SQUISH_FACTOR_COL in df.columns:
+        pr_scale = df.groupby(
+            [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+        )[SQUISH_FACTOR_COL].first()
+    else:
+        pr_scale = pr_top_y.copy() * 0 + 1.0
+    chrmd_df = chrmd_df.join(pr_scale.rename("pr_scale"))
+    if THICK_COL in df.columns:
+        pr_render_height = df.groupby(
+            [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+        )[THICK_COL].max()
+        pr_render_height = pr_render_height.where(pr_scale < 1, exon_height)
+    else:
+        pr_render_height = pr_top_y.copy() * 0 + exon_height
+    chrmd_df = chrmd_df.join(pr_render_height.rename("pr_render_height"))
+
+    pr_bottom_y = genesmd_df.groupby(
+        [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+    )["ycoord"].min()
+    chrmd_df["__render_top__"] = chrmd_df["pr_top_y"] + 0.5 + pr_render_height / 2
+    chrmd_df["__render_bottom__"] = pr_bottom_y + 0.5 - pr_render_height / 2
     chrmd_df = (
         chrmd_df.reset_index()
         .sort_values(
@@ -904,14 +927,33 @@ def get_chromosome_metadata(
         0.5 + exon_height / 2
     )  # the middle of the rectangle is +.5 of ycoord
 
-    # Obtain the positions of lines separating pr objects
-    chrmd_df["pr_line"] = chrmd_df.groupby(CHROM_COL, observed=True)["pr_top_y"].shift(
-        -1, fill_value=-(0.5 + exon_height / 2 + v_spacer)
+    # Obtain the positions of lines separating pr objects. For squished tracks,
+    # use the actual rendered edges of adjacent tracks so dividers stay between
+    # condensed glyphs instead of crossing them.
+    next_top = chrmd_df.groupby(CHROM_COL, observed=True)["pr_top_y"].shift(-1)
+    next_height = chrmd_df.groupby(CHROM_COL, observed=True)["pr_render_height"].shift(
+        -1
     )
-    chrmd_df["pr_line"] += (
-        0.5 + exon_height / 2 + v_spacer
-    )  # midle of rectangle is +.5 of ycoord
-    chrmd_df.drop(columns=["pr_top_y"], inplace=True)
+    next_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].shift(-1)
+    next_render_top = chrmd_df.groupby(CHROM_COL, observed=True)[
+        "__render_top__"
+    ].shift(-1)
+    next_pr_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].shift(-1)
+    old_pr_line = next_top + 0.5 + next_height / 2 + v_spacer * next_scale
+    edge_midpoint = (chrmd_df["__render_bottom__"] + next_render_top) / 2
+    use_edge_midpoint = (chrmd_df["pr_scale"] < 1) | (next_pr_scale < 1)
+    chrmd_df["pr_line"] = old_pr_line.where(~use_edge_midpoint, edge_midpoint)
+    chrmd_df["pr_line"] = chrmd_df["pr_line"].fillna(0).round(10)
+    chrmd_df.drop(
+        columns=[
+            "pr_top_y",
+            "pr_render_height",
+            "pr_scale",
+            "__render_top__",
+            "__render_bottom__",
+        ],
+        inplace=True,
+    )
 
     # Set chrom_ix to get the right association to the plot index
     chrmd_df_grouped["chrom_ix"] = chrmd_df_grouped.groupby(
@@ -947,6 +989,7 @@ def assign_label_rows(
     plot_limits=None,
     text_label_col=None,
     text_avoid=True,
+    track_scales=None,
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -975,7 +1018,6 @@ def assign_label_rows(
     s = s.reset_index(level=PR_INDEX_COL, drop=True)
 
     ycoord_map = {}
-    pr_rank_map = {}
 
     # Iterating in sorted cromosomes if sort_ranges == True else in original order
     chrom_iter = sorted(s["chrix"].unique()) if sort_ranges else pd.unique(s["chrix"])
@@ -1009,10 +1051,12 @@ def assign_label_rows(
             if sort_ranges
             else pd.unique(chrom_df[PR_INDEX_COL])
         )
-        for rank, pr_val in enumerate(pr_iter):
-            pr_rank_map[(chrom, pr_val)] = rank
         # iterate PR_INDEX_COL in ascending order (if sort_ranges == True)
+        pr_gap = 0
         for pr_val in pr_iter:
+            track_scale = (
+                1.0 if track_scales is None else float(track_scales.get(pr_val, 1.0))
+            )
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
             # In case sort_ranges is true we reorder the df by start
             if sort_ranges:
@@ -1097,7 +1141,9 @@ def assign_label_rows(
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
                     if key not in ycoord_map:
-                        ycoord_map[key] = current_base + assigned_row
+                        ycoord_map[key] = round(
+                            current_base + pr_gap + assigned_row * track_scale, 10
+                        )
 
                 else:
                     interval = (
@@ -1108,9 +1154,12 @@ def assign_label_rows(
                     rows.append([interval])
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
-                    ycoord_map[key] = current_base + assigned_row
+                    ycoord_map[key] = round(
+                        current_base + pr_gap + assigned_row * track_scale, 10
+                    )
 
-            current_base += len(rows)
+            current_base += len(rows) * track_scale
+            pr_gap += 0.6 * track_scale
 
     # Assign ycoord back to all rows
     def _assign_y(r):
@@ -1118,12 +1167,6 @@ def assign_label_rows(
         return ycoord_map[key]
 
     s["ycoord"] = s.apply(_assign_y, axis=1)
-
-    # Adding offset to ycoord
-    STEP = 0.6
-    s["ycoord"] = s["ycoord"] + s.apply(
-        lambda r: pr_rank_map[(r["chrix"], r[PR_INDEX_COL])] * STEP, axis=1
-    )
 
     # restore multi-index
     s.set_index([PR_INDEX_COL], append=True, inplace=True)

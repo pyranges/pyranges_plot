@@ -63,6 +63,11 @@ plot_features_dict = {
         "Color of the shrunk region background.",
         " ",
     ),
+    "squish_factor": (
+        0.35,
+        "Factor applied to rendered interval height and stacked-row spacing for tracks with squish=True.",
+        " ",
+    ),
     "tag_bkg": (
         "grey",
         "Background color of the tooltip annotation for the gene in Matplotlib.",

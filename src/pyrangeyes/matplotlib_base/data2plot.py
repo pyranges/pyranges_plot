@@ -270,44 +270,45 @@ def plot_row(
             angle = 0
             font_size = text_size
 
-        vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+        if ann != "":
+            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
-        group_start = row.get(TEXT_START_COL, start)
-        group_end = row.get(TEXT_END_COL, stop)
-        group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
+            group_start = row.get(TEXT_START_COL, start)
+            group_end = row.get(TEXT_END_COL, stop)
+            group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
 
-        x = group_start - text_pad
-        y = gene_ix
-        ha = "right"
-        va = "center"
-        if position == "right":
-            x = group_end + text_pad
-            ha = "left"
-        elif position == "center":
-            x = group_mid
-            ha = "center"
-        elif position == "above":
-            x = group_mid
-            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
-            y = gene_ix + group_height / 2 + vertical_pad
-            ha = "center"
-            va = "bottom"
-        elif position == "below":
-            x = group_mid
-            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
-            y = gene_ix - group_height / 2 - vertical_pad
-            ha = "center"
-            va = "top"
+            x = group_start - text_pad
+            y = gene_ix
+            ha = "right"
+            va = "center"
+            if position == "right":
+                x = group_end + text_pad
+                ha = "left"
+            elif position == "center":
+                x = group_mid
+                ha = "center"
+            elif position == "above":
+                x = group_mid
+                group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+                y = gene_ix + group_height / 2 + vertical_pad
+                ha = "center"
+                va = "bottom"
+            elif position == "below":
+                x = group_mid
+                group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+                y = gene_ix - group_height / 2 - vertical_pad
+                ha = "center"
+                va = "top"
 
-        ax.annotate(
-            ann,
-            xy=(x, y),
-            horizontalalignment=ha,
-            verticalalignment=va,
-            color=color,
-            fontsize=font_size,
-            rotation=angle,
-        )
+            ax.annotate(
+                ann,
+                xy=(x, y),
+                horizontalalignment=ha,
+                verticalalignment=va,
+                color=color,
+                fontsize=font_size,
+                rotation=angle,
+            )
 
     # Plot DIRECTION ARROW in EXON
     # decide about placing a direction arrow
