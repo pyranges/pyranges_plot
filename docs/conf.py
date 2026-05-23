@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 from docutils import nodes
+import doctest
 import sphinx_rtd_theme
 import os
 import sys
@@ -33,10 +34,51 @@ author = "Ester Muñoz del Campo, Marco Mariotti"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
 ]
 autosummary_generate = True  # Enable summary table generation
+
+doctest_default_flags = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+
+doctest_global_setup = """
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import pyrangeyes as pe
+import pyrangeyes.plot_main as _pe_plot_main
+import pyrangeyes.pr_register_plot as _pe_pr_register_plot
+
+if not hasattr(pe, '_doctest_real_plot'):
+    pe._doctest_real_plot = _pe_plot_main.plot
+_real_plot = pe._doctest_real_plot
+pe.reset_options()
+pe.set_id_col(None)
+
+def _doctest_plot(*args, **kwargs):
+    explicit_return = kwargs.get('return_plot') is not None or kwargs.get('to_file') is not None
+    kwargs.setdefault('warnings', False)
+    if not explicit_return:
+        kwargs['return_plot'] = 'fig'
+    result = _real_plot(*args, **kwargs)
+    if not explicit_return:
+        if hasattr(result, 'close'):
+            result.close()
+        else:
+            plt.close('all')
+        return None
+    return result
+
+pe.plot = _doctest_plot
+_pe_plot_main.plot = _doctest_plot
+_pe_pr_register_plot.plot = _doctest_plot
+"""
+
+doctest_global_cleanup = """
+import matplotlib.pyplot as plt
+plt.close('all')
+"""
 
 
 autodoc_default_options = {

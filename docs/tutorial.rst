@@ -30,20 +30,12 @@ To that end, we will use some example data included in the Pyrangeyes package.
 Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
 
     >>> p = pe.example_data.p1
-    >>> print(p)
-      index  |      Chromosome  Strand      Start      End  transcript_id    feature1    feature2
-      int64  |           int64  object      int64    int64  object           object      object
-    -------  ---  ------------  --------  -------  -------  ---------------  ----------  ----------
-          0  |               1  +               1       11  t1               a           A
-          1  |               1  +              40       60  t1               a           A
-          2  |               2  -              10       25  t2               b           B
-          3  |               2  -              70       80  t2               b           B
-          4  |               2  +              85      100  t3               c           C
-          5  |               2  +             110      115  t3               c           C
-          6  |               2  +             150      180  t3               c           C
-          7  |               3  +             140      152  t4               d           D
-    PyRanges with 8 rows, 7 columns, and 1 index columns.
+    >>> print(p)  # doctest: +ELLIPSIS
+      index  |      Chromosome  Strand      Start      End  transcript_id    ...
+    ...
+    PyRanges with 8 rows, 7 columns, and 1 index columns...
     Contains 3 chromosomes and 2 strands.
+
 
 By default, :func:`plot <pyrangeyes.plot>` produces an interactive plot. If the Matplotlib engine is selected,
 a window appears. If the Plotly engine is selected, a server is automatically opened, and
@@ -123,8 +115,8 @@ To plot with specified limits, use the following code:
 
 .. image:: images/prp_rtd_05.png
 
-Plotting selected regions as panels
------------------------------------
+Defining regions for panels
+----------------------------
 
 Use ``regions`` to replace the default one-panel-per-chromosome layout with specific panels.
 For example, this makes one panel per transcript by using a column name:
@@ -137,27 +129,31 @@ Explicit regions are also supported with ``(chromosome, start, end)`` tuples or 
 
     >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
-Reversing panel direction
--------------------------
+Plotting intervals in strand direction
+--------------------------------------
 
-Use ``reverse`` to display selected panels in mirrored coordinates.
-This is useful for showing negative-strand loci in transcript direction while keeping original genomic
-coordinates in ticks and tooltips.
+Use ``reverse="auto"`` to mirror panels whose known intervals are all on the negative strand.
+Coordinates in ticks and tooltips stay genomic.
 
-    >>> pe.plot(p, reverse=True)             # reverse all panels
-    >>> pe.plot(p, reverse="auto")           # reverse panels whose known strands are all negative
-    >>> pe.plot(p, reverse=[2])              # reverse selected chromosome/panel names
-    >>> pe.plot(p, reverse={2: True, 1: False})
+    >>> import pyranges1 as pr
+    >>> q = pr.PyRanges(
+    ...     {
+    ...         "Chromosome": ["chr1", "chr1", "chr2", "chr2"],
+    ...         "Strand": ["+", "+", "-", "-"],
+    ...         "Start": [10, 60, 20, 80],
+    ...         "End": [30, 90, 45, 110],
+    ...         "tx": ["tx1", "tx1", "tx2", "tx2"],
+    ...     }
+    ... )
+    >>> pe.plot(q, id_col="tx", reverse="auto")
 
-With explicit ``regions``, selectors may also be region tuples:
+.. image:: images/prp_rtd_38.png
 
-    >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190)], reverse=[(2, 140, 190)])
+``reverse`` accepts several inputs:
 
-The ``title_chr`` template can include ``{orientation}`` (``"fwd"`` or ``"rev"``) and
-``{rev_flag}`` (empty or ``"(rev)"``):
-
-    >>> pe.plot(p, reverse="auto", title_chr="{chrom} ({orientation})")
-    >>> pe.plot(p, reverse="auto", title_chr="Chromosome {chrom} {rev_flag}")
+    >>> pe.plot(q, id_col="tx", reverse=True)             # reverse all panels
+    >>> pe.plot(q, id_col="tx", reverse=["chr2"])         # reverse selected panels
+    >>> pe.plot(q, id_col="tx", reverse={"chr2": True})   # map panels to booleans
 
 Coloring
 --------
@@ -257,8 +253,44 @@ In this section, we have seen how to color intervals based on their attributes.
 Next, we will see how to customize the appearance of the plot itself.
 
 
-Appearance customization options: cheatsheet
---------------------------------------------
+Text labels and annotations
+---------------------------
+
+Use ``text`` to place labels next to intervals. The value can be a column template,
+including fixed text and column values in braces. Control placement with ``text_position``
+and distance from intervals with ``text_pad``.
+
+.. testcode::
+
+    pe.plot(
+        p,
+        text="transcript: {transcript_id}",
+        text_position="right",
+        text_pad=2,
+    )
+
+.. image:: images/prp_rtd_39.png
+
+Text can also be styled independently from interval fill colors. Use a channel
+``colormap`` to provide separate mappings for ``"color"`` and ``"text"``.
+
+.. testcode::
+
+    pe.plot(
+        p,
+        text="transcript: {transcript_id}",
+        text_size=16,
+        text_color_col="Strand",
+        color_col="transcript_id",
+        colormap={"color": "Dark2", "text": {"+": "black", "-": "crimson"}},
+    )
+
+.. image:: images/prp_rtd_40.png
+
+For a full list of text options, inspect ``pe.print_options()``.
+
+Quick option reference
+----------------------
 
 A wide range of **options** are available to customize appearance, as summarized below:
 
@@ -273,6 +305,7 @@ set as default beforehand. Let's see an example of providing them as parameters:
 
 To instead set these options as default, use the :func:`set_options <pyrangeyes.set_options>` function:
 
+    >>> pe.reset_options()
     >>> pe.set_options('plot_bkg', 'rgb(173, 216, 230)')
     >>> pe.set_options('plot_border', '#808080')
     >>> pe.set_options('title_color', 'magenta')
@@ -286,59 +319,66 @@ Note that any modified values from the built-in defaults will be marked with an 
     +------------------+--------------------+---------+--------------------------------------------------------------+
     |     Feature      |       Value        | Edited? |                         Description                          |
     +------------------+--------------------+---------+--------------------------------------------------------------+
-    |     colormap     |       popart       |         | Colors to assign to intervals. Use 'direct' when color_col   |
-    |                  |                    |         | and outline_col already contain literal colors. Otherwise    |
-    |                  |                    |         | provide a Matplotlib colormap, Plotly color sequence, list,  |
-    |                  |                    |         | mapping {value: color}, or channel mapping {'color': ...,    |
-    |                  |                    |         | 'outline': ...}. Missing mapped values are colored black.    |
-    | outline_color    |         |         | Fixed color for interval outlines. When empty, outlines use  |
-    |                  |                    |         | the resolved interval fill colors unless outline_col is set. |
-    |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
-    |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
-    |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |
-    |   plot_border    |      #808080       |    *    | Color of the line delimiting the plots.                      |
-    |    shrunk_bkg    |    lightyellow     |         | Color of the shrunk region background.                       |
-    |     tag_bkg      |        grey        |         | Background color of the tooltip annotation for the gene in   |
-    |                  |                    |         | Matplotlib.                                                  |
-    |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
-    |    title_size    |         18         |         | Size of the plots' titles.                                   |
-    |     x_ticks      |         |         | Int, list or dict defining the x_ticks to be displayed.      |
-    |                  |                    |         | When int, number of ticks to be placed on each plot. When    |
-    |                  |                    |         | list, it corresponds to de values used as ticks. When dict,  |
-    |                  |                    |         | the keys must match the Chromosome values of the data,       |
-    |                  |                    |         | while the values can be either int or list of int; when int  |
-    |                  |                    |         | it corresponds to the number of ticks to be placed; when     |
-    |                  |                    |         | list of int it corresponds to de values used as ticks. Note  |
-    |                  |                    |         | that when the tick falls within a shrunk region it will not  |
-    |                  |                    |         | be diplayed.                                                 |
-    +------------------+--------------------+---------+--------------------------------------------------------------+
     |   arrow_color    |        grey        |         | Color of the arrow indicating strand.                        |
     | arrow_line_width |         1          |         | Line width of the arrow lines                                |
     |    arrow_size    |       0.006        |         | Float corresponding to the fraction of the plot or int       |
     |                  |                    |         | corresponding to the number of positions occupied by a       |
     |                  |                    |         | direction arrow.                                             |
+    |     colormap     |       popart       |         | Colors to assign to interval fills. Use 'direct' when        |
+    |                  |                    |         | color_col/outline_col/text_color_col already contain literal |
+    |                  |                    |         | colors. A dict channel mapping must have 'color' and may     |
+    |                  |                    |         | also have 'outline' and 'text'; 'color'/'outline' aliases    |
+    |                  |                    |         | reuse channels. Values may be Matplotlib/Plotly colormap     |
+    |                  |                    |         | names, color lists, value-to-color mappings, or quantitative |
+    |                  |                    |         | specs.                                                       |
+    |  outline_color   |      <infer>       |         | Fixed color for interval outlines. When None, outlines use   |
+    |                  |                    |         | the resolved interval fill colors.                           |
     | interval_height  |        0.6         |         | Default (and maximum) height of rendered interval blocks.    |
-    |   intron_color   |         |         | Color of the intron lines, the color of the       |
-    |                  |                    |         | first interval will be used.                                 |
-    |     text_pad     |       0.005        |         | Space where the id annotation is placed beside the           |
-    |                  |                    |         | interval. When text_pad is float, it represents the          |
-    |                  |                    |         | percentage of the plot space, while an int pad represents    |
-    |                  |                    |         | number of positions or base pairs.                           |
-    |    text_size     |         10         |         | Fontsize of the text annotation beside the intervals.        |
-    |     v_spacer     |        0.5         |         | Vertical distance between the intervals and plot border.     |
-    +------------------+--------------------+---------+--------------------------------------------------------------+
+    |     fig_bkg      |       white        |         | Bakground color of the whole figure.                         |
+    |    grid_color    |     lightgrey      |         | Color of x coordinates grid lines.                           |
+    |   intron_color   |      <infer>       |         | Color of the intron lines. When None, the color of the first |
+    |                  |                    |         | interval will be used.                                       |
+    |     plot_bkg     | rgb(173, 216, 230) |    *    | Background color of the plots.                               |
+    |   plot_border    |      #808080       |    *    | Color of the line delimiting the plots.                      |
     |   plotly_port    |        8050        |         | Port to run plotly app.                                      |
+    |   return_plot    |      <infer>       |         | Whether the plot is returned or not.                         |
     | shrink_threshold |        0.01        |         | Minimum length of an intron or intergenic region in order    |
     |                  |                    |         | for it to be shrunk while using the “shrink” feature. When   |
     |                  |                    |         | threshold is float, it represents the fraction of the plot   |
-    |                  |                    |         | space, while an int threshold represents number of           |
-    |                  |                    |         | positions or base pairs.                                     |
+    |                  |                    |         | space, while an int threshold represents number of positions |
+    |                  |                    |         | or base pairs.                                               |
+    |    shrunk_bkg    |    lightyellow     |         | Color of the shrunk region background.                       |
+    |     tag_bkg      |        grey        |         | Background color of the tooltip annotation for the gene in   |
+    |                  |                    |         | Matplotlib.                                                  |
+    |     text_pad     |         1          |         | Space, in percent of the visible plot span, between interval |
+    |                  |                    |         | labels and intervals. For example, text_pad=1 means 1%.      |
+    |    text_size     |         10         |         | Fontsize of the text annotation beside the intervals.        |
+    |    text_color    |       black        |         | Fixed color of interval text annotations unless              |
+    |                  |                    |         | text_color_col or colormap['text'] maps them.                |
+    |    text_angle    |         0          |         | Rotation angle of interval text annotations, in degrees.     |
+    |  text_position   |        left        |         | Position of interval text annotations: 'left', 'right',      |
+    |                  |                    |         | 'center', 'above', or 'below'.                               |
+    |     text_fit     |        True        |         | Whether text labels reserve space during packed layout to    |
+    |                  |                    |         | reduce overlaps.                                             |
+    |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
+    |    title_size    |         18         |         | Size of the plots' titles.                                   |
+    |    title_font    |       Arial        |         | Font of the plots' titles.                                   |
+    |     v_spacer     |        0.5         |         | Vertical distance between the intervals and plot border.     |
+    |     x_ticks      |      <infer>       |         | Int, list or dict defining the x_ticks to be displayed. When |
+    |                  |                    |         | int, number of ticks to be placed on each plot. When list,   |
+    |                  |                    |         | it corresponds to de values used as ticks. When dict, the    |
+    |                  |                    |         | keys must match the Chromosome values of the data, while the |
+    |                  |                    |         | values can be either int or list of int; when int it         |
+    |                  |                    |         | corresponds to the number of ticks to be placed; when list   |
+    |                  |                    |         | of int it corresponds to de values used as ticks. Note that  |
+    |                  |                    |         | when the tick falls within a shrunk region it will not be    |
+    |                  |                    |         | diplayed.                                                    |
     +------------------+--------------------+---------+--------------------------------------------------------------+
 
 To reset options to built-in defaults,  use :func:`reset_options <pyrangeyes.reset_options>`.
 By default, it will reset all options. Providing arguments, you can select which options to reset:
 
-    >>> pe.reset_options('plot_background')  # reset one feature
+    >>> pe.reset_options('plot_bkg')  # reset one feature
     >>> pe.reset_options(['plot_border', 'title_color'])  # reset a few features
     >>> pe.reset_options()  # reset all features
 
@@ -381,9 +421,9 @@ By default, pyrangeyes tries to save as much vertical space as possible,
 so the transcripts are placed one beside the other, in a "packed" disposition.
 To instead display one transcript per row, set the ``packed`` parameter as ``False``:
 
-.. code-block::
+.. testcode::
 
-    pe.plot(p, packed=False, legend = False)
+    pe.plot(p, packed=False)
 
 .. image:: images/prp_rtd_09.png
 
@@ -392,7 +432,7 @@ This is useful when a PyRanges object was assembled by concatenating groups in a
 or when the order of rows already carries meaning. To instead let pyrangeyes order groups by
 its genomic sorting behavior, pass ``sort_ranges=True``:
 
-.. code-block::
+.. testcode::
 
     pe.plot(p, packed=False, sort_ranges=True)
 
@@ -403,667 +443,187 @@ The  ``shrink_threshold`` determines the minimum length of a region without visi
 When a float is provided, it will be interpreted as a fraction of the visible coordinate limits,
 while when an int is given it will be interpreted as number of base pairs.
 
-.. code-block::
-
-    ppp = pe.example_data.p3
-    print(ppp)
-
-
-.. code-block::
-
+    >>> ppp = pe.example_data.p3
+    >>> print(ppp)  # doctest: +ELLIPSIS
     index    |    Chromosome    Strand    Start    End      transcript_id
-    int64    |    object        object    int64    int64    object
-    -------  ---  ------------  --------  -------  -------  ---------------
-    0        |    1             +         90       92       t1
-    1        |    1             +         61       64       t1
-    2        |    1             +         104      113      t1
-    3        |    1             +         228      229      t1
-    ...      |    ...           ...       ...      ...      ...
-    16       |    2             -         42       46       t5
-    17       |    2             -         37       40       t5
-    18       |    2             +         60       70       t6
-    19       |    2             +         80       90       t6
+    ...
     PyRanges with 20 rows, 5 columns, and 1 index columns.
     Contains 2 chromosomes and 2 strands.
 
 
-.. code-block::
+.. testcode::
 
     pe.plot(ppp, shrink=True)
 
 .. image:: images/prp_rtd_13.png
 
-.. code-block::
+.. testcode::
 
     pe.plot(ppp, shrink=True, shrink_threshold=0.2)
 
 .. image:: images/prp_rtd_14.png
 
 
-Showing mRNA structure with adapters
-------------------------------------
+Displaying multiple tracks
+--------------------------
 
-Adapters are shortcuts to useful representations. They prepare domain-specific inputs with sensible defaults before plotting.
-For example, the ``mRNA`` adapter shows a familiar bioinformatics view where coding sequences (CDS) are displayed thicker
-than UTR (untranslated) regions. You can list available adapters with ``pe.adapters.describe()``.
+Pass a list of PyRanges objects to display them as separate tracks.
+Use different IDs when tracks should get different default colors.
 
-For the ``mRNA`` adapter, data must be coded like standard GFF/GTF files,
-with different rows for exons and for CDS, wherein CDS are subsets of exons. A "Feature" column must be present
-and contain "exon" or "CDS" values:
+.. testcode::
 
-.. code-block::
+    enhancers = pr.PyRanges(
+        {
+            "Chromosome": ["chr1", "chr1", "chr1"],
+            "Start": [15, 95, 175],
+            "End": [45, 130, 215],
+            "id": ["enh1", "enh2", "enh3"],
+        }
+    )
+    promoters = pr.PyRanges(
+        {
+            "Chromosome": ["chr1", "chr1", "chr1"],
+            "Start": [55, 145, 240],
+            "End": [80, 165, 270],
+            "id": ["prom1", "prom2", "prom3"],
+        }
+    )
+    pe.plot([enhancers, promoters], id_col="id")
 
-    pp = pe.example_data.p2
-    print(pp)
+.. image:: images/prp_rtd_17.png
+
+The same pattern works with more tracks. Use ``track_labels`` to name them on the y-axis:
+
+.. testcode::
+
+    insulators = pr.PyRanges(
+        {
+            "Chromosome": ["chr1", "chr1"],
+            "Start": [25, 225],
+            "End": [35, 235],
+            "id": ["ins1", "ins2"],
+        }
+    )
+    pe.plot(
+        [enhancers, promoters, insulators],
+        id_col="id",
+        track_labels=["Enhancers", "Promoters", "Insulators"],
+    )
+
+.. image:: images/prp_rtd_18.png
 
 
-.. code-block::
+mRNA, SNPs, and other adapter views
+-----------------------------------
 
-    index    |    Chromosome    Strand    Start    End      transcript_id    feature1    feature2    Feature
-    int64    |    int64         object    int64    int64    object           object      object      object
-    -------  ---  ------------  --------  -------  -------  ---------------  ----------  ----------  ---------
-    0        |    1             +         1        11       t1               1           A           exon
-    1        |    1             +         40       60       t1               1           A           exon
-    2        |    2             -         10       25       t2               1           B           CDS
-    3        |    2             -         70       80       t2               1           B           CDS
-    ...      |    ...           ...       ...      ...      ...              ...         ...         ...
-    10       |    4             -         30500    30700    t5               2           E           CDS
-    11       |    4             -         30647    30700    t5               2           E           exon
-    12       |    4             +         29850    29900    t6               2           F           CDS
-    13       |    4             +         29970    30000    t6               2           F           CDS
-    PyRanges with 14 rows, 8 columns, and 1 index columns.
-    Contains 4 chromosomes and 2 strands.
+Adapters are shortcuts to useful representations. They prepare domain-specific
+inputs with sensible defaults before plotting.
 
+The ``mRNA`` adapter shows CDS regions thicker than UTR/exon regions. Here,
+``tx1`` and ``tx2`` are coding transcripts, while ``lnc1`` is exon-only:
 
-.. code-block::
+.. testcode::
 
-    pe.plot(pp, "mRNA")
+    mrna = pr.PyRanges(
+        {
+            "Chromosome": ["chr1"] * 14,
+            "Strand": ["+"] * 14,
+            "Feature": ["exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "exon"],
+            "Start": [10, 25, 80, 80, 140, 140, 210, 225, 275, 275, 340, 340, 430, 470],
+            "End": [55, 55, 120, 120, 190, 175, 255, 255, 315, 315, 390, 365, 455, 500],
+            "transcript_id": ["tx1", "tx1", "tx1", "tx1", "tx1", "tx1", "tx2", "tx2", "tx2", "tx2", "tx2", "tx2", "lnc1", "lnc1"],
+        }
+    )
+    pe.plot(mrna, "mRNA")
 
 .. image:: images/prp_rtd_35.png
 
-SNPs and other VCF-like single-position variants can be shown with the ``SNP``
-adapter. It draws fixed-size markers that stay visibly square on screen; choose
-``shape`` from ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, or ``"circle"``:
+The ``SNP`` adapter draws fixed-size markers for single-position variants:
 
-.. code-block::
+.. testcode::
 
     snps = pr.PyRanges(
         {
-            "Chromosome": [1, 1, 2, 2, 4],
-            "Start": [7, 45, 13, 73, 29870],
-            "End": [8, 46, 14, 74, 29871],
+            "Chromosome": ["chr1", "chr1", "chr1", "chr1", "chr1"],
+            "Start": [35, 105, 165, 235, 355],
+            "End": [36, 106, 166, 236, 356],
             "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
             "REF": ["A", "G", "C", "T", "A"],
             "ALT": ["T", "A", "G", "C", "G"],
         }
     )
-
     pe.plot(snps, "SNP", color_col="ALT", shape="diamond")
 
 .. image:: images/prp_rtd_36.png
 
-When plotting multiple PyRanges objects, ``adapter`` can be a list with exactly
-one adapter per object. This makes it easy to combine different representations
-in one figure:
+Adapters can be combined across tracks:
 
-.. code-block::
+.. testcode::
 
-    pe.plot([pp, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
+    pe.plot([mrna, snps], adapter=["mRNA", "SNP"], shape="triangle-up")
 
 .. image:: images/prp_rtd_37.png
 
+List all available adapters with ``pe.adapters.describe()`` and inspect adapter
+options with ``pe.print_options(adapter="mRNA")``.
 
 
-Displaying multiple PyRanges objects
-------------------------------------
+Tooltips and panel titles
+-------------------------
 
-In some cases, the data intervals might overlap. An example could be when some intervals in
-the PyRanges object correspond to exons and others correspond to "GCA" appearances. For such
-cases, the ``height_col`` and ``depth_col`` parameters are implemented.
+In interactive plots, hover over intervals to see their coordinates, strand, and ID.
+Add columns with ``tooltip`` templates, and customize panel titles with ``title_chr``:
 
-The :func:`plot <pyrangeyes.plot>` function can accept more than one PyRanges object, provided as a list.
-In this case, pyrangeyes will display them in the same plot, one on top of the other, for each common chromosome.
-The intervals of different PyRanges object are separated by a vertical spacer.
-
-Let's see an example with two PyRanges objects, mapping the occurrences of two amino acids, alanine and cysteine:
-
-.. code-block::
-
-    p_ala = pe.example_data.p_ala
-    p_cys = pe.example_data.p_cys
-
-    print(p_ala)
-    print(p_cys)
-
-
-
-.. code-block::
-
-    index  |      Start      End    Chromosome  id        trait1    trait2      depth      thick
-    int64  |      int64    int64         int64  object    object    object      int64    float64
-    -------  ---  -------  -------  ------------  --------  --------  --------  -------  ---------
-        0  |         10       20             1  gene1     exon      gene_1          0        0.3
-        1  |         50       75             1  gene1     exon      gene_1          0        0.3
-        2  |         90      130             1  gene1     exon      gene_1          0        0.3
-        3  |         13       16             1  gene1     aa        Ala             1        0.6
-        4  |         60       63             1  gene1     aa        Ala             1        0.6
-        5  |         72       75             1  gene1     aa        Ala             1        0.6
-        6  |        120      123             1  gene1     aa        Ala             1        0.6
-    PyRanges with 7 rows, 8 columns, and 1 index columns.
-    Contains 1 chromosomes.
-
-    index  |      Start      End    Chromosome  id        trait1    trait2      depth      thick
-    int64  |      int64    int64         int64  object    object    object      int64    float64
-    -------  ---  -------  -------  ------------  --------  --------  --------  -------  ---------
-        0  |         10       20             1  gene1     exon      gene_1          0        0.3
-        1  |         50       75             1  gene1     exon      gene_1          0        0.3
-        2  |         90      130             1  gene1     exon      gene_1          0        0.3
-        3  |         15       18             1  gene1     aa        Cys             1        0.6
-        4  |         55       58             1  gene1     aa        Cys             1        0.6
-        5  |         62       65             1  gene1     aa        Cys             1        0.6
-        6  |        100      103             1  gene1     aa        Cys             1        0.6
-        7  |        110      113             1  gene1     aa        Cys             1        0.6
-    PyRanges with 8 rows, 8 columns, and 1 index columns.
-    Contains 1 chromosomes.
-
-
-
-.. code-block::
-
-    pe.plot([p_ala, p_cys])
-
-.. image:: images/prp_rtd_17.png
-
-When providing multiple PyRanges objects, it is useful to differentiate them in the plot. The ``y_labels`` parameter
-allows to provide a list of strings, one for each PyRanges object, to be displayed on the left side of the plot:
-
-.. code-block::
-
-    pe.plot(
-        [p_ala, p_cys],
-        y_labels=["pr Alanine", "pr Cysteine"]
-    )
-
-.. image:: images/prp_rtd_18.png
-
-Customizing depth and height
-----------------------------
-
-When dealing with overlapping intervals (e.g. see data above), the default visualization may fail to show
-relevant information, because some intervals are hidden behind others. To address this, the
-``depth_col`` parameter can be used to control the drawing order of overlapping intervals. This parameter
-accepts a numeric column name from the PyRanges object. Lower values are drawn first; higher values are
-drawn later, so they appear on top when intervals overlap. No range constraint is applied:
-
-.. code-block::
-
-    pe.plot(
-        [p_ala, p_cys],
-        id_col="id",
-        y_labels=["pr Alanine", "pr Cysteine"],
-        depth_col="depth"
-    )
-
-.. image:: images/prp_rtd_19.png
-
-Another way to highlight overlapping regions is by varying the height of the rendered interval blocks.
-This is achieved by using the ``height_col`` parameter, which defines a numeric data column whose values
-set relative interval heights. Values must range from 0 to 1, where 1 renders the block at the full
-``interval_height`` (see ``pe.print_options()``) and smaller values render proportionally shorter blocks:
-
-.. code-block::
-
-    pe.plot(
-        [p_ala, p_cys],
-        id_col="id",
-        color_col="trait1",
-        y_labels=["pr Alanine", "pr Cysteine"],
-        height_col="thick",
-    )
-
-.. image:: images/prp_rtd_11.png
-
-
-Additional information: tooltips and titles
--------------------------------------------
-
-In interactive plots there is the option of showing information about the gene when the
-mouse is placed over its structure. This information always shows the gene's strand if
-it exists, the start and end coordinates and the ID. To add information contained in other
-dataframe columns to the tooltip, a string should be given to the ``tooltip`` parameter. This
-string must contain the desired column names within curly brackets as shown below.
-
-Similarly, the title of the chromosome plots can be customized giving the desired string to
-the ``title_chr`` parameter, where the correspondent chromosome value of the data is referred
-to as {chrom}. An example could be the following:
-
-.. code-block::
+.. testcode::
 
     pe.plot(
         p,
         tooltip="first feature: {feature1}\nsecond feature: {feature2}",
-        title_chr='Chr: {chrom}'
-        )
+        title_chr="Chr: {chrom}",
+    )
 
 .. image:: images/prp_rtd_10.png
 
-Dealing with vcf files
-----------------------
 
-While Pyrangeyes is widely recognized for its robust capabilities in visualizing and managing 
-gene annotations, its functionality extends well beyond this. Pyrangeyes also provides 
-versatile tools for working with Variant Call Format (VCF) files, a standard file format used 
-for storing genetic variant information. This includes parsing VCF files, handling complex metadata 
-and visualizing genetic variants alongside gene annotations.
+Adding aligned plots
+--------------------
 
-To begin, we need to set **Plotly** as the rendering engine for visualizing the data. Then, we can load 
-an example annotation in GFF3 format, which consists of a portion of the genome annotation of Homo 
-sapiens chromosome 1:
+Use ``add_aligned_plots`` to add Plotly traces aligned to the genomic x-axis.
+Here an mRNA track and SNP track are shown with a scatter plot of SNP scores.
+See :func:`make_scatter() <pyrangeyes.make_scatter>` for scatter helper options.
 
-.. code-block::
+.. testcode::
 
-    >>> pe.set_engine("plotly")
-    >>> ann = pe.example_data.ncbi_gff()
-    >>> ann
-    index    |    Chromosome    Source         Feature     Start      End        Score     Strand      Frame     frame     ID                          logic_name           Name             ...
-    int64    |    category      object         category    int64      int64      object    category    object    object    object                      object               object           ...
-    -------  ---  ------------  -------------  ----------  ---------  ---------  --------  ----------  --------  --------  --------------------------  -------------------  ---------------  -----
-    0        |    1             havana         ncRNA_gene  173851423  173868940  .         -           .         .         gene:ENSG00000234741        havana_homo_sapiens  GAS5             ...
-    1        |    1             havana_tagene  lnc_RNA     173851423  173867989  .         -           .         .         transcript:ENST00000827943  nan                  GAS5-292         ...
-    2        |    1             havana_tagene  exon        173851423  173851602  .         -           .         .         nan                         nan                  ENSE00004240426  ...
-    3        |    1             havana_tagene  exon        173859207  173859305  .         -           .         .         nan                         nan                  ENSE00004240438  ...
-    ...      |    ...           ...            ...         ...        ...        ...       ...         ...       ...       ...                         ...                  ...              ...
-    2009     |    1             havana         CDS         173947368  173947582  .         -           .         0         CDS:ENSP00000356667         nan                  nan              ...
-    2010     |    1             havana         lnc_RNA     173938575  173941449  .         -           .         .         transcript:ENST00000479099  nan                  RC3H1-203        ...
-    2011     |    1             havana         exon        173938575  173938871  .         -           .         .         nan                         nan                  ENSE00001445398  ...
-    2012     |    1             havana         exon        173941264  173941449  .         -           .         .         nan                         nan                  ENSE00001946317  ...
-    PyRanges with 2013 rows, 28 columns, and 1 index columns. (16 columns not shown: "biotype", "description", "gene_id", ...).
-    Contains 1 chromosomes and 1 strands.
-
-Next, let's load a VCF file, which contains variant information for Homo sapiens. This file is 
-provided as part of the example dataset and can be loaded into memory as follows:
-
-.. code-block::
-
-    >>> vcf = pe.example_data.ncbi_vcf()
-    >>> vcf
-    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      ...
-    int64    |    object        int32     object        object    object    object    category    ...
-    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  -----
-    0        |    1             943995    rs761448939   C         G,T       nan       .           ...
-    1        |    1             964512    rs756054473   C         A,T       nan       .           ...
-    2        |    1             976215    rs7417106     A         C,G,T     nan       .           ...
-    3        |    1             1013983   rs1644247121  G         A         nan       .           ...
-    ...      |    ...           ...       ...           ...       ...       ...       ...         ...
-    242182   |    Y             2787592   rs104894975   A         T         nan       .           ...
-    242183   |    Y             2787600   rs104894977   G         A         nan       .           ...
-    242184   |    Y             7063898   rs199659121   A         T         nan       .           ...
-    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           ...
-    PyRanges with 242186 rows, 9 columns, and 1 index columns. (2 columns not shown: "INFO", "End").
-    Contains 25 chromosomes.
-
-Above, we leveraged the builtin example data. In real use cases, you would load data from a file, 
-using :func:`read_vcf() <pyrangeyes.vcf.read_vcf>`.
-
-By default, :func:`read_vcf() <pyrangeyes.vcf.read_vcf>` generates a PyRanges object that includes all the columns extracted 
-from the VCF file. Additionally, it adds or modifies the following three columns, required to be a Pyranges object:
-
-* **Chromosome**: The chromosome name.
-* **Start**: The start position of the variant.
-* **End**: The end position of the variant.
-
-The INFO column in the VCF file contains a wealth of additional information, often encoded as key-value 
-pairs separated by semicolons. However, in its current form, this column is not readily interpretable 
-or easy to analyze due to its compact format. Fortunately, you can easily manipulate the INFO column to 
-expand and extract this embedded information into separate, more accessible columns using the 
-:func:`split_fields() <pyrangeyes.vcf.split_fields>` function:
-
-.. code-block::
-
-    >>> vcf_split = pe.vcf.split_fields(vcf,target_cols="INFO",field_sep=";")
-    >>> vcf_split
-    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     INFO_1     INFO_2                  INFO_3                  ...
-    int64    |    object        int32     object        object    object    object    category    int32     object     object     object                  object                  ...
-    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  ---------  ----------------------  ----------------------  -----
-    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
-    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
-    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  TSA=SNV    E_Freq                  E_1000G                 ...
-    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  TSA=SNV    E_Phenotype_or_Disease  CLIN_pathogenic         ...
-    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...        ...                     ...                     ...
-    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
-    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  TSA=SNV    E_Cited                 E_Phenotype_or_Disease  ...
-    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  TSA=SNV    E_Freq                  E_Cited                 ...
-    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  TSA=indel  E_Freq                  E_Cited                 ...
-    PyRanges with 242186 rows, 28 columns, and 1 index columns. (16 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
-    Contains 25 chromosomes.
-
-Note that the column names generated when splitting the INFO column are assigned sequentially, prefixed with 
-the name of the original column (e.g., INFO_0, INFO_1, and so on). If you prefer more descriptive column names, 
-you have two options. You can use the **col_name_sep** parameter to automatically extract the column names written 
-in the VCF file (e.g., key-value pairs like DP=10 will produce a column named DP). Alternatively, you can use 
-the **col_names** parameter to manually specify each column name, giving you full control over the naming scheme. 
-Both approaches allow you to tailor the resulting column names to your specific needs, enhancing the readability 
-and usability of your data.In this case, we are going to use the col_name_sep parameter to extract column names 
-directly from the VCF file:
-
-.. code-block::
-
-    >>> vcf_split = pe.vcf.split_fields(vcf,target_cols="INFO",field_sep=";",col_name_sep="=")
-    >>> vcf_split
-    index    |    Chromosome    Start     ID            REF       ALT       QUAL      FILTER      End       INFO_0     TSA       INFO_2                  INFO_3                  ...
-    int64    |    object        int32     object        object    object    object    category    int32     object     object    object                  object                  ...
-    -------  ---  ------------  --------  ------------  --------  --------  --------  ----------  --------  ---------  --------  ----------------------  ----------------------  -----
-    0        |    1             943995    rs761448939   C         G,T       nan       .           943996    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
-    1        |    1             964512    rs756054473   C         A,T       nan       .           964513    dbSNP_156  SNV       E_Freq                  E_Cited                 ...
-    2        |    1             976215    rs7417106     A         C,G,T     nan       .           976216    dbSNP_156  SNV       E_Freq                  E_1000G                 ...
-    3        |    1             1013983   rs1644247121  G         A         nan       .           1013984   dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
-    ...      |    ...           ...       ...           ...       ...       ...       ...         ...       ...        ...       ...                     ...                     ...
-    242182   |    Y             2787592   rs104894975   A         T         nan       .           2787593   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
-    242183   |    Y             2787600   rs104894977   G         A         nan       .           2787601   dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
-    242184   |    Y             7063898   rs199659121   A         T         nan       .           7063899   dbSNP_156  SNV       E_Freq                  E_Cited                 ...
-    242185   |    Y             12735725  rs778145751   TAAGT     T         nan       .           12735726  dbSNP_156  indel     E_Freq                  E_Cited                 ...
-    PyRanges with 242186 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
-    Contains 25 chromosomes.
-
-Let's begin plotting! First, we'll select a specific region to focus on and observe the genes within it. For this 
-example, the chosen region is 173900000:173920000:
-
-.. code-block::
-
-    >>> reg = ann.loci["1","-",173900000:173920000]
-    >>> reg['ID'] = reg['Parent']
-    >>> reg
-    index    |    Chromosome    Source          Feature          Start      End        Score     Strand      Frame     frame     ID                          logic_name                        ...
-    int64    |    category      object          category         int64      int64      object    category    object    object    object                      object                            ...
-    -------  ---  ------------  --------------  ---------------  ---------  ---------  --------  ----------  --------  --------  --------------------------  --------------------------------  -----
-    1953     |    1             ensembl_havana  gene             173903799  173917327  .         -           .         .         nan        ensembl_havana_gene_homo_sapiens  ...
-    1954     |    1             ensembl_havana  mRNA             173903799  173917327  .         -           .         .         gene:ENSG00000117601  nan                               ...
-    1955     |    1             ensembl_havana  three_prime_UTR  173903799  173903888  .         -           .         .         transcript:ENST00000367698                         nan                               ...
-    1956     |    1             ensembl_havana  exon             173903799  173904065  .         -           .         .         transcript:ENST00000367698                         nan                               ...
-    ...      |    ...           ...             ...              ...        ...        ...       ...         ...       ...       ...                         ...                               ...
-    1977     |    1             havana          exon             173911979  173912014  .         -           .         .         transcript:ENST00000494024                         nan                               ...
-    1978     |    1             havana          exon             173914552  173914919  .         -           .         .         transcript:ENST00000494024                         nan                               ...
-    1979     |    1             havana          exon             173915017  173915186  .         -           .         .         transcript:ENST00000494024                         nan                               ...
-    1980     |    1             havana          exon             173917218  173917316  .         -           .         .         transcript:ENST00000494024                         nan                               ...
-    PyRanges with 28 rows, 28 columns, and 1 index columns. (17 columns not shown: "Name", "biotype", "description", ...).
-    Contains 1 chromosomes and 1 strands.
-
-Similarly, we need to focus on the SNPs within the selected region:
-
-.. code-block::
-
-    >>> coord_vcf = vcf_split.loci["1",173900000:173920000]
-    >>> coord_vcf
-    index    |    Chromosome    Start      ID            REF         ALT       QUAL      FILTER      End        INFO_0     TSA       INFO_2                  INFO_3                  ...
-    int64    |    object        int32      object        object      object    object    category    int32      object     object    object                  object                  ...
-    -------  ---  ------------  ---------  ------------  ----------  --------  --------  ----------  ---------  ---------  --------  ----------------------  ----------------------  -----
-    12765    |    1             173903891  rs1572084425  A           G         nan       .           173903892  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
-    12766    |    1             173903902  rs121909564   G           A         nan       .           173903903  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
-    12767    |    1             173903902  rs2102772927  GGGTTGGCTA  G         nan       .           173903903  dbSNP_156  deletion  E_Cited                 E_Phenotype_or_Disease  ...
-    12768    |    1             173903908  rs1572084448  G           T         nan       .           173903909  dbSNP_156  SNV       E_Cited                 E_Phenotype_or_Disease  ...
-    ...      |    ...           ...        ...           ...         ...       ...       ...         ...        ...        ...       ...                     ...                     ...
-    12856    |    1             173914920  rs1572092195  C           G         nan       .           173914921  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_likely_pathogenic  ...
-    12857    |    1             173917217  rs199469508   A           G         nan       .           173917218  dbSNP_156  SNV       E_Phenotype_or_Disease  CLIN_pathogenic         ...
-    12858    |    1             173917231  rs61736655    G           T         nan       .           173917232  dbSNP_156  SNV       E_Freq                  E_1000G                 ...
-    12859    |    1             173917430  rs1658038847  G           C         nan       .           173917431  dbSNP_156  SNV       E_Freq                  E_Cited                 ...
-    PyRanges with 95 rows, 31 columns, and 1 index columns. (19 columns not shown: "INFO_4", "INFO_5", "INFO_6", ...).
-    Contains 1 chromosomes.
-
-Finally, we are ready to visualize our data. By combining the gene annotation from the selected genomic region with 
-the prepared PyRanges object representing the SNPs, we can generate an insightful plot that overlays both datasets. 
-Using the pe.plot function, you can pass the gene annotations and the SNPs together to create a detailed visualization. 
-or this, simply specify the id_col parameter to indicate the column containing unique identifiers, such as the SNP IDs. 
-Here's how you can do it:
-
-.. code-block::
-
-    >>> pe.plot([reg,coord_vcf],id_col='ID')
+    snps1 = pr.PyRanges(
+        {
+            "Chromosome": ["chr1", "chr1", "chr1"],
+            "Start": [35, 105, 235],
+            "End": [36, 106, 236],
+            "ID": ["rs1", "rs2", "rs3"],
+            "ALT": ["T", "A", "G"],
+            "score": [0.2, 0.8, 0.5],
+        }
+    )
+    aligned = pe.make_scatter(snps1, y="score", title="SNP score", engine="ply")
+    pe.plot([mrna, snps1], adapter=["mRNA", "SNP"], add_aligned_plots=[aligned])
 
 .. image:: images/prp_rtd_21.png
 
-In the figure above, the text displaying the ID of each variant may be misinterpreted due to overlapping with other SNP 
-labels. To address this, you can create an artificial column that selectively displays this text only for annotation data 
-while omitting it for VCF data. The ``text`` argument accepts ``True``/``False`` or a row-value format template;
-use global text options such as ``text_position`` and ``text_fit`` for placement and packing behavior. Set
-``text_fit=False`` when labels should not reserve extra horizontal space during row packing:
 
-.. code-block::
+Integrating Pyrangeyes with External Visualizations
+---------------------------------------------------
 
-    >>> reg["Text_col"]=reg["Parent"]
-    >>> coord_vcf['Text_col'] = ''
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text='{Text_col}', text_position='right', text_fit=False)
+For custom dashboards, return the Plotly/Dash object with ``return_plot="app"``
+and compose it with other Dash components.
 
-.. image:: images/prp_rtd_22.png
+.. testcode::
 
-However, genome variant analysis is not limited to simply identifying the positions of variants. You might also want to 
-explore the distribution of variants by analyzing the number of variants at each position. With Pyrangeyes, you can achieve 
-this by first creating a scatterplot that visualizes these counts, and then including it as input in the **add_aligned_plots**
-parameter:
+    from dash import dcc, html
+    import plotly.graph_objects as go
 
-.. code-block::
+    app = pe.plot([mrna, snps1], adapter=["mRNA", "SNP"], return_plot="app")
+    pie = go.Figure(go.Pie(labels=["A", "T", "G"], values=[1, 1, 1]))
 
-    >>> import plotly.graph_objects as go
-    >>> aligned_traces = [
-    ...     (go.Scatter(
-    ...         x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
-    ...         y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    ...         mode='markers'
-    ...     ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green'})
-    ... ]
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
-
-.. image:: images/prp_rtd_23.png
-
-.. warning::
-
-    Be careful! The add_aligned_plots parameter is currently only supported when your input data contains a single chromosome. 
-    If your dataset spans multiple chromosomes, you will need to filter it beforehand to focus on a specific chromosome for this 
-    feature to work correctly.
-
-As you observed, the add_aligned_plots parameter accepts as input a list of tuples, where each tuple consists of two elements: 
-the first is the scatterplot object, and the second is a dictionary for customizing the title of the aligned plot.This dictionary 
-allows you to control three title parameters:
-
-* title: The text of the title.
-* title_size: The font size of the title.
-* title_color: The color of the title text.
-* y_space: Determines de distance between the main plot and the aligned plots
-* height: Determines the height of the added plot
-
-We already used the options to customise the title., let's now customise the y axis length and the space between these plots:
-
-.. code-block::
-
-    >>> aligned_traces = [
-    ...          (go.Scatter(
-    ...              x=[173905000, 173905500, 173906000, 173906500, 173907000, 173907500, 173908000, 173908500, 173909000, 173909500],
-    ...              y=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    ...              mode='markers'
-    ...          ),{'title': 'Scatterplot', 'title_size': 18, 'title_color': 'green', 'height': 0.5, 'y_space': 0.5})
-    ... ]
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=aligned_traces)
-
-.. image:: images/prp_rtd_24.png
-
-If your dataset is too large to manually create a Plotly scatterplot, Pyrangeyes offers a convenient function called :func:`make_scatter() <pyrangeyes.make_scatter>`. 
-This function allows you to automatically generate a scatterplot directly from your data, introducing the numeric column for the
-y axis.
-
-First we will use Numpy to create a random Count column
-
-.. code-block::
-
-    >>> import numpy as np
-    >>> coord_vcf['Count']=coord_vcf.apply(lambda row: np.random.randint(0, 100), axis=1)
-
-Next, we will use this column to define the y-axis for the plot:
-
-.. code-block::
-
-    >>> aligned = pe.make_scatter(coord_vcf, y='Count')
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
-
-.. image:: images/prp_rtd_25.png
-
-The :func:`make_scatter() <pyrangeyes.make_scatter>` function includes several options that allow you to customize your plot to better fit your needs. For instance, 
-you can use the following parameters:
-
-* color_by: Specify a column from your dataset to color the markers based on its values.
-* title: Set a custom title for your scatterplot.
-* title_size: Adjust the font size of the title for better visibility.
-* title_color: Change the color of the title text to match your design preferences.
-* size_by: Define a column to dynamically adjust the marker sizes based on its values.
-* y_space: Determines de distance between the main plot and the aligned plots
-* height: Determines the height of the added plot
-
-These customization options make it easy to generate informative and visually appealing scatterplots tailored to your data.
-In our case we are going to color our genetic variants by its type (**TSA** column):
-
-.. code-block::
-
-    >>> aligned = pe.make_scatter(coord_vcf, y='Count',color_by="TSA", title="Human Variants", title_color="Magenta",title_size=18)
-    >>> pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}',add_aligned_plots=[aligned])
-
-.. image:: images/prp_rtd_26.png
-
-Enhancing Pyrangeyes with External Visualizations
-----------------------------------------------------
-
-A typical genomic analysis often involves more than just visualizing genomic intervals. Researchers frequently need to incorporate additional 
-plots—potentially using different axes or plot types—to provide context or enhance the interpretation of results. Pyrangeyes allows you 
-to export your plot to a variable by using the **return_plot** parameter. This parameter accepts two values:
-
-* app: Returns a Dash object, which can be integrated into a custom dashboard.
-* fig: Returns the figure and axes of the data, enabling direct manipulation or combination with other Plotly figures.
-
-Example:
-
-.. code-block::
-
-    >>> p = pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
-    >>> p
-    <dash.dash.Dash object at 0x73321d74e990>
-
-Imagine you have your VCF plot and want to visualize how many variants are present in your dataset. For instance, first you can export 
-the Pyrangeyes dash object and then you can create a pie chart to display the distribution of variants by type and seamlessly 
-integrate it into the Pyrangeyes layout. Below is an example of a Pyrangeyes combined with a horizontally aligned pie chart:
-
-.. code-block::
-    
-    from dash import Dash, html, dcc
-    
-    p = pe.plot([reg,coord_vcf],id_col='ID',text = '{Text_col}', return_plot='app')
-
-    # Example additional data
-    variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
-    variant_counts = [30, 20, 10, 15, 25]  # Example counts or proportions
-
-    # Create a pie chart
-    pie_chart = go.Figure(
-        go.Pie(
-            labels=variant_types,
-            values=variant_counts,
-            hoverinfo="label+percent",
-            textinfo="label+percent",
-        )
-    )
-    pie_chart.update_layout(title={"text": "Variant Types", "font": {"color": "black", "size": 18}, "x": 0.5},
-                        margin=dict(l=10, r=10, t=30, b=10))
-
-    # Access and extend the existing Dash app's layout
-    p.layout = html.Div(
-        [
-            html.Div(
-                [
-                    html.Div([p.layout], style={"width": "70%", "display": "flex", "justify-content": "center"}),
-                    html.Div(
-                        [dcc.Graph(figure=pie_chart)],
-                        style={
-                            "width": "70%",
-                            "display": "flex",
-                            "align-items": "center",
-                            "justify-content": "center",
-                        },
-                    ),
-                ],
-                style={"display": "flex", "flex-direction": "row"},  # Arrange side by side
-            )
-        ]
-    )
-
-    # Run the Dash app
-    if __name__ == "__main__":
-        p.run_server(debug=True)
+    app.layout = html.Div([app.layout, dcc.Graph(figure=pie)])
 
 .. image:: images/prp_rtd_27.png
-
-.. warning::
-    Hey! This code may cause issues if it is run in an IPython shell. 
-    For a smoother experience, consider using a Jupyter Notebook instead.
-
-This layout can also be implemented vertically, allowing you to stack the Pyrangeyes and the pie chart for a clear and intuitive 
-visualization. Here's how you can achieve this configuration:
-
-.. code-block::
-
-    from dash import Dash, html, dcc
-
-    p = pe.plot([reg,p_vcf[0]],id_col='ID',text = '{Artificial_col}', return_plot='app')
-
-    # Example additional data
-    variant_types = ["Missense", "Synonymous", "Nonsense", "Frameshift", "Splice Site"]
-    variant_counts = [30, 20, 10, 15, 25]  # Example counts or proportions
-
-    # Create a pie chart
-    pie_chart = go.Figure(
-        go.Pie(
-            labels=variant_types,
-            values=variant_counts,
-            hoverinfo="label+percent",
-            textinfo="label+percent",
-        )
-    )
-    pie_chart.update_layout(title={"text": "Variant Types", "font": {"color": "black", "size": 18}, "x": 0.5},
-                        margin=dict(l=10, r=10, t=30, b=10))
-
-
-    # Access and extend the existing Dash app's layout
-    p.layout = html.Div(
-        [
-            p.layout,  # Retain the existing layout from pe.plot
-            html.Div(
-                [
-                    dcc.Graph(figure=pie_chart, style={"margin-bottom": "20px"}),
-                ],
-                style={"display": "flex", "flex-direction": "column"}  # Arrange vertically
-            )
-        ]
-    )
-
-    # Run the Dash app
-    if __name__ == "__main__":
-        p.run_server(debug=True)
-
-.. image:: images/prp_rtd_28.png
-
-Interactive browsing
---------------------
-
-After configuring a Plotly plot, use ``pe.browse()`` when you want the same
-figure layout with per-panel view controls::
-
-    import pyrangeyes as pe
-
-    pe.set_engine("ply")
-    fig = pe.browse(
-        annotation,
-        adapter="mRNA",
-        text="{transcript_id}",
-        text_position="right",
-        color_col="Feature",
-        colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
-    )
-
-Each panel gets a compact selector for ``squish``, ``packed``, ``list``, or
-``zip`` mode, and switching one panel does not affect the others. ``browse()`` is
-currently Plotly-only.

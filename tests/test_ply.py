@@ -317,7 +317,7 @@ test_cases = [
             [data1, data2, data3],
             id_col="transcript_id",
             color_col="Feature",
-            y_labels=[1, 2, 3],
+            track_labels=[1, 2, 3],
             shrink=True,
             sort_ranges=True,
             return_plot="fig",

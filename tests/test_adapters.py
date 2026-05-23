@@ -180,7 +180,7 @@ def test_plot_accepts_one_adapter_per_input_object():
 
 
 def test_plot_rejects_adapter_list_length_mismatch():
-    with pytest.raises(ValueError, match="one adapter per PyRanges object"):
+    with pytest.raises(ValueError, match="one adapter per track"):
         pre.plot([_gtf_like_annotation(), _snp_like_variants()], adapter=["mRNA"])
 
 
