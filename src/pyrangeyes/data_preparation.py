@@ -896,6 +896,9 @@ def get_chromosome_metadata(
     )["ycoord"].min()
     chrmd_df["__render_top__"] = chrmd_df["pr_top_y"] + 0.5 + pr_render_height / 2
     chrmd_df["__render_bottom__"] = pr_bottom_y + 0.5 - pr_render_height / 2
+    chrmd_df["track_gap"] = v_spacer * chrmd_df["pr_scale"]
+    chrmd_df["__track_top__"] = chrmd_df["__render_top__"] + chrmd_df["track_gap"]
+    chrmd_df["__track_bottom__"] = chrmd_df["__render_bottom__"] - chrmd_df["track_gap"]
     chrmd_df = (
         chrmd_df.reset_index()
         .sort_values(
@@ -928,51 +931,34 @@ def get_chromosome_metadata(
     )  # the middle of the rectangle is +.5 of ycoord
 
     panel_edges = chrmd_df.groupby(CHROM_COL, group_keys=False, observed=True).agg(
-        y_min=("__render_bottom__", "min"),
-        y_max=("__render_top__", "max"),
+        y_min=("__track_bottom__", "min"),
+        y_max=("__track_top__", "max"),
     )
     chrmd_df_grouped = chrmd_df_grouped.join(panel_edges)
-    has_squish = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].agg(
-        lambda s: bool((s < 1).any())
-    )
-    chrmd_df_grouped = chrmd_df_grouped.join(has_squish.rename("use_render_y_limits"))
-    squished_panel = chrmd_df_grouped["use_render_y_limits"]
+    chrmd_df_grouped["use_render_y_limits"] = True
     panel_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].min()
     chrmd_df_grouped = chrmd_df_grouped.join(panel_scale.rename("y_pad_scale"))
-    chrmd_df_grouped["y_pad"] = v_spacer
-    chrmd_df_grouped.loc[squished_panel, "y_pad"] = (
-        v_spacer * chrmd_df_grouped.loc[squished_panel, "y_pad_scale"]
-    )
-    chrmd_df_grouped.loc[squished_panel, "y_height"] = (
-        chrmd_df_grouped.loc[squished_panel, "y_max"]
-        - chrmd_df_grouped.loc[squished_panel, "y_min"]
-        + 2 * chrmd_df_grouped.loc[squished_panel, "y_pad"]
-    )
+    chrmd_df_grouped["y_pad"] = 0
+    chrmd_df_grouped["y_height"] = chrmd_df_grouped["y_max"] - chrmd_df_grouped["y_min"]
 
     # Obtain the positions of lines separating pr objects. For squished tracks,
     # use the actual rendered edges of adjacent tracks so dividers stay between
     # condensed glyphs instead of crossing them.
-    next_top = chrmd_df.groupby(CHROM_COL, observed=True)["pr_top_y"].shift(-1)
-    next_height = chrmd_df.groupby(CHROM_COL, observed=True)["pr_render_height"].shift(
+    next_track_top = chrmd_df.groupby(CHROM_COL, observed=True)["__track_top__"].shift(
         -1
     )
-    next_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].shift(-1)
-    next_render_top = chrmd_df.groupby(CHROM_COL, observed=True)[
-        "__render_top__"
-    ].shift(-1)
-    next_pr_scale = chrmd_df.groupby(CHROM_COL, observed=True)["pr_scale"].shift(-1)
-    old_pr_line = next_top + 0.5 + next_height / 2 + v_spacer * next_scale
-    edge_midpoint = (chrmd_df["__render_bottom__"] + next_render_top) / 2
-    use_edge_midpoint = (chrmd_df["pr_scale"] < 1) | (next_pr_scale < 1)
-    chrmd_df["pr_line"] = old_pr_line.where(~use_edge_midpoint, edge_midpoint)
+    chrmd_df["pr_line"] = next_track_top
     chrmd_df["pr_line"] = chrmd_df["pr_line"].fillna(0).round(10)
     chrmd_df.drop(
         columns=[
             "pr_top_y",
             "pr_render_height",
             "pr_scale",
+            "track_gap",
             "__render_top__",
             "__render_bottom__",
+            "__track_top__",
+            "__track_bottom__",
         ],
         inplace=True,
     )
@@ -1044,20 +1030,12 @@ def assign_label_rows(
 
     ycoord_map = {}
     interval_height = 0.6 if interval_height is None else interval_height
-    compact_tracks = track_scales is not None and any(
-        float(scale) < 1 for scale in track_scales.values()
-    )
-    compact_scale = (
-        min(float(scale) for scale in track_scales.values()) if compact_tracks else 1.0
-    )
-    compact_track_gap = 2 * v_spacer * compact_scale
 
     # Iterating in sorted cromosomes if sort_ranges == True else in original order
     chrom_iter = sorted(s["chrix"].unique()) if sort_ranges else pd.unique(s["chrix"])
 
     for chrom in chrom_iter:
-        current_base = 0  # reiniciate per each chromosome
-        next_track_bottom = None
+        next_track_bottom = 0
         chrom_df = s[s["chrix"] == chrom]
 
         # Compute plot limits
@@ -1081,9 +1059,7 @@ def assign_label_rows(
         )
 
         pr_values = list(pd.unique(chrom_df[PR_INDEX_COL]))
-        pr_iter = sorted(pr_values, reverse=True) if sort_ranges else pr_values[::-1]
-        # iterate PR_INDEX_COL in ascending order (if sort_ranges == True)
-        pr_gap = 0
+        pr_iter = sorted(pr_values, reverse=True)
         for pr_val in pr_iter:
             track_scale = (
                 1.0 if track_scales is None else float(track_scales.get(pr_val, 1.0))
@@ -1095,8 +1071,7 @@ def assign_label_rows(
             )
             effective_text_avoid = text_avoid and track_scale >= 1
             track_height = interval_height * track_scale
-            if compact_tracks and next_track_bottom is None:
-                next_track_bottom = 0.5 - track_height / 2
+            track_gap = v_spacer * track_scale
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
             # In case sort_ranges is true we reorder the df by start
             if sort_ranges:
@@ -1181,15 +1156,13 @@ def assign_label_rows(
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
                     if key not in ycoord_map:
-                        if compact_tracks:
-                            ycoord = (
-                                next_track_bottom
-                                - 0.5
-                                + track_height / 2
-                                + assigned_row * track_scale
-                            )
-                        else:
-                            ycoord = current_base + pr_gap + assigned_row * track_scale
+                        ycoord = (
+                            next_track_bottom
+                            + track_gap
+                            + track_height / 2
+                            + assigned_row * (track_height + track_gap)
+                            - 0.5
+                        )
                         ycoord_map[key] = round(ycoord, 10)
 
                 else:
@@ -1201,27 +1174,18 @@ def assign_label_rows(
                     rows.append([interval])
 
                     key = (chrom, g[PR_INDEX_COL], tuple(g[id_col]))
-                    if compact_tracks:
-                        ycoord = (
-                            next_track_bottom
-                            - 0.5
-                            + track_height / 2
-                            + assigned_row * track_scale
-                        )
-                    else:
-                        ycoord = current_base + pr_gap + assigned_row * track_scale
+                    ycoord = (
+                        next_track_bottom
+                        + track_gap
+                        + track_height / 2
+                        + assigned_row * (track_height + track_gap)
+                        - 0.5
+                    )
                     ycoord_map[key] = round(ycoord, 10)
 
-            if compact_tracks:
-                track_top = (
-                    next_track_bottom
-                    + (max(len(rows), 1) - 1) * track_scale
-                    + track_height
-                )
-                next_track_bottom = track_top + compact_track_gap
-            else:
-                current_base += len(rows) * track_scale
-                pr_gap += 0.6 * track_scale
+            next_track_bottom += (
+                max(len(rows), 1) * track_height + (max(len(rows), 1) + 1) * track_gap
+            )
 
     # Assign ycoord back to all rows
     def _assign_y(r):

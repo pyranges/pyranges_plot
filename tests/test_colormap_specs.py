@@ -451,7 +451,9 @@ def test_plotly_colormap_text_channel_sets_annotation_font_colors():
     )
 
     label_annotations = [
-        annotation for annotation in fig.layout.annotations if annotation.text in {"a", "b"}
+        annotation
+        for annotation in fig.layout.annotations
+        if annotation.text in {"a", "b"}
     ]
     assert [annotation.font.color for annotation in label_annotations] == [
         "purple",
@@ -506,7 +508,9 @@ def test_colormap_text_aliases_reuse_resolved_channels():
         return_plot="fig",
         warnings=False,
     )
-    outline_texts = [text for text in outline.axes[0].texts if text.get_text() in {"a", "b"}]
+    outline_texts = [
+        text for text in outline.axes[0].texts if text.get_text() in {"a", "b"}
+    ]
     assert [_hex(text.get_color()) for text in outline_texts] == ["#800080", "#008000"]
 
 

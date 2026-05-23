@@ -148,6 +148,101 @@ p3 = pr.PyRanges(
 )
 
 
+mrna1 = pr.PyRanges(
+    {
+        "Chromosome": ["chr1"] * 14,
+        "Strand": ["+"] * 14,
+        "Feature": [
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "exon",
+        ],
+        "Start": [10, 25, 80, 80, 140, 140, 210, 225, 275, 275, 340, 340, 430, 470],
+        "End": [55, 55, 120, 120, 190, 175, 255, 255, 315, 315, 390, 365, 455, 500],
+        "transcript_id": ["tx1"] * 6 + ["tx2"] * 6 + ["lnc1"] * 2,
+    }
+)
+
+mrna2 = pr.PyRanges(
+    {
+        "Chromosome": ["chr1"] * 18,
+        "Strand": ["+"] * 18,
+        "Feature": [
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "CDS",
+            "exon",
+            "exon",
+            "exon",
+        ],
+        "Start": [
+            35,
+            50,
+            115,
+            115,
+            170,
+            170,
+            245,
+            45,
+            62,
+            130,
+            130,
+            205,
+            205,
+            285,
+            285,
+            365,
+            420,
+            465,
+        ],
+        "End": [
+            90,
+            90,
+            150,
+            150,
+            225,
+            210,
+            295,
+            100,
+            100,
+            175,
+            175,
+            245,
+            245,
+            330,
+            315,
+            405,
+            445,
+            505,
+        ],
+        "transcript_id": ["alt_tx1"] * 7 + ["alt_tx2"] * 9 + ["alt_lnc"] * 2,
+    }
+)
+
+
 p_ala = pr.PyRanges(
     {
         "Start": [10, 50, 90] + [13, 60, 72, 120],

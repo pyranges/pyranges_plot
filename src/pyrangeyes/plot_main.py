@@ -1034,7 +1034,7 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
-        interval_height=feat_dict["layout_interval_height"],
+        interval_height=feat_dict["interval_height"],
         v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
@@ -1120,7 +1120,7 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
-        interval_height=feat_dict["layout_interval_height"],
+        interval_height=feat_dict["interval_height"],
         v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,

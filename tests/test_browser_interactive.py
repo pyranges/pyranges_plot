@@ -62,7 +62,9 @@ def browser_html(tmp_path_factory):
     )
     meta = _browser_meta(fig)
     fig.layout.updatemenus = ()
-    html = fig.to_html(full_html=True, include_plotlyjs="cdn", config={"scrollZoom": True})
+    html = fig.to_html(
+        full_html=True, include_plotlyjs="cdn", config={"scrollZoom": True}
+    )
     html = html.replace("<head>", "<head>" + _style())
     html = html.replace("</body>", _enhancement_script(meta) + "</body>")
     path = tmp_path_factory.mktemp("browser-html") / "browser.html"
@@ -151,7 +153,11 @@ def _zip_annotation_indices(menus):
             if button.get("label") != "Zip":
                 continue
             for key, value in button.get("args", [{}, {}])[1].items():
-                if key.startswith("annotations[") and key.endswith("].visible") and value is True:
+                if (
+                    key.startswith("annotations[")
+                    and key.endswith("].visible")
+                    and value is True
+                ):
                     found = int(key.split("[")[1].split("]")[0])
                     break
         out.append(found)
@@ -298,7 +304,11 @@ def _enhancement_script(meta):
 
 
 def _open_page(browser, browser_html, width=390, height=844):
-    page = browser.new_page(viewport={"width": width, "height": height}, device_scale_factor=2, is_mobile=width <= 500)
+    page = browser.new_page(
+        viewport={"width": width, "height": height},
+        device_scale_factor=2,
+        is_mobile=width <= 500,
+    )
     page.goto(browser_html.as_uri(), wait_until="networkidle")
     page.wait_for_selector(".pre-view-button", timeout=15000)
     return page
@@ -306,7 +316,11 @@ def _open_page(browser, browser_html, width=390, height=844):
 
 def _click_mode(page, panel_ix, mode):
     page.locator(".pre-view-button").nth(panel_ix).click()
-    option = page.locator(".pre-view-control").nth(panel_ix).locator(".pre-view-option", has_text=mode)
+    option = (
+        page.locator(".pre-view-control")
+        .nth(panel_ix)
+        .locator(".pre-view-option", has_text=mode)
+    )
     option.click()
     page.wait_for_timeout(500)
 
@@ -339,12 +353,24 @@ def _assert_layout_clean(page):
     metrics = _layout_metrics(page)
     assert len(metrics["titles"]) == 3
     for ix, title in enumerate(metrics["titles"]):
-        assert title["bottom"] <= metrics["axes"][ix]["top"] - 8, (ix, title, metrics["axes"][ix])
+        assert title["bottom"] <= metrics["axes"][ix]["top"] - 8, (
+            ix,
+            title,
+            metrics["axes"][ix],
+        )
         if ix:
-            assert title["top"] >= metrics["axes"][ix - 1]["bottom"] + 8, (ix, title, metrics["axes"][ix - 1])
+            assert title["top"] >= metrics["axes"][ix - 1]["bottom"] + 8, (
+                ix,
+                title,
+                metrics["axes"][ix - 1],
+            )
         control = metrics["controls"][ix]
         assert abs(control["top"] - title["top"]) <= 4, (ix, control, title)
-        assert metrics["graphRight"] - control["right"] <= 14, (ix, control, metrics["graphRight"])
+        assert metrics["graphRight"] - control["right"] <= 14, (
+            ix,
+            control,
+            metrics["graphRight"],
+        )
 
 
 def _panel_brick_heights(page, panel_ix):
@@ -371,7 +397,9 @@ def _panel_brick_heights(page, panel_ix):
     )
 
 
-def test_interactive_mode_cycling_keeps_titles_and_menus_outside_plots(browser, browser_html):
+def test_interactive_mode_cycling_keeps_titles_and_menus_outside_plots(
+    browser, browser_html
+):
     page = _open_page(browser, browser_html, width=390)
     assert page.locator("g.updatemenu").count() == 0
     _assert_layout_clean(page)
@@ -384,7 +412,9 @@ def test_interactive_mode_cycling_keeps_titles_and_menus_outside_plots(browser, 
 
 
 @pytest.mark.parametrize("width,height", [(390, 844), (1200, 900)])
-def test_interactive_brick_heights_are_mode_consistent(browser, browser_html, width, height):
+def test_interactive_brick_heights_are_mode_consistent(
+    browser, browser_html, width, height
+):
     page = _open_page(browser, browser_html, width=width, height=height)
     packed = _panel_brick_heights(page, 0)
     assert packed and max(packed) - min(packed) <= 1, packed
@@ -434,13 +464,17 @@ def test_interactive_zip_is_text_layer_not_selectable_plot(browser, browser_html
     from playwright.sync_api import expect
 
     expect(zip_block).to_be_visible()
-    before = page.evaluate("document.querySelector('.plotly-graph-div')._fullLayout.xaxis2.range.slice()")
+    before = page.evaluate(
+        "document.querySelector('.plotly-graph-div')._fullLayout.xaxis2.range.slice()"
+    )
     box = zip_block.bounding_box()
     page.mouse.move(box["x"] + 8, box["y"] + box["height"] - 8)
     page.mouse.down()
     page.mouse.move(box["x"] + box["width"] - 8, box["y"] + 8, steps=8)
     page.mouse.up()
     page.wait_for_timeout(500)
-    after = page.evaluate("document.querySelector('.plotly-graph-div')._fullLayout.xaxis2.range.slice()")
+    after = page.evaluate(
+        "document.querySelector('.plotly-graph-div')._fullLayout.xaxis2.range.slice()"
+    )
     assert after == before, (before, after)
     page.close()

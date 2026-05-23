@@ -214,7 +214,9 @@ def test_packed_list_controls_track_layout():
 
     divider = min(shape.y0 for shape in fig.layout.shapes if shape.y0 != 0)
     packed_centers = [center for center in filled_centers_by_track if center > divider]
-    unpacked_centers = [center for center in filled_centers_by_track if center < divider]
+    unpacked_centers = [
+        center for center in filled_centers_by_track if center < divider
+    ]
 
     assert len(packed_centers) == 2
     assert len(unpacked_centers) == 3

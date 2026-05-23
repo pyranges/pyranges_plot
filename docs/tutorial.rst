@@ -363,7 +363,7 @@ Note that any modified values from the built-in defaults will be marked with an 
     |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
     |    title_size    |         18         |         | Size of the plots' titles.                                   |
     |    title_font    |       Arial        |         | Font of the plots' titles.                                   |
-    |     v_spacer     |        0.5         |         | Vertical distance between the intervals and plot border.     |
+    |     v_spacer     |        0.25        |         | Vertical distance between the intervals and plot border.     |
     |     x_ticks      |      <infer>       |         | Int, list or dict defining the x_ticks to be displayed. When |
     |                  |                    |         | int, number of ticks to be placed on each plot. When list,   |
     |                  |                    |         | it corresponds to de values used as ticks. When dict, the    |
@@ -515,16 +515,18 @@ The first PyRanges object in the list is rendered as the top track:
 
 For dense multi-track views, use ``squish`` to draw selected tracks more compactly.
 Both ``squish`` and ``packed`` accept either a single boolean for all tracks or a
-list with one boolean per track:
+list with one boolean per track. For example, this combines two different mRNA-like
+tracks from ``pe.example_data``:
 
 .. testcode::
 
     pe.plot(
-        [enhancers, promoters, insulators],
-        id_col="id",
-        track_labels=["Enhancers", "Promoters", "Insulators"],
-        squish=[False, True, True],
-        packed=[True, True, False],
+        [pe.example_data.mrna1, pe.example_data.mrna2],
+        adapter=["mRNA", "mRNA"],
+        color_col="transcript_id",
+        track_labels=["Reference isoforms", "Alternative isoforms"],
+        squish=[False, True],
+        packed=[True, False],
         text=False,
     )
 
@@ -542,16 +544,7 @@ The ``mRNA`` adapter shows CDS regions thicker than UTR/exon regions. Here,
 
 .. testcode::
 
-    mrna = pr.PyRanges(
-        {
-            "Chromosome": ["chr1"] * 14,
-            "Strand": ["+"] * 14,
-            "Feature": ["exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "CDS", "exon", "exon"],
-            "Start": [10, 25, 80, 80, 140, 140, 210, 225, 275, 275, 340, 340, 430, 470],
-            "End": [55, 55, 120, 120, 190, 175, 255, 255, 315, 315, 390, 365, 455, 500],
-            "transcript_id": ["tx1", "tx1", "tx1", "tx1", "tx1", "tx1", "tx2", "tx2", "tx2", "tx2", "tx2", "tx2", "lnc1", "lnc1"],
-        }
-    )
+    mrna = pe.example_data.mrna1
     pe.plot(mrna, "mRNA")
 
 .. image:: images/prp_rtd_35.png
