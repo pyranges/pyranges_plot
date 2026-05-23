@@ -348,6 +348,8 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | space, while an int threshold represents number of positions |
     |                  |                    |         | or base pairs.                                               |
     |    shrunk_bkg    |    lightyellow     |         | Color of the shrunk region background.                       |
+    |  squish_factor   |        0.3         |         | Factor applied to rendered interval height and stacked-row   |
+    |                  |                    |         | spacing for tracks with squish=True.                         |
     |     tag_bkg      |        grey        |         | Background color of the tooltip annotation for the gene in   |
     |                  |                    |         | Matplotlib.                                                  |
     |     text_pad     |         1          |         | Space, in percent of the visible plot span, between interval |
