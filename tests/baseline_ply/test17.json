@@ -2342,7 +2342,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t1",
@@ -2357,7 +2357,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t1",
@@ -2372,7 +2372,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t2",
@@ -2387,7 +2387,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t2",
@@ -2402,7 +2402,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t3",
@@ -2417,7 +2417,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t3",
@@ -2432,7 +2432,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t4",
@@ -2447,7 +2447,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t4",
@@ -2462,7 +2462,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t5",
@@ -2477,7 +2477,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t6",
@@ -2492,7 +2492,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t7",
@@ -2507,7 +2507,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t8",
@@ -2522,7 +2522,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t9",

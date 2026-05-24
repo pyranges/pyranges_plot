@@ -78,7 +78,7 @@ plot_features_dict = {
         "Space, in percent of the visible plot span, between interval labels and intervals. For example, label_pad=1 means 1%.",
         " ",
     ),
-    "label_size": (10, "Fontsize of the text annotation beside the intervals.", " "),
+    "label_size": (12, "Fontsize of the text annotation beside the intervals.", " "),
     "label_color": (
         "black",
         "Fixed color of interval labels unless label_color_col or colormap['label'] maps them.",
@@ -86,8 +86,8 @@ plot_features_dict = {
     ),
     "label_angle": (0, "Rotation angle of interval labels, in degrees.", " "),
     "label_position": (
-        "left",
-        "Position of interval labels: 'left', 'right', 'center', 'above', or 'below'.",
+        "top",
+        "Position of interval labels: 'left', 'right', 'center', 'top'/'above', or 'bottom'/'below'.",
         " ",
     ),
     "label_fit": (

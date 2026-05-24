@@ -78,11 +78,13 @@ def _normalize_label_spec(label, pack, *, label_position, label_fit, label_angle
     if not isinstance(label, (bool, str)):
         raise TypeError("label must be None, bool, or a format string.")
 
+    position_aliases = {"top": "above", "bottom": "below"}
+    label_position = position_aliases.get(label_position, label_position)
     allowed_positions = {"left", "right", "center", "above", "below"}
     if label_position not in allowed_positions:
+        public_positions = sorted(allowed_positions | set(position_aliases))
         raise ValueError(
-            f"label_position must be one of {sorted(allowed_positions)}; "
-            f"got {label_position!r}."
+            f"label_position must be one of {public_positions}; got {label_position!r}."
         )
 
     enabled = bool(label)
@@ -853,7 +855,10 @@ def plot(
         track_fill_col = _track_value(track, "fill_col", fill_col)
         track_outline_col = _track_value(track, "outline_col", outline_col)
         track_label_color_col = _track_value(track, "label_color_col", label_color_col)
-        fill_legend_title = _legend_title_from_public_cols(track_fill_col, track_id_col)
+        legend_id_col = track_id_col or get_id_col() or "__interval_index__"
+        fill_legend_title = _legend_title_from_public_cols(
+            track_fill_col, legend_id_col
+        )
         outline_legend_title = _legend_title_from_public_cols(track_outline_col, None)
         track_height_col = _track_value(track, "height_col", height_col)
         track_depth_col = _track_value(track, "depth_col", depth_col)

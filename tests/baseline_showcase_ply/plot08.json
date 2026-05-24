@@ -1428,7 +1428,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx1",
@@ -1443,7 +1443,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx2",
@@ -1458,7 +1458,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx3",
@@ -1473,7 +1473,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx4",
@@ -1488,7 +1488,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx5",
@@ -1503,7 +1503,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx6",
@@ -1518,7 +1518,7 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx7",

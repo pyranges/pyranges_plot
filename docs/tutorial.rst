@@ -89,9 +89,9 @@ Below, we can set the maximum number of transcripts show as 2. Note the warning 
 .. image:: images/prp_rtd_03.png
 
 To plot only a subset of the data, use the Pandas/PyRanges object's slicing capabilities.
-For example, this plots the intervals on chromosome 2, positive strand, between positions 100 and 200:
+For example, this plots the intervals on chromosome 2, negative strand, between positions 100 and 200:
 
-    >>> (x.loci[2, '+', 100:200]).plot()
+    >>> (x.loci[2, '-', 100:200]).plot()
 
 By default, the **limits of plot coordinates** are set to show all the data, and leave some margin at the edges.
 This is customizable with the ``limits`` parameter.
@@ -129,31 +129,20 @@ Explicit regions are also supported with ``(chromosome, start, end)`` tuples or 
 
     >>> pe.plot(x, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
+.. image:: images/prp_rtd_43.png
+
 Plotting intervals in strand direction
 --------------------------------------
 
 Use ``reverse="auto"`` to mirror panels whose known intervals are all on the negative strand.
+In ``x``, all intervals on chromosome 2 are negative-strand, so that panel is reversed automatically.
 Coordinates in ticks and tooltips stay genomic.
 
-    >>> import pyranges1 as pr
-    >>> q = pr.PyRanges(
-    ...     {
-    ...         "Chromosome": ["chr1", "chr1", "chr2", "chr2"],
-    ...         "Strand": ["+", "+", "-", "-"],
-    ...         "Start": [10, 60, 20, 80],
-    ...         "End": [30, 90, 45, 110],
-    ...         "tx": ["tx1", "tx1", "tx2", "tx2"],
-    ...     }
-    ... )
-    >>> pe.plot(q, id_col="tx", reverse="auto")
+    >>> pe.plot(x, reverse="auto")
 
 .. image:: images/prp_rtd_38.png
 
-``reverse`` accepts several inputs:
-
-    >>> pe.plot(q, id_col="tx", reverse=True)             # reverse all panels
-    >>> pe.plot(q, id_col="tx", reverse=["chr2"])         # reverse selected panels
-    >>> pe.plot(q, id_col="tx", reverse={"chr2": True})   # map panels to booleans
+``reverse`` also accepts explicit inputs such as ``True``, a list of chromosomes, or a ``{chrom: bool}`` mapping.
 
 Coloring
 --------
@@ -353,12 +342,12 @@ Note that any modified values from the built-in defaults will be marked with an 
     |                  |                    |         | Matplotlib.                                                  |
     |    label_pad     |         1          |         | Space, in percent of the visible plot span, between interval |
     |                  |                    |         | labels and intervals. For example, label_pad=1 means 1%.     |
-    |    label_size    |         10         |         | Fontsize of the text annotation beside the intervals.        |
+    |    label_size    |         12         |         | Fontsize of the text annotation beside the intervals.        |
     |   label_color    |       black        |         | Fixed color of interval labels unless label_color_col or     |
     |                  |                    |         | colormap['label'] maps them.                                 |
     |   label_angle    |         0          |         | Rotation angle of interval labels, in degrees.               |
-    |  label_position  |        left        |         | Position of interval labels: 'left', 'right', 'center',      |
-    |                  |                    |         | 'above', or 'below'.                                         |
+    |  label_position  |        top         |         | Position of interval labels: 'left', 'right', 'center',      |
+    |                  |                    |         | 'top'/'above', or 'bottom'/'below'.                          |
     |    label_fit     |        True        |         | Whether text labels reserve space during pack layout to      |
     |                  |                    |         | reduce overlaps.                                             |
     |   title_color    |      magenta       |    *    | Color of the plots' titles.                                  |
@@ -411,7 +400,9 @@ documentation. For example, here's the "dark" theme:
 
 .. image:: images/prp_rtd_16.png
 
-To reset the theme, you can resort again to :func:`reset_options <pyrangeyes.reset_options>`.
+Reset options before continuing, so later examples do not inherit the dark theme:
+
+    >>> pe.reset_options()
 
 
 
@@ -431,11 +422,7 @@ To instead display one transcript per row, set the ``pack`` parameter as ``False
 When ``pack=False``, rows are shown in the first-seen order of the input by default.
 This is useful when a PyRanges object was assembled by concatenating groups in a specific order,
 or when the order of rows already carries meaning. To instead let pyrangeyes order groups by
-its genomic sorting behavior, pass ``sort_ranges=True``:
-
-.. testcode::
-
-    pe.plot(x, pack=False, sort_ranges=True)
+its genomic sorting behavior, pass ``sort_ranges=True``.
 
 
 Pyrangeyes offers the option to reduce horizontal space, occupied by introns or intergenic regions,
@@ -468,95 +455,7 @@ while when an int is given it will be interpreted as number of base pairs.
 Displaying multiple tracks
 --------------------------
 
-Pass a list of PyRanges objects to display them as separate tracks.
-Use different IDs when tracks should get different default colors.
-
-.. testcode::
-
-    enhancers = pr.PyRanges(
-        {
-            "Chromosome": ["chr1", "chr1", "chr1"],
-            "Start": [15, 95, 175],
-            "End": [45, 130, 215],
-            "id": ["enh1", "enh2", "enh3"],
-        }
-    )
-    promoters = pr.PyRanges(
-        {
-            "Chromosome": ["chr1", "chr1", "chr1"],
-            "Start": [55, 145, 240],
-            "End": [80, 165, 270],
-            "id": ["prom1", "prom2", "prom3"],
-        }
-    )
-    pe.plot([enhancers, promoters], id_col="id")
-
-.. image:: images/prp_rtd_17.png
-
-The same pattern works with more tracks. Wrap inputs in ``pe.Track`` when a track needs its own name or options. The first item in the list is rendered as the top track:
-
-.. testcode::
-
-    insulators = pr.PyRanges(
-        {
-            "Chromosome": ["chr1", "chr1"],
-            "Start": [25, 225],
-            "End": [35, 235],
-            "id": ["ins1", "ins2"],
-        }
-    )
-    pe.plot(
-        [
-            pe.Track(enhancers, name="Enhancers"),
-            pe.Track(promoters, name="Promoters"),
-            pe.Track(insulators, name="Insulators"),
-        ],
-        id_col="id",
-    )
-
-.. image:: images/prp_rtd_18.png
-
-For dense multi-track views, set per-track options on ``pe.Track``. This combines two different mRNA-like tracks from ``pe.example_data`` and squishes only the second one:
-
-.. testcode::
-
-    pe.plot(
-        [
-            pe.Track(pe.example_data.mrna1, "mRNA", name="Reference isoforms"),
-            pe.Track(
-                pe.example_data.mrna2,
-                "mRNA",
-                name="Alternative isoforms",
-                squish=True,
-                pack=False,
-            ),
-        ],
-        fill_col="transcript_id",
-        label=False,
-    )
-
-.. image:: images/prp_rtd_41.png
-
-A ``Track`` can also override adapters, colors, labels, and layout independently of the plot defaults. Here the mRNA track uses its adapter and compact layout, while the interval tracks choose their own labels:
-
-.. testcode::
-
-    pe.plot(
-        [
-            pe.Track(
-                pe.example_data.mrna1,
-                "mRNA",
-                name="mRNA",
-                squish=True,
-                colormap="Dark2",
-            ),
-            pe.Track(enhancers, name="Enhancers", id_col="id", label=False),
-            pe.Track(promoters, name="Promoters", id_col="id", label="{id}"),
-        ],
-        colormap="Set2",
-    )
-
-.. image:: images/prp_rtd_42.png
+Multi-track examples are coming soon.
 
 
 mRNA, SNPs, and other adapter views
@@ -578,6 +477,8 @@ The ``mRNA`` adapter shows CDS regions thicker than UTR/exon regions. Here,
 The ``SNP`` adapter draws fixed-size markers for single-position variants:
 
 .. testcode::
+
+    import pyranges1 as pr
 
     snps = pr.PyRanges(
         {
