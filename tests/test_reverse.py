@@ -140,13 +140,13 @@ def test_reverse_x_ticks_accept_original_positive_coordinates():
     assert tuple(fig.layout.xaxis.ticktext) == (10, 20, 55)
 
 
-def test_reverse_title_chr_exposes_orientation_and_rev_flag():
+def test_reverse_panel_title_exposes_orientation_and_rev_flag():
     pre.set_engine("ply")
     fig = pre.plot(
         _strand_data(),
         id_col="tx",
         reverse=["chr2"],
-        title_chr="{chrom} {orientation}{rev_flag}",
+        panel_title="{chrom} {orientation}{rev_flag}",
         return_plot="fig",
     )
     titles = [ann.text for ann in fig.layout.annotations[:2]]

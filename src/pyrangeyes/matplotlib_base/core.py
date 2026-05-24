@@ -71,11 +71,11 @@ else:
         warn.wm_title("Warning!")
         warn.configure(background=bkg)
 
-        label = tk.Label(warn, text=txt, font=("Sans", 15), fg=txtcol, bg=bkg)
+        label = tk.Label(warn, label=txt, font=("Sans", 15), fg=txtcol, bg=bkg)
         label.pack(side="top", anchor="center", pady=10)
 
         bot = tk.Button(
-            warn, text="Got it", command=warn.destroy, fg="black", bg=botcol
+            warn, label="Got it", command=warn.destroy, fg="black", bg=botcol
         )
         bot.pack(pady=10)
 

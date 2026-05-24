@@ -450,7 +450,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -477,7 +477,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -498,7 +498,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -519,7 +519,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -540,7 +540,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -561,7 +561,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -582,7 +582,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -603,7 +603,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -624,7 +624,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -645,7 +645,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -707,10 +707,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -736,10 +736,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -768,7 +768,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -795,7 +795,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -816,7 +816,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -879,7 +879,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -900,7 +900,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -962,10 +962,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -991,10 +991,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1020,10 +1020,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1052,7 +1052,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -1079,7 +1079,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -1099,10 +1099,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1173,7 +1173,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -1200,7 +1200,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -1221,7 +1221,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -1284,7 +1284,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -1305,7 +1305,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "dot",
         "width": 0.7
       },
@@ -1367,10 +1367,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1396,10 +1396,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1425,10 +1425,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1457,7 +1457,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -1484,7 +1484,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -1504,10 +1504,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -1749,7 +1749,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -1776,7 +1776,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -1839,7 +1839,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -1860,7 +1860,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -1922,10 +1922,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -1951,10 +1951,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "CDS",
@@ -1980,10 +1980,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -2009,10 +2009,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -2041,7 +2041,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -2068,7 +2068,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -2130,10 +2130,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -2159,10 +2159,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "exon",
@@ -2454,7 +2454,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -2481,7 +2481,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2544,7 +2544,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2607,7 +2607,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2627,10 +2627,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -2656,10 +2656,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -2685,10 +2685,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -2714,10 +2714,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3030,7 +3030,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -3057,7 +3057,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3119,10 +3119,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3148,10 +3148,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3301,7 +3301,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -3328,7 +3328,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3349,7 +3349,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -3412,7 +3412,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3433,7 +3433,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -3496,7 +3496,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3517,7 +3517,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -3538,7 +3538,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3600,10 +3600,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3629,10 +3629,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3658,10 +3658,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3687,10 +3687,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -3719,7 +3719,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -3746,7 +3746,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3809,7 +3809,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3830,7 +3830,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -3851,7 +3851,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3872,7 +3872,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -3935,7 +3935,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -3956,7 +3956,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "dot",
         "width": 0.7
       },
@@ -4018,10 +4018,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4047,10 +4047,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4076,10 +4076,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4105,10 +4105,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4137,7 +4137,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -4164,7 +4164,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -4226,10 +4226,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4255,10 +4255,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",
@@ -4287,7 +4287,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -4314,7 +4314,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#7bc45f",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -4334,10 +4334,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#7bc45f",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#7bc45f"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "exon",

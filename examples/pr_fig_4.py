@@ -14,7 +14,7 @@ p_cds = p[p["Feature"] == "CDS"]
 pre.plot(
     p_cds,
     id_col="gene_name",
-    text=False,
+    label=False,
     legend=True,
     to_file=("fig_4.png", (600, 500)),
     arrow_size=0.05,

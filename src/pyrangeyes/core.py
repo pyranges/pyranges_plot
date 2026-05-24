@@ -204,11 +204,11 @@ def set_options(varname=None, value=None, *, adapter=None, variable=None):
     --------
     >>> import pyrangeyes as pe
 
-    >>> pe.set_options('plot_background', 'magenta')
+    >>> pe.set_options('track_bg', 'magenta')
 
     >>> pe.set_options('title_size', 20)
 
-    >>> pe.set_options({'plot_background': 'magenta', 'title_size': 20})
+    >>> pe.set_options({'track_bg': 'magenta', 'title_size': 20})
 
     >>> pe.set_options(adapter='mRNA', variable='utr_height', value=0.5)
 
@@ -317,7 +317,7 @@ def reset_options(varname="all", *, adapter=None):
 
     >>> pe.reset_options('tag_bkg')
 
-    >>> pe.reset_options(['title_size', 'tag_background'])
+    >>> pe.reset_options(['title_size', 'tag_bkg'])
 
     >>> pe.reset_options(adapter='mRNA')
 

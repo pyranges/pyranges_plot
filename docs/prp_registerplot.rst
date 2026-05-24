@@ -1,6 +1,8 @@
-Register plot
--------------
+Register methods
+----------------
 
-Register plot function on PyRanges objects.
+Register pyrangeyes convenience methods on PyRanges objects.
 
-.. autofunction:: pyrangeyes.register_plot
+``register_methods()`` adds both ``.plot()`` and ``.track()`` to ``pyranges.PyRanges``.
+
+.. autofunction:: pyrangeyes.register_methods

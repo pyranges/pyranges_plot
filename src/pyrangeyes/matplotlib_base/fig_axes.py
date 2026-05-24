@@ -53,7 +53,7 @@ def ax_limits(ax, x_min, x_max, x_rang, grid_color):
     )  # only integer ticks for bases
 
 
-def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_background):
+def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bg, tag_background):
     """Add shrunk regions rectangles to the plot."""
 
     rects_df = ts_data[chrom].copy()
@@ -77,7 +77,7 @@ def ax_shrink_rects(ax, fig, ts_data, chrom, y_min, y_max, shrunk_bkg, tag_backg
             b - a,
             y_max + 3,
             edgecolor="grey",
-            facecolor=shrunk_bkg,
+            facecolor=shrunk_bg,
             fill=True,
             linewidth=0,
             zorder=3,
@@ -101,20 +101,20 @@ def create_fig(
     id_col,
     ts_data,
     legend_item_d,
-    title_chr,
+    panel_title,
     title_dict_plt,
     plot_background,
     plot_border,
     grid_color,
-    packed,
+    pack,
     legend,
-    track_labels,
+    track_names,
     x_ticks,
     tick_pos_d,
     ori_tick_pos_d,
     tag_background,
-    fig_bkg,
-    shrunk_bkg,
+    figure_bg,
+    shrunk_bg,
     v_spacer,
     exon_height,
     add_aligned_plots,
@@ -125,7 +125,7 @@ def create_fig(
     # plot._attach_panel_display so multi-window panels display the real
     # chromosome plus the window coordinates.
     def _fmt_title(row, fallback_chrom):
-        return title_chr.format(
+        return panel_title.format(
             chrom=row.get("display_chrom", fallback_chrom),
             start=_format_coord(row.get("display_start")),
             end=_format_coord(row.get("display_end")),
@@ -183,7 +183,7 @@ def create_fig(
     row_heights_additional = [height] * num_additional_rows
 
     # Start figure
-    fig = plt.figure(figsize=(x, y), facecolor=fig_bkg)
+    fig = plt.figure(figsize=(x, y), facecolor=figure_bg)
 
     gs = gridspec.GridSpec(
         total_rows,
@@ -321,10 +321,10 @@ def create_fig(
                 y_min = 0.5 - exon_height / 2
                 y_max = chrmd_df_grouped.loc[chrom]["y_height"]
             ax.set_ylim(y_min - y_pad, y_max + y_pad)
-            # gene name as y labels if not packed and not track_labels
+            # gene name as y labels if not pack and not track_names
             y_ticks_val = []
             y_ticks_name = []
-            if not packed and not track_labels:
+            if not pack and not track_names:
                 y_ticks_val = genesmd_df.loc[chrom]["ycoord"] + 0.5
                 y_ticks_val.reset_index(PR_INDEX_COL, drop=True, inplace=True)
                 y_ticks_name = y_ticks_val.index
@@ -339,7 +339,7 @@ def create_fig(
                     chrom,
                     y_min,
                     y_max,
-                    shrunk_bkg,
+                    shrunk_bg,
                     tag_background,
                 )
 
@@ -370,7 +370,7 @@ def create_fig(
                         )
 
                         # add y_label in the middle of the subplot if needed
-                        if track_labels and j < len(present_pr_l):
+                        if track_names and j < len(present_pr_l):
                             next_pr_line = (
                                 pr_line_y_l[j + 1] if j + 1 < len(pr_line_y_l) else 0
                             )
@@ -378,7 +378,7 @@ def create_fig(
                                 y_ticks_val.append(((pr_line_y) + next_pr_line) / 2)
                             else:
                                 y_ticks_val.append((pr_line_y) / 2)
-                            y_ticks_name.append(track_labels[int(present_pr_l[j])])
+                            y_ticks_name.append(track_names[int(present_pr_l[j])])
 
             ax.set_yticks(y_ticks_val)
             ax.set_yticklabels(list(y_ticks_name))

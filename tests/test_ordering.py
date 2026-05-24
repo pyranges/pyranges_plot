@@ -26,44 +26,44 @@ def _out_of_genomic_order_data():
     )
 
 
-def test_packed_false_preserves_input_row_order_by_default_matplotlib():
+def test_pack_false_preserves_input_row_order_by_default_matplotlib():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
         _out_of_genomic_order_data(),
         id_col="transcript_id",
-        packed=False,
+        pack=False,
         return_plot="fig",
-        text=True,
+        label=True,
         warnings=False,
-        title_chr=" ",
+        panel_title=" ",
     )
 
     assert _top_to_bottom_ylabels(fig.axes[0]) == ["first", "second", "third"]
 
 
-def test_text_none_defaults_to_packed_only_matplotlib():
+def test_text_none_defaults_to_pack_only_matplotlib():
     pre.set_engine("matplotlib")
 
-    packed_fig = pre.plot(
+    pack_fig = pre.plot(
         _out_of_genomic_order_data(),
         id_col="transcript_id",
-        packed=True,
+        pack=True,
         return_plot="fig",
         warnings=False,
-        title_chr=" ",
+        panel_title=" ",
     )
-    unpacked_fig = pre.plot(
+    unpack_fig = pre.plot(
         _out_of_genomic_order_data(),
         id_col="transcript_id",
-        packed=False,
+        pack=False,
         return_plot="fig",
         warnings=False,
-        title_chr=" ",
+        panel_title=" ",
     )
 
-    packed_text = {text.get_text() for text in packed_fig.axes[0].texts}
-    unpacked_text = {text.get_text() for text in unpacked_fig.axes[0].texts}
+    pack_text = {text.get_text() for text in pack_fig.axes[0].texts}
+    unpack_text = {text.get_text() for text in unpack_fig.axes[0].texts}
 
-    assert {"first", "second", "third"}.issubset(packed_text)
-    assert unpacked_text == {""}
+    assert {"first", "second", "third"}.issubset(pack_text)
+    assert unpack_text == {""}

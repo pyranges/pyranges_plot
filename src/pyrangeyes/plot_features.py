@@ -27,8 +27,8 @@ plot_features_dict = {
     ),
     "colormap": (
         "popart",
-        "Colors to assign to interval fills. Use 'direct' when color_col/outline_col/text_color_col already contain literal colors. "
-        "A dict channel mapping must have 'color' and may also have 'outline' and 'text'; 'color'/'outline' aliases reuse channels. "
+        "Colors to assign to interval fills. Use 'direct' when fill_col/outline_col/label_color_col already contain literal colors. "
+        "A dict channel mapping must have 'fill' and may also have 'outline' and 'label'; 'fill'/'outline' aliases reuse channels. "
         "Values may be Matplotlib/Plotly colormap names, color lists, value-to-color mappings, or quantitative specs.",
         " ",
     ),
@@ -42,14 +42,14 @@ plot_features_dict = {
         "Default (and maximum) height of rendered interval blocks.",
         " ",
     ),
-    "fig_bkg": ("white", "Bakground color of the whole figure.", " "),
+    "figure_bg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),
     "intron_color": (
         None,
         "Color of the intron lines. When None, the color of the first interval will be used.",
         " ",
     ),
-    "plot_bkg": ("white", "Background color of the plots.", " "),
+    "track_bg": ("white", "Background color of the plots.", " "),
     "plot_border": ("black", "Color of the line delimiting the plots.", " "),
     "plotly_port": (8050, "Port to run plotly app.", " "),
     "return_plot": (None, "Whether the plot is returned or not.", " "),
@@ -58,7 +58,7 @@ plot_features_dict = {
         "Minimum length of an intron or intergenic region in order for it to be shrunk while using the “shrink” feature. When threshold is float, it represents the fraction of the plot space, while an int threshold represents number of positions or base pairs.",
         " ",
     ),
-    "shrunk_bkg": (
+    "shrunk_bg": (
         "lightyellow",
         "Color of the shrunk region background.",
         " ",
@@ -73,26 +73,26 @@ plot_features_dict = {
         "Background color of the tooltip annotation for the gene in Matplotlib.",
         " ",
     ),
-    "text_pad": (
+    "label_pad": (
         1,
-        "Space, in percent of the visible plot span, between interval labels and intervals. For example, text_pad=1 means 1%.",
+        "Space, in percent of the visible plot span, between interval labels and intervals. For example, label_pad=1 means 1%.",
         " ",
     ),
-    "text_size": (10, "Fontsize of the text annotation beside the intervals.", " "),
-    "text_color": (
+    "label_size": (10, "Fontsize of the text annotation beside the intervals.", " "),
+    "label_color": (
         "black",
-        "Fixed color of interval text annotations unless text_color_col or colormap['text'] maps them.",
+        "Fixed color of interval labels unless label_color_col or colormap['label'] maps them.",
         " ",
     ),
-    "text_angle": (0, "Rotation angle of interval text annotations, in degrees.", " "),
-    "text_position": (
+    "label_angle": (0, "Rotation angle of interval labels, in degrees.", " "),
+    "label_position": (
         "left",
-        "Position of interval text annotations: 'left', 'right', 'center', 'above', or 'below'.",
+        "Position of interval labels: 'left', 'right', 'center', 'above', or 'below'.",
         " ",
     ),
-    "text_fit": (
+    "label_fit": (
         True,
-        "Whether text labels reserve space during packed layout to reduce overlaps.",
+        "Whether text labels reserve space during pack layout to reduce overlaps.",
         " ",
     ),
     "title_color": ("black", "Color of the plots' titles.", " "),
@@ -115,14 +115,14 @@ for key, val in plot_features_dict.items():
 # Dark theme
 theme_dark = {
     "colormap": "G10",
-    "fig_bkg": "#1f1f1f",
+    "figure_bg": "#1f1f1f",
     "plot_border": "white",
-    "text_color": "white",
+    "label_color": "white",
     "title_color": "goldenrod",
-    "plot_bkg": "grey",
+    "track_bg": "grey",
     "grid_color": "darkgrey",
     "arrow_color": "lightgrey",
-    "shrunk_bkg": "lightblue",
+    "shrunk_bg": "lightblue",
 }
 
 # pastel default theme
@@ -140,18 +140,18 @@ lighter_l = [
 
 theme_pastel = {
     "colormap": ori_l + lighter_l + darker_l,
-    "shrunk_bkg": "#e7e0f5",
-    "fig_bkg": "#fff5ee",
+    "shrunk_bg": "#e7e0f5",
+    "figure_bg": "#fff5ee",
     "title_color": "#590000",
     "plot_border": "#4c644c",
 }
 
 # Swimming pool theme
 theme_sp = {
-    "fig_bkg": "#696969",
-    "plot_bkg": "#71E2E8",
+    "figure_bg": "#696969",
+    "track_bg": "#71E2E8",
     "colormap": ["#0D61AF", "#B82C10", "white"],
-    "shrunk_bkg": "#c6e6c6",
+    "shrunk_bg": "#c6e6c6",
     "plot_border": "#011334",
     "title_color": "#011334",
 }

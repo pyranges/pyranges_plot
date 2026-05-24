@@ -52,7 +52,7 @@ def browser(sync_playwright):
 @pytest.fixture(scope="module")
 def browser_html(tmp_path_factory):
     pre.set_engine("ply")
-    fig = pre.browse(_browser_data(), id_col="id", default_mode="packed")
+    fig = pre.browse(_browser_data(), id_col="id", default_mode="pack")
     fig.update_layout(
         autosize=True,
         width=None,
@@ -188,7 +188,10 @@ def _enhancement_script(meta):
   const GAP_PX = 60;
   const yaxisName = ix => ix === 0 ? 'yaxis' : 'yaxis' + (ix + 1);
   const xaxisName = ix => ix === 0 ? 'xaxis' : 'xaxis' + (ix + 1);
-  const buttonFor = (ix, mode) => META.menus[ix].buttons.find(b => b.label.toLowerCase() === mode);
+  const buttonFor = (ix, mode) => {{
+    const label = mode === 'pack' ? 'packed' : mode;
+    return META.menus[ix].buttons.find(b => b.label.toLowerCase() === label);
+  }};
   function modeHeight(ix, mode) {{
     if (mode === 'zip') return 58;
     const update = buttonFor(ix, mode).args[1];
@@ -228,7 +231,7 @@ def _enhancement_script(meta):
     shell.className = 'pyrangeyes-browser-shell';
     gd.parentNode.insertBefore(shell, gd);
     shell.appendChild(gd);
-    const states = META.menus.map(() => 'packed');
+    const states = META.menus.map(() => 'pack');
     const controls = [];
     const zipBlocks = [];
     META.menus.forEach((menu, ix) => {{
@@ -315,11 +318,9 @@ def _open_page(browser, browser_html, width=390, height=844):
 
 
 def _click_mode(page, panel_ix, mode):
-    page.locator(".pre-view-button").nth(panel_ix).click()
+    page.locator(".pre-view-button").nth(panel_ix).click(force=True)
     option = (
-        page.locator(".pre-view-control")
-        .nth(panel_ix)
-        .locator(".pre-view-option", has_text=mode)
+        page.locator(".pre-view-control").nth(panel_ix).get_by_role("button", name=mode)
     )
     option.click()
     page.wait_for_timeout(500)
@@ -416,16 +417,16 @@ def test_interactive_brick_heights_are_mode_consistent(
     browser, browser_html, width, height
 ):
     page = _open_page(browser, browser_html, width=width, height=height)
-    packed = _panel_brick_heights(page, 0)
-    assert packed and max(packed) - min(packed) <= 1, packed
+    pack = _panel_brick_heights(page, 0)
+    assert pack and max(pack) - min(pack) <= 1, pack
 
     _click_mode(page, 0, "Squish")
     squish = _panel_brick_heights(page, 0)
-    assert squish and max(squish) < min(packed), (packed, squish)
+    assert squish and max(squish) < min(pack), (pack, squish)
 
     _click_mode(page, 0, "Full")
     full = _panel_brick_heights(page, 0)
-    assert full and abs(max(full) - max(packed)) <= 1, (packed, full)
+    assert full and abs(max(full) - max(pack)) <= 1, (pack, full)
     page.close()
 
 

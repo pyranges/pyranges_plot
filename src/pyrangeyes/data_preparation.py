@@ -93,8 +93,8 @@ def make_subset(df, id_col, max_shown):
 ############ GENESMD_DF
 
 
-###packed
-def genesmd_packed(genesmd_df):
+###pack
+def genesmd_pack(genesmd_df):
     """xxx"""
 
     # Initialize IntervalTree and used y-coordinates list
@@ -183,7 +183,7 @@ def get_plycolormap(colormap_string):
 
 def _is_channel_colormap(colormap):
     return isinstance(colormap, dict) and any(
-        channel in colormap for channel in ("color", "outline", "text")
+        channel in colormap for channel in ("fill", "outline", "label")
     )
 
 
@@ -219,24 +219,24 @@ def _validate_colormap_spec(colormap, context="colormap"):
 
     if isinstance(colormap, dict):
         if _is_channel_colormap(colormap):
-            allowed = {"color", "outline", "text"}
+            allowed = {"fill", "outline", "label"}
             extra = set(colormap) - allowed
             if extra:
                 raise ValueError(
                     f"{context} with channel-specific colors only accepts keys "
-                    f"'color', 'outline', and 'text'; found {sorted(extra)!r}."
+                    f"'fill', 'outline', and 'label'; found {sorted(extra)!r}."
                 )
-            if "color" not in colormap:
-                raise ValueError(f"{context} channel mapping requires a 'color' entry.")
-            _validate_colormap_spec(colormap["color"], f"{context}['color']")
+            if "fill" not in colormap:
+                raise ValueError(f"{context} channel mapping requires a 'fill' entry.")
+            _validate_colormap_spec(colormap["fill"], f"{context}['fill']")
             if "outline" in colormap:
                 outline = colormap["outline"]
-                if outline != "color":
+                if outline != "fill":
                     _validate_colormap_spec(outline, f"{context}['outline']")
-            if "text" in colormap:
-                text = colormap["text"]
-                if text not in (None, "color", "outline"):
-                    _validate_colormap_spec(text, f"{context}['text']")
+            if "label" in colormap:
+                label = colormap["label"]
+                if label not in (None, "fill", "outline"):
+                    _validate_colormap_spec(label, f"{context}['label']")
             return
 
         if "type" in colormap:
@@ -392,14 +392,7 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
     # 1-plt colormap to list
     if not missing_plt_flag and isinstance(colormap, mcolors.ListedColormap):
         colormap = list(colormap.colors)  # colors of plt object
-        colormap = [
-            "rgb({}, {}, {})".format(
-                int(mcolors.to_rgb(color)[0] * 255),
-                int(mcolors.to_rgb(color)[1] * 255),
-                int(mcolors.to_rgb(color)[2] * 255),
-            )
-            for color in colormap
-        ]  # compatible with plotly
+        colormap = [mcolors.to_hex(color) for color in colormap]
     elif not missing_plt_flag and isinstance(colormap, mcolors.Colormap):
         positions = np.linspace(0, 1, max(n_color_tags, 1))
         colormap = [mcolors.to_hex(colormap(position)) for position in positions]
@@ -460,33 +453,35 @@ def _legend_title(cols, fallback):
 def subdf_assigncolor(
     subdf,
     colormap,
-    color_col,
+    fill_col,
     outline_col,
     outline_color,
-    text_color,
-    text_color_col,
+    label_color,
+    label_color_col,
     warnings,
+    fill_legend_title=None,
+    outline_legend_title=None,
 ):
     """Add fill, outline, and text color information to data."""
     _validate_colormap_spec(colormap)
 
     # Create COLOR_COL column
-    if len(color_col) > 1:
-        subdf[COLOR_TAG_COL] = list(zip(*[subdf[c] for c in color_col]))
+    if len(fill_col) > 1:
+        subdf[COLOR_TAG_COL] = list(zip(*[subdf[c] for c in fill_col]))
     else:
-        subdf[COLOR_TAG_COL] = subdf[color_col[0]]
+        subdf[COLOR_TAG_COL] = subdf[fill_col[0]]
 
-    color_cmap = _channel_colormap(colormap, "color", fallback=prp_cmap)
+    color_cmap = _channel_colormap(colormap, "fill", fallback=prp_cmap)
     subdf = _assign_color_channel(
         subdf, COLOR_TAG_COL, COLOR_INFO, color_cmap, warnings
     )
     subdf[COLOR_LEGEND_KIND_COL] = _legend_kind(color_cmap)
-    subdf[COLOR_LEGEND_TITLE_COL] = _legend_title(color_col, "color")
+    subdf[COLOR_LEGEND_TITLE_COL] = fill_legend_title or _legend_title(fill_col, "fill")
 
     outline_spec = (
-        _channel_colormap(colormap, "outline", fallback="color")
+        _channel_colormap(colormap, "outline", fallback="fill")
         if _is_channel_colormap(colormap)
-        else "color"
+        else "fill"
     )
     if (
         outline_color is not None
@@ -505,7 +500,7 @@ def subdf_assigncolor(
         subdf[OUTLINE_LEGEND_TITLE_COL] = "outline"
         resolved_outline_cmap = None
     elif outline_col is None:
-        if outline_spec != "color":
+        if outline_spec != "fill":
             raise ValueError(
                 "Mapped colormap['outline'] requires outline_col. For one fixed "
                 "outline color, use outline_color='black'."
@@ -519,43 +514,45 @@ def subdf_assigncolor(
             subdf[OUTLINE_TAG_COL] = list(zip(*[subdf[c] for c in outline_col]))
         else:
             subdf[OUTLINE_TAG_COL] = subdf[outline_col[0]]
-        resolved_outline_cmap = color_cmap if outline_spec == "color" else outline_spec
+        resolved_outline_cmap = color_cmap if outline_spec == "fill" else outline_spec
         subdf = _assign_color_channel(
             subdf, OUTLINE_TAG_COL, BORDER_COLOR_COL, resolved_outline_cmap, warnings
         )
         subdf[OUTLINE_LEGEND_KIND_COL] = _legend_kind(resolved_outline_cmap)
-        subdf[OUTLINE_LEGEND_TITLE_COL] = _legend_title(outline_col, "outline")
+        subdf[OUTLINE_LEGEND_TITLE_COL] = outline_legend_title or _legend_title(
+            outline_col, "outline"
+        )
 
-    text_spec = (
-        _channel_colormap(colormap, "text", fallback=None)
+    label_spec = (
+        _channel_colormap(colormap, "label", fallback=None)
         if _is_channel_colormap(colormap)
         else None
     )
-    if text_color_col is None:
-        if text_spec is None:
-            subdf[TEXT_COLOR_COL] = [text_color] * len(subdf)
-        elif text_spec == "color":
+    if label_color_col is None:
+        if label_spec is None:
+            subdf[TEXT_COLOR_COL] = [label_color] * len(subdf)
+        elif label_spec == "fill":
             subdf[TEXT_COLOR_COL] = subdf[COLOR_INFO]
-        elif text_spec == "outline":
+        elif label_spec == "outline":
             subdf[TEXT_COLOR_COL] = subdf[BORDER_COLOR_COL]
         else:
             raise ValueError(
-                "colormap['text'] requires text_color_col unless it is None, "
-                "'color', or 'outline'."
+                "colormap['label'] requires label_color_col unless it is None, "
+                "'fill', or 'outline'."
             )
     else:
-        if len(text_color_col) > 1:
-            subdf[TEXT_COLOR_TAG_COL] = list(zip(*[subdf[c] for c in text_color_col]))
+        if len(label_color_col) > 1:
+            subdf[TEXT_COLOR_TAG_COL] = list(zip(*[subdf[c] for c in label_color_col]))
         else:
-            subdf[TEXT_COLOR_TAG_COL] = subdf[text_color_col[0]]
-        if text_spec in (None, "color"):
-            text_cmap = color_cmap
-        elif text_spec == "outline":
-            text_cmap = resolved_outline_cmap or color_cmap
+            subdf[TEXT_COLOR_TAG_COL] = subdf[label_color_col[0]]
+        if label_spec in (None, "fill"):
+            label_cmap = color_cmap
+        elif label_spec == "outline":
+            label_cmap = resolved_outline_cmap or color_cmap
         else:
-            text_cmap = text_spec
+            label_cmap = label_spec
         subdf = _assign_color_channel(
-            subdf, TEXT_COLOR_TAG_COL, TEXT_COLOR_COL, text_cmap, warnings
+            subdf, TEXT_COLOR_TAG_COL, TEXT_COLOR_COL, label_cmap, warnings
         )
 
     return subdf
@@ -568,7 +565,7 @@ def codes(vals, desc=False):
 
 
 def get_genes_metadata(
-    df, id_col, color_col, packed, exon_height, v_spacer, order, sort_ranges
+    df, id_col, fill_col, pack, exon_height, v_spacer, order, sort_ranges
 ):
     """Create genes metadata df."""
 
@@ -584,13 +581,13 @@ def get_genes_metadata(
     # Define the aggregation functions for each column
     agg_funcs = {
         col: "first"
-        for col in id_col + color_col
+        for col in id_col + fill_col
         # if col not in [START_COL, END_COL, PR_INDEX_COL]
     }
     agg_funcs[START_COL] = "min"
     agg_funcs[END_COL] = "max"
-    # workaround for Chromosome in color_col list
-    if CHROM_COL in color_col:
+    # workaround for Chromosome in fill_col list
+    if CHROM_COL in fill_col:
         genesmd_df = (
             df.groupby(
                 [CHROM_COL, PR_INDEX_COL] + id_col,
@@ -601,9 +598,9 @@ def get_genes_metadata(
             # .reset_index(level=[PR_INDEX_COL, CHROM_COL])
         )
         genesmd_df["chromosome"] = genesmd_df[CHROM_COL]
-        for i in range(len(color_col)):
-            if color_col[i] == CHROM_COL:
-                color_col[i] = "chromosome"
+        for i in range(len(fill_col)):
+            if fill_col[i] == CHROM_COL:
+                fill_col[i] = "chromosome"
 
     else:
         genesmd_df = (
@@ -840,7 +837,7 @@ def fill_min_max(row, ts_data):
 
 
 def get_chromosome_metadata(
-    df, limits, genesmd_df, packed, v_spacer, exon_height, ts_data=None
+    df, limits, genesmd_df, pack, v_spacer, exon_height, ts_data=None
 ):
     """Create chromosome metadata df."""
 
@@ -991,8 +988,8 @@ def assign_label_rows(
     subdf,
     id_col,
     PR_INDEX_COL,
-    text_pad,
-    packed,
+    label_pad,
+    pack,
     sort_ranges,
     interval_height=None,
     v_spacer=0.3,
@@ -1000,7 +997,7 @@ def assign_label_rows(
     text_label_col=None,
     text_avoid=True,
     track_scales=None,
-    packed_by_track=None,
+    pack_by_track=None,
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -1018,7 +1015,7 @@ def assign_label_rows(
         Column name with the label text (e.g. "ID").
     PR_INDEX_COL : str
         Name of index level or column that contains the pyranges index (default "__pr_ix__").
-    text_pad : float
+    label_pad : float
         Fractional padding (relative to plot width). Default 0.005.
     plot_limits : tuple(xmin, xmax) or None
         If provided, used to compute padding scale; otherwise taken from subdf Start/End.
@@ -1046,7 +1043,7 @@ def assign_label_rows(
             xmin, xmax = plot_limits
 
         plot_width = float(xmax - xmin) if xmax - xmin != 0 else 1.0
-        pad_unit = text_pad * plot_width
+        pad_unit = label_pad * plot_width
 
         # Visual interval, all ranges occupies by groups connected by id_col
         visual_spans = (
@@ -1064,10 +1061,8 @@ def assign_label_rows(
             track_scale = (
                 1.0 if track_scales is None else float(track_scales.get(pr_val, 1.0))
             )
-            track_packed = (
-                packed
-                if packed_by_track is None
-                else bool(packed_by_track.get(pr_val, packed))
+            track_pack = (
+                pack if pack_by_track is None else bool(pack_by_track.get(pr_val, pack))
             )
             effective_text_avoid = text_avoid and track_scale >= 1
             track_height = interval_height * track_scale
@@ -1114,7 +1109,7 @@ def assign_label_rows(
 
             rows = []  # each element = row interval
             for _, g in gdf.iterrows():
-                if track_packed:
+                if track_pack:
                     label_len = 0
                     if effective_text_avoid:
                         if text_label_col and text_label_col in g:

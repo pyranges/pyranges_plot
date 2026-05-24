@@ -1,14 +1,19 @@
 from pyranges1 import PyRanges
 from .core import set_engine
 from .plot_main import plot
+from .track import Track
 
 
-def register_plot(engine=None):
+def _track(self, adapter=None, **options):
+    return Track(self, adapter, **options)
+
+
+def register_methods(engine=None):
     """
-    Register the plot function as a method to PyRanges.
+    Register pyrangeyes convenience methods on PyRanges.
 
-    Allows to use the plot function as a method of PyRanges, as PyRanges.plot().
-    Optionally, set the plotting engine.
+    Adds ``PyRanges.plot(...)`` and ``PyRanges.track(...)``. Optionally, set the
+    plotting engine.
 
     Parameters
     ----------
@@ -20,14 +25,14 @@ def register_plot(engine=None):
     --------
     >>> import pyrangeyes as pe
 
-    >>> pe.register_plot()
+    >>> pe.register_methods()
 
-    >>> pe.register_plot("matplotlib")
+    >>> pe.register_methods("matplotlib")
 
     """
 
     if engine is not None:
         set_engine(engine)
 
-    # Attach the wrapper as a method to PyRanges
     PyRanges.plot = plot
+    PyRanges.track = _track

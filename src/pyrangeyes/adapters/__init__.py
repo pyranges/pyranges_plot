@@ -420,7 +420,7 @@ def get_options(name, varname="all"):
     Adapter functions use the public ``DEFAULT`` sentinel in their signatures;
     when an argument is left as ``DEFAULT`` at runtime, the corresponding value
     is fetched through this function. This means ``set_options`` affects both
-    ``plot(..., adapter=...)`` and direct adapter calls such as ``mRNA(...)``.
+    ``Track(data, adapter=...)`` and direct adapter calls such as ``mRNA(...)``.
     """
 
     get(name)  # validates name

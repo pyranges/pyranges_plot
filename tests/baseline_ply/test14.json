@@ -124,7 +124,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -151,7 +151,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -171,10 +171,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f05f89",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#f05f89"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "0",
@@ -200,10 +200,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "1",

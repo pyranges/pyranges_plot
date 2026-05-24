@@ -1990,7 +1990,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -2017,7 +2017,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2080,7 +2080,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2143,7 +2143,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -2205,10 +2205,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffadc9",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffadc9"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "T2",
@@ -2234,10 +2234,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffadc9",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffadc9"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "T2",
@@ -2263,10 +2263,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffee76",
+      "fillcolor": "#7bc45f",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffee76"
+        "color": "#7bc45f"
       },
       "mode": "lines",
       "name": "T3",
@@ -2292,10 +2292,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffee76",
+      "fillcolor": "#7bc45f",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffee76"
+        "color": "#7bc45f"
       },
       "mode": "lines",
       "name": "T3",
@@ -2321,10 +2321,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffee76",
+      "fillcolor": "#7bc45f",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffee76"
+        "color": "#7bc45f"
       },
       "mode": "lines",
       "name": "T3",
@@ -2353,7 +2353,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#a8e89a",
+        "color": "#5e4699",
         "width": 0
       },
       "mode": "lines",
@@ -2380,7 +2380,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#a8e89a",
+        "color": "#5e4699",
         "dash": "solid",
         "width": 0.7
       },
@@ -2400,10 +2400,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#a8e89a",
+      "fillcolor": "#5e4699",
       "hoverinfo": "text",
       "line": {
-        "color": "#a8e89a"
+        "color": "#5e4699"
       },
       "mode": "lines",
       "name": "T4",
@@ -2474,7 +2474,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#816bb9",
+        "color": "#f7943a",
         "width": 0
       },
       "mode": "lines",
@@ -2501,7 +2501,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#816bb9",
+        "color": "#f7943a",
         "dash": "solid",
         "width": 0.7
       },
@@ -2564,7 +2564,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#816bb9",
+        "color": "#f7943a",
         "dash": "solid",
         "width": 0.7
       },
@@ -2626,10 +2626,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#816bb9",
+      "fillcolor": "#f7943a",
       "hoverinfo": "text",
       "line": {
-        "color": "#816bb9"
+        "color": "#f7943a"
       },
       "mode": "lines",
       "name": "T5",
@@ -2655,10 +2655,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#816bb9",
+      "fillcolor": "#f7943a",
       "hoverinfo": "text",
       "line": {
-        "color": "#816bb9"
+        "color": "#f7943a"
       },
       "mode": "lines",
       "name": "T5",
@@ -2684,10 +2684,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#816bb9",
+      "fillcolor": "#f7943a",
       "hoverinfo": "text",
       "line": {
-        "color": "#816bb9"
+        "color": "#f7943a"
       },
       "mode": "lines",
       "name": "T5",
@@ -2716,7 +2716,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffc56b",
+        "color": "#537ebf",
         "width": 0
       },
       "mode": "lines",
@@ -2743,7 +2743,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffc56b",
+        "color": "#537ebf",
         "dash": "solid",
         "width": 0.7
       },
@@ -2763,10 +2763,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#ffc56b",
+      "fillcolor": "#537ebf",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffc56b"
+        "color": "#537ebf"
       },
       "mode": "lines",
       "name": "T6",

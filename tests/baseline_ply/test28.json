@@ -30,7 +30,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -57,7 +57,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffadc9",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -78,9 +78,9 @@
     {
       "hoverinfo": "text",
       "marker": {
-        "color": "#ffadc9",
+        "color": "#f05f89",
         "line": {
-          "color": "#ffadc9"
+          "color": "#f05f89"
         },
         "size": 18.0,
         "symbol": "triangle-up"
@@ -104,7 +104,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffee76",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -131,7 +131,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffee76",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -152,9 +152,9 @@
     {
       "hoverinfo": "text",
       "marker": {
-        "color": "#ffee76",
+        "color": "#f0db36",
         "line": {
-          "color": "#ffee76"
+          "color": "#f0db36"
         },
         "size": 18.0,
         "symbol": "triangle-up"
@@ -178,7 +178,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#a8e89a",
+        "color": "#7bc45f",
         "width": 0
       },
       "mode": "lines",
@@ -205,7 +205,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#a8e89a",
+        "color": "#7bc45f",
         "dash": "solid",
         "width": 0.7
       },
@@ -226,9 +226,9 @@
     {
       "hoverinfo": "text",
       "marker": {
-        "color": "#a8e89a",
+        "color": "#7bc45f",
         "line": {
-          "color": "#a8e89a"
+          "color": "#7bc45f"
         },
         "size": 18.0,
         "symbol": "triangle-up"
@@ -252,7 +252,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#816bb9",
+        "color": "#5e4699",
         "width": 0
       },
       "mode": "lines",
@@ -279,7 +279,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#816bb9",
+        "color": "#5e4699",
         "dash": "solid",
         "width": 0.7
       },
@@ -300,9 +300,9 @@
     {
       "hoverinfo": "text",
       "marker": {
-        "color": "#816bb9",
+        "color": "#5e4699",
         "line": {
-          "color": "#816bb9"
+          "color": "#5e4699"
         },
         "size": 18.0,
         "symbol": "triangle-up"
@@ -326,7 +326,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#ffc56b",
+        "color": "#f7943a",
         "width": 0
       },
       "mode": "lines",
@@ -353,7 +353,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#ffc56b",
+        "color": "#f7943a",
         "dash": "solid",
         "width": 0.7
       },
@@ -374,9 +374,9 @@
     {
       "hoverinfo": "text",
       "marker": {
-        "color": "#ffc56b",
+        "color": "#f7943a",
         "line": {
-          "color": "#ffc56b"
+          "color": "#f7943a"
         },
         "size": 18.0,
         "symbol": "triangle-up"

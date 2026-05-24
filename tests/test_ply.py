@@ -244,7 +244,7 @@ test_cases = [
         "test01",
         pre.plot(
             data1,
-            color_col="transcript_id",
+            fill_col="transcript_id",
             outline_color="black",
             sort_ranges=True,
             return_plot="fig",
@@ -255,7 +255,7 @@ test_cases = [
         pre.plot(
             data1,
             id_col="second_id",
-            color_col="transcript_id",
+            fill_col="transcript_id",
             shrink=True,
             outline_color="black",
             sort_ranges=True,
@@ -267,8 +267,8 @@ test_cases = [
         pre.plot(
             data1,
             id_col=["transcript_id", "second_id"],
-            color_col="transcript_id",
-            packed=False,
+            fill_col="transcript_id",
+            pack=False,
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -295,7 +295,7 @@ test_cases = [
         "test06",
         pre.plot(
             [data2, data3],
-            color_col="transcript_id",
+            fill_col="transcript_id",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -305,8 +305,8 @@ test_cases = [
         pre.plot(
             [data2, data3],
             id_col="Feature",
-            color_col="transcript_id",
-            text="{Feature}",
+            fill_col="transcript_id",
+            label="{Feature}",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -314,10 +314,13 @@ test_cases = [
     (
         "test08",
         pre.plot(
-            [data1, data2, data3],
+            [
+                pre.Track(data1, name=1),
+                pre.Track(data2, name=2),
+                pre.Track(data3, name=3),
+            ],
             id_col="transcript_id",
-            color_col="Feature",
-            track_labels=[1, 2, 3],
+            fill_col="Feature",
             shrink=True,
             sort_ranges=True,
             return_plot="fig",
@@ -326,10 +329,9 @@ test_cases = [
     (
         "test09",
         pre.plot(
-            [data2, data2],
+            [pre.Track(data2, "mRNA"), pre.Track(data2, "mRNA")],
             id_col="transcript_id",
-            packed=False,
-            adapter="mRNA",
+            pack=False,
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -337,10 +339,9 @@ test_cases = [
     (
         "test10",
         pre.plot(
-            data2,
-            adapter="mRNA",
+            pre.Track(data2, "mRNA"),
             limits=(75, 125),
-            text="{Feature}",
+            label="{Feature}",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -371,9 +372,9 @@ test_cases = [
         pre.plot(
             [data2, data3],
             id_col="transcript_id",
-            color_col="Feature",
+            fill_col="Feature",
             legend=True,
-            title_chr="TITLE {chrom}",
+            panel_title="TITLE {chrom}",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -383,7 +384,7 @@ test_cases = [
         pre.plot(
             [data4, data5],
             id_col="id",
-            color_col="depth",
+            fill_col="depth",
             depth_col="depth",
             tooltip="{depth}",
             return_plot="fig",
@@ -394,7 +395,7 @@ test_cases = [
         pre.plot(
             [data4, data5],
             id_col="id",
-            color_col="depth",
+            fill_col="depth",
             depth_col="depth",
             tooltip="{depth}",
             theme="dark",
@@ -406,7 +407,7 @@ test_cases = [
         pre.plot(
             [data4, data5],
             id_col="id",
-            color_col="depth",
+            fill_col="depth",
             depth_col="depth",
             tooltip="{depth}",
             colormap={"0": "#505050", "1": "goldenrod"},
@@ -457,8 +458,8 @@ test_cases = [
         pre.plot(
             data1,
             id_col=["transcript_id", "second_id"],
-            color_col="transcript_id",
-            packed=False,
+            fill_col="transcript_id",
+            pack=False,
             return_plot="fig",
         ),
     ),
@@ -467,7 +468,7 @@ test_cases = [
         pre.plot(
             data6,
             id_col="id",
-            color_col="height",
+            fill_col="height",
             height_col="height",
             interval_height=0.8,
             theme="pastel",
@@ -479,7 +480,7 @@ test_cases = [
         pre.plot(
             data7,
             id_col="id",
-            color_col="fill",
+            fill_col="fill",
             outline_col="outline",
             colormap="direct",
             legend=True,
@@ -491,10 +492,10 @@ test_cases = [
         pre.plot(
             data7,
             id_col="id",
-            color_col="score",
+            fill_col="score",
             outline_col="outline_score",
             colormap={
-                "color": {
+                "fill": {
                     "type": "quantitative",
                     "colors": ["blue", "white", "red"],
                     "range": (0, 1),
@@ -508,9 +509,8 @@ test_cases = [
     (
         "test25",
         pre.plot(
-            data2,
-            "mRNA",
-            color_col="Feature",
+            pre.Track(data2, "mRNA"),
+            fill_col="Feature",
             colormap={"exon": "lightgrey", "CDS": "gold"},
             sort_ranges=True,
             return_plot="fig",
@@ -519,10 +519,8 @@ test_cases = [
     (
         "test26",
         pre.plot(
-            data2,
-            adapter="mRNA",
-            utr_height=0.6,
-            color_col="Feature",
+            pre.Track(data2, "mRNA", utr_height=0.6),
+            fill_col="Feature",
             colormap={"exon": "lightgrey", "CDS": "gold"},
             sort_ranges=True,
             return_plot="fig",
@@ -531,9 +529,8 @@ test_cases = [
     (
         "test27",
         pre.plot(
-            data8,
-            "SNP",
-            color_col="ALT",
+            pre.Track(data8, "SNP"),
+            fill_col="ALT",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -541,9 +538,7 @@ test_cases = [
     (
         "test28",
         pre.plot(
-            [data2, data8],
-            adapter=["mRNA", "SNP"],
-            shape="triangle-up",
+            [pre.Track(data2, "mRNA"), pre.Track(data8, "SNP", shape="triangle-up")],
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -551,10 +546,8 @@ test_cases = [
     (
         "test29",
         pre.plot(
-            data8,
-            "SNP",
-            shape="triangle-down",
-            color_col="ALT",
+            pre.Track(data8, "SNP", shape="triangle-down"),
+            fill_col="ALT",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -562,10 +555,8 @@ test_cases = [
     (
         "test30",
         pre.plot(
-            data8,
-            "SNP",
-            shape="circle",
-            color_col="ALT",
+            pre.Track(data8, "SNP", shape="circle"),
+            fill_col="ALT",
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -575,12 +566,12 @@ test_cases = [
         pre.plot(
             data1,
             id_col="transcript_id",
-            color_col="transcript_id",
-            text="{transcript_id}:{Feature}",
-            text_position="right",
-            text_fit=False,
-            text_pad=1,
-            text_size=8,
+            fill_col="transcript_id",
+            label="{transcript_id}:{Feature}",
+            label_position="right",
+            label_fit=False,
+            label_pad=1,
+            label_size=8,
             sort_ranges=True,
             return_plot="fig",
         ),
@@ -590,25 +581,24 @@ test_cases = [
         pre.plot(
             data7,
             id_col="id",
-            color_col="fill",
+            fill_col="fill",
             colormap="direct",
-            text="{id}",
-            text_position="center",
-            text_color="white",
-            text_size=9,
+            label="{id}",
+            label_position="center",
+            label_color="white",
+            label_size=9,
             return_plot="fig",
         ),
     ),
     (
         "test33",
         pre.plot(
-            data8,
-            "SNP",
-            color_col="ALT",
-            text="{REF}>{ALT}",
-            text_position="above",
-            text_angle=20,
-            text_size=8,
+            pre.Track(data8, "SNP"),
+            fill_col="ALT",
+            label="{REF}>{ALT}",
+            label_position="above",
+            label_angle=20,
+            label_size=8,
             sort_ranges=True,
             return_plot="fig",
         ),

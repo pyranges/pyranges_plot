@@ -79,8 +79,8 @@ for ext in ["png"]:  # , 'pdf']:
     pre.plot(
         [gr, w, z, mapped_t1, mapped_t2, t1, t2, mapped_w, mapped_z],
         id_col="transcript_id",
-        color_col="transcript_id",
-        title_chr="Sequence: {chrom}",
+        fill_col="transcript_id",
+        panel_title="Sequence: {chrom}",
         warnings=False,
         y_labels=[
             "g",

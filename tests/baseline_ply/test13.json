@@ -44,7 +44,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -71,7 +71,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -133,10 +133,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -162,10 +162,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -194,7 +194,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -221,7 +221,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -284,7 +284,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -346,10 +346,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -375,10 +375,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -404,10 +404,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -436,7 +436,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -463,7 +463,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -483,10 +483,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -557,7 +557,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -584,7 +584,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -647,7 +647,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -709,10 +709,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -738,10 +738,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -767,10 +767,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -799,7 +799,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -826,7 +826,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -846,10 +846,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -1254,7 +1254,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "width": 0
       },
       "mode": "lines",
@@ -1281,7 +1281,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f0db36",
+        "color": "#f05f89",
         "dash": "solid",
         "width": 0.7
       },
@@ -1343,10 +1343,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",
@@ -1372,10 +1372,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "Feature: exon",

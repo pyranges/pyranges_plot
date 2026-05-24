@@ -59,7 +59,7 @@ def categorical_outline_items(df):
     return items
 
 
-def _quantitative_info(df, tag_col, color_col, title_col):
+def _quantitative_info(df, tag_col, fill_col, title_col):
     if tag_col not in df.columns:
         return None
     values = pd.to_numeric(df[tag_col], errors="coerce")
@@ -67,14 +67,14 @@ def _quantitative_info(df, tag_col, color_col, title_col):
     if not mask.any():
         return None
 
-    qdf = pd.DataFrame({"value": values[mask], "color": df.loc[mask, color_col]})
+    qdf = pd.DataFrame({"value": values[mask], "fill": df.loc[mask, fill_col]})
     qdf = qdf.drop_duplicates("value").sort_values("value")
     vmin = float(qdf["value"].min())
     vmax = float(qdf["value"].max())
     if vmin == vmax:
         vmax = vmin + 1
 
-    colors = [mcolors.to_hex(color) for color in qdf["color"]]
+    colors = [mcolors.to_hex(color) for color in qdf["fill"]]
     if len(colors) == 1:
         colors = colors * 2
     title = _first_present(df, title_col, "")

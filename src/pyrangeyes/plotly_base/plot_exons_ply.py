@@ -147,10 +147,10 @@ def plot_exons_ply(
     legend=False,
     return_plot=None,
     add_aligned_plots=None,
-    track_labels=False,
-    text=True,
-    title_chr=None,
-    packed=True,
+    track_names=False,
+    label=True,
+    panel_title=None,
+    pack=True,
     to_file=None,
     file_size=None,
     warnings=None,
@@ -162,20 +162,20 @@ def plot_exons_ply(
 
     # Get default plot features
     intron_color = feat_dict["intron_color"]
-    fig_bkg = feat_dict["fig_bkg"]
-    plot_bkg = feat_dict["plot_bkg"]
+    figure_bg = feat_dict["figure_bg"]
+    track_bg = feat_dict["track_bg"]
     plot_border = feat_dict["plot_border"]
     title_dict_ply = feat_dict["title_dict_ply"]
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["outline_color"]
     exon_height = feat_dict["interval_height"]
     v_spacer = feat_dict["v_spacer"]
-    text_size = feat_dict["text_size"]
+    label_size = feat_dict["label_size"]
     plotly_port = feat_dict["plotly_port"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
-    shrunk_bkg = feat_dict["shrunk_bkg"]
+    shrunk_bg = feat_dict["shrunk_bg"]
     x_ticks = feat_dict["x_ticks"]
 
     # Create figure and chromosome plots
@@ -186,15 +186,15 @@ def plot_exons_ply(
         genesmd_df,
         id_col,
         ts_data,
-        title_chr,
+        panel_title,
         title_dict_ply,
         grid_color,
-        packed,
-        track_labels,
+        pack,
+        track_names,
         x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
-        shrunk_bkg,
+        shrunk_bg,
         v_spacer,
         exon_height,
         plot_border,
@@ -216,11 +216,11 @@ def plot_exons_ply(
             legend,
             return_plot,
             transcript_str,
-            text,
-            text_size,
+            label,
+            label_size,
             exon_height,
             exon_border,
-            plot_bkg,
+            track_bg,
             arrow_line_width,
             arrow_color,
             arrow_size,
@@ -231,10 +231,10 @@ def plot_exons_ply(
 
     # Adjust plot display
     fig.update_layout(
-        plot_bgcolor=plot_bkg,
+        plot_bgcolor=track_bg,
         font_color=plot_border,
         showlegend=legend,
-        paper_bgcolor=fig_bkg,
+        paper_bgcolor=figure_bg,
     )
     fig.update_xaxes(
         showline=True,
@@ -304,7 +304,7 @@ def gby_plot_exons(
     return_plot,
     transcript_str,
     text,
-    text_size,
+    label_size,
     exon_height,
     exon_border,
     plot_background,
@@ -421,7 +421,7 @@ def gby_plot_exons(
     apply_gene_bridge(
         transcript_str,
         text,
-        text_size,
+        label_size,
         df,
         fig,
         draw_strand,

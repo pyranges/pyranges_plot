@@ -20,9 +20,9 @@ pre.plot(
     arrow_size=0.03,
     shrink=True,
     shrink_threshold=500,
-    text=True,
-    text_pad=100,
+    label=True,
+    label_pad=100,
     title_size=25,
     outline_color="black",
-    text_size=15,
+    label_size=15,
 )

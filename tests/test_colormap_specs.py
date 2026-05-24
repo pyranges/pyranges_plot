@@ -39,10 +39,10 @@ def test_matplotlib_named_colors_work_in_mappings_and_direct_columns():
     mapped = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
+            "fill": {"x": "skyblue", "y": "gold"},
             "outline": {"ok": "navy", "warn": "black"},
         },
         return_plot="fig",
@@ -51,7 +51,7 @@ def test_matplotlib_named_colors_work_in_mappings_and_direct_columns():
     direct = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill_name",
+        fill_col="fill_name",
         outline_col="outline_name",
         colormap="direct",
         return_plot="fig",
@@ -70,10 +70,10 @@ def test_plotly_named_colors_work_in_mappings_and_direct_columns():
     mapped = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
+            "fill": {"x": "skyblue", "y": "gold"},
             "outline": {"ok": "navy", "warn": "black"},
         },
         return_plot="fig",
@@ -82,7 +82,7 @@ def test_plotly_named_colors_work_in_mappings_and_direct_columns():
     direct = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill_name",
+        fill_col="fill_name",
         outline_col="outline_name",
         colormap="direct",
         return_plot="fig",
@@ -105,7 +105,7 @@ def test_plotly_legend_entries_are_deduplicated():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         colormap={"x": "skyblue", "y": "gold"},
         legend=True,
         return_plot="fig",
@@ -124,10 +124,10 @@ def test_plotly_legend_shows_fill_and_outline_when_mapped():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
+            "fill": {"x": "skyblue", "y": "gold"},
             "outline": {"ok": "navy", "warn": "black"},
         },
         legend=True,
@@ -150,10 +150,10 @@ def test_plotly_quantitative_legend_uses_colorbars():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         outline_col="outline_score",
         colormap={
-            "color": {"type": "quantitative", "colors": ["blue", "red"]},
+            "fill": {"type": "quantitative", "colors": ["blue", "red"]},
             "outline": {"type": "quantitative", "colors": ["black", "white"]},
         },
         legend=True,
@@ -188,7 +188,7 @@ def test_quantitative_colormap_accepts_named_color_gradients():
     mpl_fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         colormap={"type": "quantitative", "colors": ["navy", "gold"]},
         return_plot="fig",
         warnings=False,
@@ -197,7 +197,7 @@ def test_quantitative_colormap_accepts_named_color_gradients():
     ply_fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         colormap={"type": "quantitative", "colors": ["navy", "gold"]},
         return_plot="fig",
         warnings=False,
@@ -219,7 +219,7 @@ def test_matplotlib_quantitative_colormap_auto_range():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         colormap={"type": "quantitative", "colors": ["blue", "red"]},
         return_plot="fig",
         warnings=False,
@@ -235,7 +235,7 @@ def test_matplotlib_quantitative_colormap_manual_range():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         colormap={
             "type": "quantitative",
             "colors": ["blue", "white", "red"],
@@ -255,10 +255,10 @@ def test_matplotlib_quantitative_colormap_for_fill_and_outline():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         outline_col="outline_score",
         colormap={
-            "color": {"type": "quantitative", "colors": ["blue", "red"]},
+            "fill": {"type": "quantitative", "colors": ["blue", "red"]},
             "outline": {"type": "quantitative", "colors": ["black", "white"]},
         },
         return_plot="fig",
@@ -276,10 +276,10 @@ def test_matplotlib_legend_labels_use_mapping_column_names():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
+            "fill": {"x": "skyblue", "y": "gold"},
             "outline": {"ok": "navy", "warn": "black"},
         },
         legend=True,
@@ -298,10 +298,10 @@ def test_matplotlib_bottom_legend_space_separates_multiple_legends():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         outline_col="outline_score",
         colormap={
-            "color": {"type": "quantitative", "colors": ["blue", "red"]},
+            "fill": {"type": "quantitative", "colors": ["blue", "red"]},
             "outline": {"type": "quantitative", "colors": ["black", "white"]},
         },
         legend=True,
@@ -321,7 +321,7 @@ def test_plotly_quantitative_colormap_auto_range():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="score",
+        fill_col="score",
         colormap={"type": "quantitative", "colors": ["blue", "red"]},
         return_plot="fig",
         warnings=False,
@@ -342,9 +342,9 @@ def test_channel_outline_spec_requires_outline_col():
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="kind",
+            fill_col="kind",
             colormap={
-                "color": {"x": "#111111", "y": "#222222"},
+                "fill": {"x": "#111111", "y": "#222222"},
                 "outline": {"ok": "#333333", "warn": "#444444"},
             },
             return_plot="fig",
@@ -359,9 +359,9 @@ def test_fixed_outline_color_is_not_a_colormap_outline_spec():
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="kind",
+            fill_col="kind",
             outline_col="status",
-            colormap={"color": {"x": "#111111", "y": "#222222"}, "outline": "black"},
+            colormap={"fill": {"x": "#111111", "y": "#222222"}, "outline": "black"},
             return_plot="fig",
             warnings=False,
         )
@@ -376,11 +376,11 @@ def test_colormap_outline_and_outline_color_are_mutually_exclusive():
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="kind",
+            fill_col="kind",
             outline_col="status",
             outline_color="black",
             colormap={
-                "color": {"x": "#111111", "y": "#222222"},
+                "fill": {"x": "#111111", "y": "#222222"},
                 "outline": {"ok": "#333333", "warn": "#444444"},
             },
             return_plot="fig",
@@ -388,19 +388,19 @@ def test_colormap_outline_and_outline_color_are_mutually_exclusive():
         )
 
 
-def test_colormap_text_channel_maps_text_from_color_col():
+def test_colormap_text_channel_maps_text_from_fill_col():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
-            "text": {"x": "purple", "y": "green"},
+            "fill": {"x": "skyblue", "y": "gold"},
+            "label": {"x": "purple", "y": "green"},
         },
-        text=True,
-        text_color_col="kind",
+        label=True,
+        label_color_col="kind",
         return_plot="fig",
         warnings=False,
     )
@@ -412,16 +412,16 @@ def test_colormap_text_channel_maps_text_from_color_col():
     ]
 
 
-def test_text_color_defaults_to_global_option_not_fill_color():
+def test_label_color_defaults_to_global_option_not_fill_color():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         colormap={"x": "skyblue", "y": "gold"},
-        text=True,
-        text_color="crimson",
+        label=True,
+        label_color="crimson",
         return_plot="fig",
         warnings=False,
     )
@@ -439,13 +439,13 @@ def test_plotly_colormap_text_channel_sets_annotation_font_colors():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
-            "text": {"x": "purple", "y": "green"},
+            "fill": {"x": "skyblue", "y": "gold"},
+            "label": {"x": "purple", "y": "green"},
         },
-        text=True,
-        text_color_col="kind",
+        label=True,
+        label_color_col="kind",
         return_plot="fig",
         warnings=False,
     )
@@ -461,19 +461,19 @@ def test_plotly_colormap_text_channel_sets_annotation_font_colors():
     ]
 
 
-def test_colormap_text_spec_requires_text_color_col():
+def test_colormap_text_spec_requires_label_color_col():
     pre.set_engine("matplotlib")
 
-    with pytest.raises(ValueError, match="requires text_color_col"):
+    with pytest.raises(ValueError, match="requires label_color_col"):
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="kind",
+            fill_col="kind",
             colormap={
-                "color": {"x": "skyblue", "y": "gold"},
-                "text": {"x": "purple", "y": "green"},
+                "fill": {"x": "skyblue", "y": "gold"},
+                "label": {"x": "purple", "y": "green"},
             },
-            text=True,
+            label=True,
             return_plot="fig",
             warnings=False,
         )
@@ -485,9 +485,9 @@ def test_colormap_text_aliases_reuse_resolved_channels():
     fill = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
-        colormap={"color": {"x": "skyblue", "y": "gold"}, "text": "color"},
-        text=True,
+        fill_col="kind",
+        colormap={"fill": {"x": "skyblue", "y": "gold"}, "label": "fill"},
+        label=True,
         return_plot="fig",
         warnings=False,
     )
@@ -497,14 +497,14 @@ def test_colormap_text_aliases_reuse_resolved_channels():
     outline = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "skyblue", "y": "gold"},
+            "fill": {"x": "skyblue", "y": "gold"},
             "outline": {"ok": "purple", "warn": "green"},
-            "text": "outline",
+            "label": "outline",
         },
-        text=True,
+        label=True,
         return_plot="fig",
         warnings=False,
     )
@@ -528,7 +528,7 @@ def test_colormap_text_aliases_reuse_resolved_channels():
             {"type": "quantitative", "colors": [(0, "blue"), (2, "red")]},
             "between 0 and 1",
         ),
-        ({"color": "Set3", "outline": "Set3", "extra": "bad"}, "only accepts keys"),
+        ({"fill": "Set3", "outline": "Set3", "extra": "bad"}, "only accepts keys"),
     ],
 )
 def test_invalid_colormap_specs_raise_informative_errors(colormap, message):
@@ -538,7 +538,7 @@ def test_invalid_colormap_specs_raise_informative_errors(colormap, message):
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="score",
+            fill_col="score",
             outline_col="outline_score",
             colormap=colormap,
             return_plot="fig",
@@ -553,7 +553,7 @@ def test_quantitative_colormap_requires_numeric_values():
         pre.plot(
             _style_data(),
             id_col="id",
-            color_col="bad_score",
+            fill_col="bad_score",
             colormap={"type": "quantitative", "colors": "viridis"},
             return_plot="fig",
             warnings=False,

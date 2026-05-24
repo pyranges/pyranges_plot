@@ -1,3 +1,10 @@
 # Local-only generated artifacts and showcase/report scripts
 artifacts/
 examples/make_adapter_showcase.py
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+docs/_build/
+my_plot.pdf
+my_plot.png
