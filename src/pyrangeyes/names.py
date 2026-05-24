@@ -37,6 +37,8 @@ THICK_COL = "__thickness_col__"
 SHAPE_COL = "__shape_col__"
 MARKER_SIZE_COL = "__marker_size_col__"
 REVERSE_COL = "__reverse_x__"
+SQUISH_COL = "__squish__"
+SQUISH_FACTOR_COL = "__squish_factor__"
 
 # Panel/region splitting (multi-window per chromosome)
 PANEL_SEP = (

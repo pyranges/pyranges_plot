@@ -48,11 +48,30 @@ from .names import (
     SHAPE_COL,
     MARKER_SIZE_COL,
     REVERSE_COL,
+    SQUISH_COL,
+    SQUISH_FACTOR_COL,
 )
+
+
+def _normalize_track_flags(value, n_tracks, *, name):
+    """Normalize a bool or per-track bool list into ``list[bool]``."""
+    if isinstance(value, bool):
+        return [value] * n_tracks
+    if isinstance(value, (list, tuple)):
+        if len(value) != n_tracks:
+            raise ValueError(
+                f"{name} must be a bool or a list with one bool per track "
+                f"({n_tracks} expected, got {len(value)})."
+            )
+        if not all(isinstance(item, bool) for item in value):
+            raise TypeError(f"{name} list entries must all be bool values.")
+        return list(value)
+    raise TypeError(f"{name} must be a bool or a list of bool values.")
 
 
 def _normalize_text_spec(text, packed, *, text_position, text_fit, text_angle):
     """Normalize the public ``text=`` argument into a rendering spec."""
+    defaulted = text is None
     if text is None:
         text = bool(packed)
     if not isinstance(text, (bool, str)):
@@ -68,6 +87,7 @@ def _normalize_text_spec(text, packed, *, text_position, text_fit, text_angle):
     enabled = bool(text)
     return {
         "enabled": enabled,
+        "defaulted": defaulted,
         "label": text if isinstance(text, str) else None,
         "position": text_position,
         "angle": text_angle,
@@ -95,8 +115,11 @@ def _assign_text_group_spans(subdf, id_col, interval_height):
     # Vertical text at pad=0 should sit outside the full allocated interval row,
     # not the possibly shorter rendered rectangle from height_col/adapters. This
     # matches the intron-arrow envelope and keeps UTR-only labels from appearing
-    # inside the row's visual space.
-    subdf[TEXT_HEIGHT_COL] = interval_height
+    # inside the row's visual space. Squished tracks use the squished row height.
+    if SQUISH_FACTOR_COL in subdf.columns:
+        subdf[TEXT_HEIGHT_COL] = interval_height * subdf[SQUISH_FACTOR_COL]
+    else:
+        subdf[TEXT_HEIGHT_COL] = interval_height
     return subdf
 
 
@@ -354,6 +377,7 @@ def plot(
     limits=None,
     regions=None,
     reverse=False,
+    squish=False,
     text=None,
     legend=False,
     title_chr=None,
@@ -392,9 +416,10 @@ def plot(
     max_shown: int, default 20
         Maximum number of genes plotted in the dataframe order.
 
-    packed: bool, default True
+    packed: bool or list of bool, default True
         Disposition of the genes in the plot. Use True for a packed disposition (genes in the same line if
-        they do not overlap) and False for unpacked (one row per gene).
+        they do not overlap) and False for unpacked (one row per gene). When a list is provided, it must
+        contain one bool per track.
 
     return_plot: {None, "fig", "app"}, default None
         Return the backend figure/app instead of only displaying or saving it.
@@ -471,9 +496,16 @@ def plot(
         name, ``(chromosome, start, end)`` region tuple, or list of these to reverse selected
         panels; or a dict mapping selectors to booleans.
 
+    squish: bool or list of bool, default False
+        Render selected tracks in compact form. Squished tracks use
+        ``squish_factor`` to reduce interval height and vertical spacing among
+        stacked intervals. Text labels are hidden for squished tracks, even when
+        ``text=True`` or a format string is provided.
+
     text: {None, bool, str}, default None
         Controls interval text annotations. If None, text is enabled for packed
-        plots and disabled for unpacked plots to avoid duplicated row labels.
+        plots and disabled for unpacked plots to avoid duplicated row labels. If
+        ``packed`` is a list, the default is enabled only when all tracks are packed.
         If True, the id/index is used; if False, labels are disabled. A string
         is interpreted as a row-value format template such as ``"{Feature}: {id}"``.
         Use ``text_pad``, ``text_size``, ``text_color``, ``text_angle``,
@@ -577,6 +609,8 @@ def plot(
     # Treat input data as list
     if not isinstance(data, list):
         data = [data]
+    squish_flags = _normalize_track_flags(squish, len(data), name="squish")
+    packed_flags = _normalize_track_flags(packed, len(data), name="packed")
 
     if adapter is not None:
         if isinstance(adapter, str):
@@ -632,9 +666,9 @@ def plot(
             shape_col = default_plot_args["shape_col"]
 
     # Ensure correct track_labels
-    if track_labels:
+    if track_labels is not None and track_labels is not False:
         if len(track_labels) != len(data):
-            raise Exception(
+            raise ValueError(
                 f"The number of provided track_labels {track_labels} does not match the number of tracks ({len(data)})."
             )
 
@@ -751,15 +785,24 @@ def plot(
         "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
         "shrunk_bkg": getvalue("shrunk_bkg"),
+        "squish_factor": float(getvalue("squish_factor")),
         "x_ticks": getvalue("x_ticks"),
+    }
+    if not 0 < feat_dict["squish_factor"] <= 1:
+        raise ValueError("squish_factor must be > 0 and <= 1.")
+    track_scales = {
+        pr_ix: feat_dict["squish_factor"] if flag else 1.0
+        for pr_ix, flag in enumerate(squish_flags)
     }
     text = _normalize_text_spec(
         text,
-        packed,
+        all(packed_flags),
         text_position=feat_dict["text_position"],
         text_fit=feat_dict["text_fit"],
         text_angle=feat_dict["text_angle"],
     )
+    packed_by_track = dict(enumerate(packed_flags))
+    packed_for_axes = all(packed_flags)
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
     if colormap == "popart":
@@ -804,6 +847,8 @@ def plot(
     subdf = pd.concat(df_d, names=[PR_INDEX_COL]).reset_index(
         level=PR_INDEX_COL
     )  ### change to pr but doesn't work yet!!
+    subdf[SQUISH_COL] = subdf[PR_INDEX_COL].map(dict(enumerate(squish_flags)))
+    subdf[SQUISH_FACTOR_COL] = subdf[PR_INDEX_COL].map(track_scales)
 
     # If `regions` is provided, replace the default chromosome layout with the
     # requested region panels and ignore `limits` for this call. Otherwise,
@@ -836,7 +881,9 @@ def plot(
             return vals[0] if len(vals) == 1 else tuple(vals)
 
         subdf[TEXT_LABEL_COL] = [
-            _format_text_label(row, text, _row_genename(row))
+            ""
+            if bool(row.get(SQUISH_COL, False))
+            else _format_text_label(row, text, _row_genename(row))
             for _, row in subdf.iterrows()
         ]
 
@@ -878,6 +925,14 @@ def plot(
     else:
         subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
 
+    if any(squish_flags):
+        subdf[THICK_COL] = subdf[THICK_COL] * subdf[SQUISH_FACTOR_COL]
+    feat_dict["layout_interval_height"] = (
+        float(subdf[THICK_COL].max())
+        if any(squish_flags)
+        else feat_dict["interval_height"]
+    )
+
     if shape_col is not None:
         if shape_col not in subdf.columns:
             raise ValueError(
@@ -902,6 +957,8 @@ def plot(
 
     if adapters.ADAPTER_MARKER_SIZE_COL in subdf.columns:
         subdf[MARKER_SIZE_COL] = subdf[adapters.ADAPTER_MARKER_SIZE_COL]
+        if any(squish_flags):
+            subdf[MARKER_SIZE_COL] = subdf[MARKER_SIZE_COL] * subdf[SQUISH_FACTOR_COL]
 
     # Store color information in data
     # color_col as list
@@ -977,9 +1034,13 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
+        interval_height=feat_dict["interval_height"],
+        v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
         text_avoid=text["enabled"] and text["fit"],
+        track_scales=track_scales,
+        packed_by_track=packed_by_track,
     )
 
     # Create chromosome metadata DataFrame
@@ -989,10 +1050,10 @@ def plot(
         genesmd_df,
         packed,
         feat_dict["v_spacer"],
-        feat_dict["interval_height"],
+        feat_dict["layout_interval_height"],
     )
     chrmd_df = _attach_panel_y_height(
-        chrmd_df, genesmd_df, feat_dict["interval_height"]
+        chrmd_df, genesmd_df, feat_dict["layout_interval_height"]
     )
     _attach_panel_display(chrmd_df_grouped, panel_display)
     reverse_flags = _normalize_reverse(reverse, subdf, chrmd_df_grouped)
@@ -1059,9 +1120,13 @@ def plot(
         text_pad=feat_dict["text_pad"],
         packed=packed,
         sort_ranges=sort_ranges,
+        interval_height=feat_dict["interval_height"],
+        v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
         text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
         text_avoid=text["enabled"] and text["fit"],
+        track_scales=track_scales,
+        packed_by_track=packed_by_track,
     )
 
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
@@ -1070,11 +1135,11 @@ def plot(
         genesmd_df,
         packed,
         feat_dict["v_spacer"],
-        feat_dict["interval_height"],
+        feat_dict["layout_interval_height"],
         ts_data=ts_data if shrink else None,
     )
     chrmd_df = _attach_panel_y_height(
-        chrmd_df, genesmd_df, feat_dict["interval_height"]
+        chrmd_df, genesmd_df, feat_dict["layout_interval_height"]
     )
     _attach_panel_display(chrmd_df_grouped, panel_display)
     chrmd_df_grouped[REVERSE_COL] = [
@@ -1170,7 +1235,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1203,7 +1268,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1240,7 +1305,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1271,7 +1336,7 @@ def plot(
                     track_labels=track_labels,
                     text=text,
                     title_chr=title_chr,
-                    packed=packed,
+                    packed=packed_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,

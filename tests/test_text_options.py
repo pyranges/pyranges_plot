@@ -219,8 +219,8 @@ def test_plotly_above_below_pad_zero_uses_full_row_height():
 
     above_ann = next(ann for ann in above.layout.annotations if ann.text == "utr")
     below_ann = next(ann for ann in below.layout.annotations if ann.text == "utr")
-    assert above_ann.y == pytest.approx(0.9)
-    assert below_ann.y == pytest.approx(0.1)
+    assert above_ann.y == pytest.approx(1.05)
+    assert below_ann.y == pytest.approx(0.25)
 
 
 def test_matplotlib_above_below_pad_zero_uses_full_row_height():
@@ -246,7 +246,7 @@ def test_matplotlib_above_below_pad_zero_uses_full_row_height():
         return_plot="fig",
     )
     text = next(t for t in fig.axes[0].texts if t.get_text() == "utr")
-    assert text.get_position()[1] == pytest.approx(0.9)
+    assert text.get_position()[1] == pytest.approx(1.05)
 
 
 def test_plotly_text_angle_matches_matplotlib_direction():

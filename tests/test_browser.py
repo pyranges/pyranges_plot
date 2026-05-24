@@ -97,7 +97,7 @@ def test_browser_full_button_restores_axis_group_labels():
     layout_update = full_button.args[1]
 
     assert layout_update["yaxis.ticktext"] == ["a", "b"]
-    assert layout_update["yaxis.tickvals"] == [1.5, 0.5]
+    assert layout_update["yaxis.tickvals"] == [1.4, 0.55]
 
 
 def test_browser_modes_update_axis_geometry_and_clear_stale_labels():
@@ -153,7 +153,10 @@ def test_browser_zip_hides_axes_and_is_shorter_than_squish_for_single_panel():
 
     assert zip_button.args[1]["xaxis.visible"] is False
     assert zip_button.args[1]["yaxis.visible"] is False
-    assert squish_button.args[1]["height"] < fig.layout.updatemenus[0].buttons[2].args[1]["height"]
+    assert (
+        squish_button.args[1]["height"]
+        < fig.layout.updatemenus[0].buttons[2].args[1]["height"]
+    )
 
 
 def test_browser_mode_switch_moves_subplot_titles_with_domains():
@@ -195,4 +198,7 @@ def test_squish_ignores_text_padding_when_packing_rows():
 
     squish_button = fig.layout.updatemenus[0].buttons[1]
 
-    assert squish_button.args[1]["yaxis.range"] == [0.295, 0.705]
+    assert squish_button.args[1]["yaxis.range"] == [
+        1.3877787807814457e-17,
+        0.41000000000000003,
+    ]

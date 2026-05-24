@@ -300,55 +300,56 @@ def plot_row(
             color = row.get(TEXT_COLOR_COL)
             angle = 0
             font_size = text_size
-        vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
+        if ann != "":
+            vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
-        group_start = row.get(TEXT_START_COL, x0)
-        group_end = row.get(TEXT_END_COL, x1)
-        group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
+            group_start = row.get(TEXT_START_COL, x0)
+            group_end = row.get(TEXT_END_COL, x1)
+            group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
 
-        x = group_start - text_pad
-        y = (y0 + y1) / 2
-        xanchor = "right"
-        yanchor = "middle"
-        if position == "right":
-            x = group_end + text_pad
-            xanchor = "left"
-        elif position == "center":
-            x = group_mid
-            xanchor = "center"
-        elif position == "above":
-            x = group_mid
-            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
-            y = (y0 + y1) / 2 + group_height / 2 + vertical_pad
-            xanchor = "center"
-            yanchor = "bottom"
-        elif position == "below":
-            x = group_mid
-            group_height = row.get(TEXT_HEIGHT_COL, exon_height)
-            y = (y0 + y1) / 2 - group_height / 2 - vertical_pad
-            xanchor = "center"
-            yanchor = "top"
+            x = group_start - text_pad
+            y = (y0 + y1) / 2
+            xanchor = "right"
+            yanchor = "middle"
+            if position == "right":
+                x = group_end + text_pad
+                xanchor = "left"
+            elif position == "center":
+                x = group_mid
+                xanchor = "center"
+            elif position == "above":
+                x = group_mid
+                group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+                y = (y0 + y1) / 2 + group_height / 2 + vertical_pad
+                xanchor = "center"
+                yanchor = "bottom"
+            elif position == "below":
+                x = group_mid
+                group_height = row.get(TEXT_HEIGHT_COL, exon_height)
+                y = (y0 + y1) / 2 - group_height / 2 - vertical_pad
+                xanchor = "center"
+                yanchor = "top"
 
-        font = {"size": font_size}
-        if color is not None:
-            font["color"] = color
+            font = {"size": font_size}
+            if color is not None:
+                font["color"] = color
 
-        annotation = dict(
-            x=x,
-            y=y,
-            showarrow=False,
-            text=ann,
-            textangle=-angle,
-            xanchor=xanchor,
-        )
-        annotation["yanchor"] = yanchor
+            annotation = dict(
+                x=x,
+                y=y,
+                showarrow=False,
+                text=ann,
+                textangle=-angle,
+                xanchor=xanchor,
+            )
+            annotation["yanchor"] = yanchor
 
-        fig.add_annotation(
-            annotation,
-            row=chrom_ix + 1,
-            col=1,
-            font=font,
-        )
+            fig.add_annotation(
+                annotation,
+                row=chrom_ix + 1,
+                col=1,
+                font=font,
+            )
 
     # Plot DIRECTION ARROW in EXON
     # decide about placing a direction arrow
