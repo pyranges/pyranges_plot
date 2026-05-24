@@ -13,10 +13,9 @@ If necessary, go through its tutorial first: https://pyranges1.readthedocs.io/
 Getting started
 ---------------
 
-The first compulsory step to obtain a plot is setting the **engine**, using function
-:func:`set_engine <pyrangeyes.set_engine>` after importing. We also **register** the plot function
-using :func:`register_methods <pyrangeyes.register_methods>`, which is optional but convenient:
-it allows to use the plot function directly from PyRanges objects (further explained later).
+First choose a plotting **engine** with :func:`set_engine <pyrangeyes.set_engine>`.
+Optionally call :func:`register_methods <pyrangeyes.register_methods>` to add pyrangeyes
+convenience methods to PyRanges objects, such as ``.plot(...)`` and ``.track(...)``.
 
     >>> import pyrangeyes as pe
     >>> pe.set_engine("plotly")  # possible engines: "plotly" and "matplotlib"
@@ -29,19 +28,20 @@ customize the appearance of the plot, showcased in this tutorial.
 To that end, we will use some example data included in the Pyrangeyes package.
 Yet, any PyRanges object can be used, e.g. loaded from gff, gtf, bam files.
 
-    >>> p = pe.example_data.p1
-    >>> print(p)  # doctest: +ELLIPSIS
-      index  |      Chromosome  Strand      Start      End  transcript_id    ...
+    >>> x = pe.example_data.p1
+    >>> x.head()  # doctest: +ELLIPSIS
+      index  |      Chromosome  Strand      Start      End  transcript_id    feature1    ...
     ...
-    PyRanges with 8 rows, 7 columns, and 1 index columns...
-    Contains 3 chromosomes and 2 strands.
+          0  |               1  +               1       11  t1               a           ...
+    ...
+    PyRanges with 5 rows, 7 columns, and 1 index columns...
 
 
 By default, :func:`plot <pyrangeyes.plot>` produces an interactive plot. If the Matplotlib engine is selected,
 a window appears. If the Plotly engine is selected, a server is automatically opened, and
 an address is printed in the console. The plot can be accessed by opening this address in a browser.
 
-    >>> pe.plot(p)
+    >>> pe.plot(x)
 
 .. image:: images/prp_rtd_01.png
 
@@ -55,18 +55,18 @@ Interactive navigation is intuitive:
 To create a pdf or png image file instead of opening an interactive plot,
 use the ``to_file`` parameter of :func:`plot <pyrangeyes.plot>`.
 
-    >>> pe.plot(p, to_file="my_plot.png")
+    >>> pe.plot(x, to_file="my_plot.png")
 
-Because we **registered** the plot function, we can also invoke it like a method of the PyRanges object, as
-``PyRanges.plot(...)``. This is equivalent to the previous code:
+Because we called ``register_methods()``, PyRanges objects now have a ``.plot(...)`` method.
+This is equivalent to calling ``pe.plot(...)``:
 
-    >>> p.plot(to_file="my_plot.png")
+    >>> x.plot(to_file="my_plot.png")
 
 In the figure above, intervals are displayed individually, i.e. each PyRanges row is treated as a separate entity.
 To link the intervals instead, as to represent a transcript composed of exons, use the ``id_column`` parameter,
 indicating the column name that defines the groups of intervals.
 
-    >>> pe.plot(p, id_col="transcript_id")
+    >>> pe.plot(x, id_col="transcript_id")
 
 .. image:: images/prp_rtd_02.png
 
@@ -74,7 +74,7 @@ Because the ``id_col`` parameter is used frequently, it can be set as default fo
 :func:`set_id_col <pyrangeyes.set_id_col>`. The following code is equivalent to the previous one:
 
     >>> pe.set_id_col("transcript_id")
-    >>> pe.plot(p)
+    >>> pe.plot(x)
 
 
 Selecting what to plot
@@ -84,14 +84,14 @@ By default, a **maximum of 25 transcripts** are plotted, customizable with the `
 :func:`plot <pyrangeyes.plot>`.
 Below, we can set the maximum number of transcripts show as 2. Note the warning shown:
 
-    >>> pe.plot(p, max_shown=2)
+    >>> pe.plot(x, max_shown=2)
 
 .. image:: images/prp_rtd_03.png
 
 To plot only a subset of the data, use the Pandas/PyRanges object's slicing capabilities.
 For example, this plots the intervals on chromosome 2, positive strand, between positions 100 and 200:
 
-    >>> (p.loci[2, '+', 100:200]).plot()
+    >>> (x.loci[2, '+', 100:200]).plot()
 
 By default, the **limits of plot coordinates** are set to show all the data, and leave some margin at the edges.
 This is customizable with the ``limits`` parameter.
@@ -105,13 +105,13 @@ The ``limits`` parameter accepts different input types:
 
 * PyRanges object, wherein Start and End columns define the limits for the corresponding Chromosome.
 
-    >>> pe.plot(p, limits={1: (None, 100), 2: (60, 200)})
+    >>> pe.plot(x, limits={1: (None, 100), 2: (60, 200)})
 
 .. image:: images/prp_rtd_04.png
 
 To plot with specified limits, use the following code:
 
-    >>> pe.plot(p, limits=(0,300))
+    >>> pe.plot(x, limits=(0,300))
 
 .. image:: images/prp_rtd_05.png
 
@@ -121,13 +121,13 @@ Defining regions for panels
 Use ``regions`` to replace the default one-panel-per-chromosome layout with specific panels.
 For example, this makes one panel per transcript by using a column name:
 
-    >>> pe.plot(p, regions="transcript_id", fill_col="transcript_id")
+    >>> pe.plot(x, regions="transcript_id", fill_col="transcript_id")
 
 .. image:: images/prp_rtd_29.png
 
 Explicit regions are also supported with ``(chromosome, start, end)`` tuples or PyRanges rows:
 
-    >>> pe.plot(p, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
+    >>> pe.plot(x, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
 Plotting intervals in strand direction
 --------------------------------------
@@ -164,7 +164,7 @@ We can select any other column to color the intervals by using the ``fill_col`` 
 of :func:`plot <pyrangeyes.plot>`.
 For example, let's color by the Strand column:
 
-    >>> pe.plot(p, fill_col="Strand")
+    >>> pe.plot(x, fill_col="Strand")
 
 .. image:: images/prp_rtd_06.png
 
@@ -176,7 +176,7 @@ It is a versatile parameter, accepting many different types of input. Colors can
 rgb strings, or explicit color names such as ``"skyblue"`` and ``"black"``.
 Using a dictionary allows to exert full control over the coloring, explicitly setting each value-color pair:
 
-    >>> pe.plot(p, fill_col="Strand",
+    >>> pe.plot(x, fill_col="Strand",
     ...          colormap={"+": "green", "-": "red"})
 
 .. image:: images/prp_rtd_07.png
@@ -187,22 +187,22 @@ One can provide a list of colors in hex or rgb; or a string recognized as the na
 Matplotlib or Plotly colormap;
 or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" Matplotlib colormap:
 
-    >>> pe.plot(p, colormap="Dark2")
+    >>> pe.plot(x, colormap="Dark2")
 
 .. image:: images/prp_rtd_08.png
 
 If a column already stores literal colors (for example hex strings), set ``colormap="direct"``
 to use those values directly instead of mapping them as categories:
 
-    >>> p["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
-    >>> pe.plot(p, fill_col="fill", colormap="direct")
+    >>> x["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
+    >>> pe.plot(x, fill_col="fill", colormap="direct")
 
 .. image:: images/prp_rtd_30.png
 
 By default, interval outlines use the same resolved color as the fill. For one fixed
 outline color, use the ``outline_color`` option:
 
-    >>> pe.plot(p, fill_col="Strand", outline_color="black")
+    >>> pe.plot(x, fill_col="Strand", outline_color="black")
 
 .. image:: images/prp_rtd_31.png
 
@@ -211,7 +211,7 @@ different value domains, provide a channel mapping with separate ``"fill"`` and
 ``"outline"`` entries:
 
     >>> pe.plot(
-    ...     p,
+    ...     x,
     ...     fill_col="Strand",
     ...     outline_col="feature1",
     ...     colormap={
@@ -225,8 +225,8 @@ different value domains, provide a channel mapping with separate ``"fill"`` and
 Numeric columns can be colored as a continuous gradient with ``type="quantitative"``.
 Values are normalized to the observed minimum and maximum by default:
 
-    >>> p["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
-    >>> pe.plot(p, fill_col="score", colormap={"type": "quantitative", "colors": "viridis"})
+    >>> x["score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
+    >>> pe.plot(x, fill_col="score", colormap={"type": "quantitative", "colors": "viridis"})
 
 .. image:: images/prp_rtd_33.png
 
@@ -234,7 +234,7 @@ Set ``range=(min, max)`` to choose the normalization range manually. The gradien
 can be a named continuous colormap, a list of colors, or normalized color stops:
 
     >>> pe.plot(
-    ...     p,
+    ...     x,
     ...     fill_col="score",
     ...     colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (0, 1)},
     ... )
@@ -245,7 +245,7 @@ To improve the clarity of the plot, we can enable a legend that labels each colo
 to interpret the intervals based on their assigned colors. This can be done by setting the 
 **legend** parameter of :func:`plot <pyrangeyes.plot>` as True:
 
-    >>> pe.plot(p, colormap="Dark2", legend=True)
+    >>> pe.plot(x, colormap="Dark2", legend=True)
 
 .. image:: images/prp_rtd_20.png
 
@@ -263,7 +263,7 @@ and distance from intervals with ``label_pad``.
 .. testcode::
 
     pe.plot(
-        p,
+        x,
         label="transcript: {transcript_id}",
         label_position="right",
         label_pad=2,
@@ -277,7 +277,7 @@ Labels can also be styled independently from interval fill colors. Use a channel
 .. testcode::
 
     pe.plot(
-        p,
+        x,
         label="transcript: {transcript_id}",
         label_size=16,
         label_color_col="Strand",
@@ -299,7 +299,7 @@ A wide range of **options** are available to customize appearance, as summarized
 These options can be provided as parameters to the :func:`plot <pyrangeyes.plot>` function, or
 set as default beforehand. Let's see an example of providing them as parameters:
 
-    >>> pe.plot(p, track_bg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
+    >>> pe.plot(x, track_bg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
 
 .. image:: images/prp_rtd_15.png
 
@@ -309,7 +309,7 @@ To instead set these options as default, use the :func:`set_options <pyrangeyes.
     >>> pe.set_options('track_bg', 'rgb(173, 216, 230)')
     >>> pe.set_options('plot_border', '#808080')
     >>> pe.set_options('title_color', 'magenta')
-    >>> pe.plot(p)  # this will now open a plot identical to the previous one
+    >>> pe.plot(x)  # this will now open a plot identical to the previous one
 
 To inspect the current default options, use the
 :func:`print_options <pyrangeyes.print_options>` function.
@@ -401,13 +401,13 @@ For example, below we create a theme corresponding to the appearance of our last
     ...     "title_color": "magenta"
     ... }
     >>> pe.set_theme(my_theme)
-    >>> pe.plot(p)  # this will now open a plot identical to the previous one
+    >>> pe.plot(x)  # this will now open a plot identical to the previous one
 
 Pyrangeyes comes with a few built-in themes, listed in the :func:`set_theme <pyrangeyes.set_theme>` function's
 documentation. For example, here's the "dark" theme:
 
     >>> pe.set_theme('dark')
-    >>> pe.plot(p)
+    >>> pe.plot(x)
 
 .. image:: images/prp_rtd_16.png
 
@@ -424,7 +424,7 @@ To instead display one transcript per row, set the ``pack`` parameter as ``False
 
 .. testcode::
 
-    pe.plot(p, pack=False)
+    pe.plot(x, pack=False)
 
 .. image:: images/prp_rtd_09.png
 
@@ -435,7 +435,7 @@ its genomic sorting behavior, pass ``sort_ranges=True``:
 
 .. testcode::
 
-    pe.plot(p, pack=False, sort_ranges=True)
+    pe.plot(x, pack=False, sort_ranges=True)
 
 
 Pyrangeyes offers the option to reduce horizontal space, occupied by introns or intergenic regions,
@@ -614,7 +614,7 @@ Add columns with ``tooltip`` templates, and customize panel titles with ``panel_
 .. testcode::
 
     pe.plot(
-        p,
+        x,
         tooltip="first feature: {feature1}\nsecond feature: {feature2}",
         panel_title="Chr: {chrom}",
     )
