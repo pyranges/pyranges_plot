@@ -15,7 +15,6 @@ from ..names import (
     COLOR_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     OUTLINE_LEGEND_KIND_COL,
-    OUTLINE_LEGEND_TITLE_COL,
     SQUISH_COL,
     THICK_COL,
 )
@@ -58,7 +57,6 @@ def _postprocess_legend(fig, subdf, legend):
     fill_kind = subdf[COLOR_LEGEND_KIND_COL].iloc[0]
     fill_title = subdf[COLOR_LEGEND_TITLE_COL].iloc[0]
     outline_kind = subdf[OUTLINE_LEGEND_KIND_COL].iloc[0]
-    outline_title = subdf[OUTLINE_LEGEND_TITLE_COL].iloc[0]
     quantitative_infos = [
         qinfo
         for qinfo in [quantitative_fill_info(subdf), quantitative_outline_info(subdf)]

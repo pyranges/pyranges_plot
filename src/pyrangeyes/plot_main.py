@@ -49,8 +49,6 @@ from .names import (
     TEXT_PAD_FRAC_COL,
     TEXT_PAD_Y_COL,
     TEXT_HEIGHT_COL,
-    TEXT_EXTRA_Y_COL,
-    TEXT_POSITION_COL,
     THICK_COL,
     SHAPE_COL,
     MARKER_SIZE_COL,
