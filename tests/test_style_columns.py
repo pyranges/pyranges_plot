@@ -41,7 +41,7 @@ def test_matplotlib_direct_color_and_outline_columns():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill",
+        fill_col="fill",
         outline_col="outline",
         colormap="direct",
         return_plot="fig",
@@ -59,10 +59,10 @@ def test_matplotlib_channel_colormaps_for_color_and_outline():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="kind",
+        fill_col="kind",
         outline_col="status",
         colormap={
-            "color": {"x": "#111111", "y": "#222222"},
+            "fill": {"x": "#111111", "y": "#222222"},
             "outline": {"ok": "#333333", "warn": "#444444"},
         },
         return_plot="fig",
@@ -80,7 +80,7 @@ def test_matplotlib_outline_color_option_overrides_outline_col():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill",
+        fill_col="fill",
         outline_col="outline",
         colormap="direct",
         outline_color="black",
@@ -99,7 +99,7 @@ def test_matplotlib_height_col_scales_interval_height():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill",
+        fill_col="fill",
         colormap="direct",
         height_col="height",
         interval_height=0.8,
@@ -192,7 +192,7 @@ def test_matplotlib_depth_col_draws_larger_values_on_top():
     fig = pre.plot(
         data,
         id_col="id",
-        color_col="fill",
+        fill_col="fill",
         colormap="direct",
         depth_col="depth",
         return_plot="fig",
@@ -209,7 +209,7 @@ def test_plotly_direct_color_and_outline_columns():
     fig = pre.plot(
         _style_data(),
         id_col="id",
-        color_col="fill",
+        fill_col="fill",
         outline_col="outline",
         colormap="direct",
         return_plot="fig",

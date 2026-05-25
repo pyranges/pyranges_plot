@@ -11,13 +11,14 @@ from pyranges1.core.names import CHROM_COL, START_COL, END_COL
 
 from .core import get_engine
 from .plot_main import plot
+from .track import Track
 
-BROWSER_MODES = ("zip", "squish", "packed", "full")
-_MODE_ALIASES = {"list": "full"}
+BROWSER_MODES = ("zip", "squish", "pack", "full")
+_MODE_ALIASES = {"list": "full", "packed": "pack"}
 _MODE_LABELS = {
     "zip": "Zip",
     "squish": "Squish",
-    "packed": "Packed",
+    "pack": "Packed",
     "full": "Full",
 }
 
@@ -66,28 +67,38 @@ def _normalize_modes(modes, default_mode):
     return modes, default_mode
 
 
-def _mode_kwargs(mode, base_kwargs, base_text, base_interval_height):
+def _mode_tracks(data, mode, base_label):
+    tracks = data if isinstance(data, list) else [data]
+    out = []
+    for item in tracks:
+        track = item if isinstance(item, Track) else Track(item)
+        options = dict(track.options)
+        if mode == "squish":
+            options.update(pack=True, label=False, squish=True)
+        elif mode == "pack":
+            options.update(pack=True, label=base_label)
+            options.pop("squish", None)
+        elif mode == "full":
+            options.update(pack=False, label=False)
+            options.pop("squish", None)
+        out.append(Track(track.data, track.adapter, **options))
+    return out if isinstance(data, list) else out[0]
+
+
+def _mode_kwargs(mode, base_kwargs, base_interval_height):
     kwargs = deepcopy(base_kwargs)
     if mode == "zip":
         return kwargs
     if mode == "squish":
         kwargs.update(
-            packed=True,
-            text=False,
-            track_labels=False,
             interval_height=min(base_interval_height, 0.25),
             v_spacer=min(kwargs.get("v_spacer", 0.2), 0.08),
         )
-    elif mode == "packed":
-        kwargs.update(packed=True, text=base_text)
-    elif mode == "full":
-        kwargs.update(
-            packed=False, text=False, track_labels=kwargs.get("track_labels", None)
-        )
     else:
-        raise ValueError(
-            f"Unknown browser mode {mode!r}; expected one of {BROWSER_MODES}."
-        )
+        if mode not in {"pack", "full"}:
+            raise ValueError(
+                f"Unknown browser mode {mode!r}; expected one of {BROWSER_MODES}."
+            )
     return kwargs
 
 
@@ -95,12 +106,24 @@ def _data_for_chrom(data, chrom):
     if chrom is None:
         return data
     if isinstance(data, list):
-        return [pr_obj[pr_obj[CHROM_COL] == chrom] for pr_obj in data]
+        result = []
+        for item in data:
+            if isinstance(item, Track):
+                subset = item.data[item.data[CHROM_COL] == chrom]
+                result.append(Track(subset, item.adapter, **item.options))
+            else:
+                result.append(item[item[CHROM_COL] == chrom])
+        return result
+    if isinstance(data, Track):
+        return Track(
+            data.data[data.data[CHROM_COL] == chrom], data.adapter, **data.options
+        )
     return data[data[CHROM_COL] == chrom]
 
 
 def _chroms_from_data(data):
     data_l = _as_list(data)
+    data_l = [item.data if isinstance(item, Track) else item for item in data_l]
     if not all(CHROM_COL in pr_obj.columns for pr_obj in data_l):
         return [None]
     chroms = []
@@ -128,13 +151,11 @@ def _panels_for_figure(data, fig):
     return panels
 
 
-def _plot_mode_figure(
-    data, adapter, mode, base_kwargs, base_text, base_interval_height
-):
-    kwargs = _mode_kwargs(mode, base_kwargs, base_text, base_interval_height)
+def _plot_mode_figure(data, mode, base_kwargs, base_label, base_interval_height):
+    kwargs = _mode_kwargs(mode, base_kwargs, base_interval_height)
+    mode_data = _mode_tracks(data, mode, base_label)
     return plot(
-        data,
-        adapter=adapter,
+        mode_data,
         return_plot="fig",
         warnings=False,
         **kwargs,
@@ -230,7 +251,7 @@ def _axis_layout(fig, yaxis_name):
     layout.setdefault("visible", True)
 
     # Plotly does not remove old tick labels unless they are explicitly
-    # overwritten, so packed/squish/zip switches must clear labels left by full.
+    # overwritten, so pack/squish/zip switches must clear labels left by full.
     layout.setdefault("tickvals", [])
     layout.setdefault("ticktext", [])
     return layout
@@ -252,7 +273,7 @@ def _panel_pixel_height(axis_layout, mode):
     span = _mode_weight(axis_layout, mode)
     if mode == "squish":
         return max(20, round(span / 0.25 * 8))
-    if mode in {"packed", "full"}:
+    if mode in {"pack", "full"}:
         return max(48, round(span / 0.6 * 18))
     return max(48, round(span * 30))
 
@@ -340,7 +361,11 @@ def _axis_range_from_trace_values(traces, yaxis_ref):
 
 
 def _zip_summary(data, label, id_col=None):
-    df = pd.concat(data, ignore_index=True) if isinstance(data, list) else data
+    if isinstance(data, list):
+        dfs = [item.data if isinstance(item, Track) else item for item in data]
+        df = pd.concat(dfs, ignore_index=True)
+    else:
+        df = data.data if isinstance(data, Track) else data
     start = int(df[START_COL].min()) if START_COL in df.columns and len(df) else 0
     end = int(df[END_COL].max()) if END_COL in df.columns and len(df) else 1
     n_intervals = len(df)
@@ -349,13 +374,13 @@ def _zip_summary(data, label, id_col=None):
         cols = [id_col] if isinstance(id_col, str) else list(id_col)
         if all(col in df.columns for col in cols):
             n_groups = len(df[cols].drop_duplicates())
-    group_text = f"; {n_groups} groups" if n_groups is not None else ""
-    text = f"{label}: {n_intervals} intervals{group_text}<br>{start:,}–{end:,}"
+    group_label = f"; {n_groups} groups" if n_groups is not None else ""
+    text = f"{label}: {n_intervals} intervals{group_label}<br>{start:,}–{end:,}"
     return start, end, text
 
 
 def _zip_trace_and_annotation(panel, id_col=None):
-    start, end, text = _zip_summary(panel.data, panel.label, id_col=id_col)
+    start, end, label = _zip_summary(panel.data, panel.label, id_col=id_col)
     if end <= start:
         end = start + 1
     trace = go.Scatter(
@@ -370,7 +395,7 @@ def _zip_trace_and_annotation(panel, id_col=None):
     annotation = dict(
         x=(start + end) / 2,
         y=0.5,
-        text=text,
+        text=label,
         showarrow=False,
         xanchor="center",
         yanchor="middle",
@@ -392,10 +417,9 @@ def _copy_layout_from_mode(base_fig, mode_fig, panel, mode):
 
 def browse(
     data,
-    adapter=None,
     *,
     modes=BROWSER_MODES,
-    default_mode="packed",
+    default_mode="pack",
     button_x=0.98,
     return_plot="fig",
     **kwargs,
@@ -406,7 +430,7 @@ def browse(
     layout, axes, subplot structure, titles, multi-object stacking, and standard
     interactivity. It then adds alternate per-panel interval views and compact
     mode selectors so each chromosome or input panel can switch independently
-    between ``"squish"``, ``"packed"``, ``"list"``, and ``"zip"`` views.
+    between ``"squish"``, ``"pack"``, ``"list"``, and ``"zip"`` views.
 
     Parameters are the same as ``plot()`` unless listed here. ``modes`` selects
     the available views, ``default_mode`` chooses the initial view, and
@@ -419,7 +443,7 @@ def browse(
 
     modes, default_mode = _normalize_modes(modes, default_mode)
     base_kwargs = deepcopy(kwargs)
-    base_text = base_kwargs.pop("text", None)
+    base_label = base_kwargs.pop("label", None)
     base_interval_height = float(base_kwargs.get("interval_height", 0.8))
     id_col = base_kwargs.get("id_col")
 
@@ -427,15 +451,15 @@ def browse(
     for mode in modes:
         if mode != "zip":
             mode_figures[mode] = _plot_mode_figure(
-                data, adapter, mode, base_kwargs, base_text, base_interval_height
+                data, mode, base_kwargs, base_label, base_interval_height
             )
 
     if default_mode == "zip":
-        layout_mode = next((mode for mode in modes if mode != "zip"), "packed")
+        layout_mode = next((mode for mode in modes if mode != "zip"), "pack")
         base_fig = deepcopy(
             mode_figures.get(layout_mode)
             or _plot_mode_figure(
-                data, adapter, "packed", base_kwargs, base_text, base_interval_height
+                data, "pack", base_kwargs, base_label, base_interval_height
             )
         )
         for trace in base_fig.data:

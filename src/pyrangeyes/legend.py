@@ -9,6 +9,7 @@ from .names import (
     COLOR_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     COLOR_TAG_COL,
+    PR_INDEX_COL,
     OUTLINE_LEGEND_KIND_COL,
     OUTLINE_LEGEND_TITLE_COL,
     OUTLINE_TAG_COL,
@@ -25,16 +26,24 @@ def _as_label(value):
     return str(value)
 
 
+def _track_ordered(df, columns):
+    order_cols = ([PR_INDEX_COL] if PR_INDEX_COL in df.columns else []) + columns
+    out = df[order_cols].drop_duplicates()
+    if PR_INDEX_COL in out.columns:
+        out = out.sort_values([PR_INDEX_COL], kind="stable")
+    return out
+
+
 def categorical_fill_items(df):
     """Return ``[(label, fill_color, outline_color), ...]`` for fill legend."""
     if _first_present(df, COLOR_LEGEND_KIND_COL) == "quantitative":
         return []
     items = []
     seen = set()
-    for _, row in (
-        df[[COLOR_TAG_COL, COLOR_INFO, BORDER_COLOR_COL]].drop_duplicates().iterrows()
-    ):
-        label = _as_label(row[COLOR_TAG_COL])
+    cols = [COLOR_TAG_COL, COLOR_INFO, BORDER_COLOR_COL, COLOR_LEGEND_TITLE_COL]
+    for _, row in _track_ordered(df, cols).iterrows():
+        title = _as_label(row[COLOR_LEGEND_TITLE_COL])
+        label = f"{title}: {_as_label(row[COLOR_TAG_COL])}"
         if label in seen:
             continue
         seen.add(label)
@@ -50,8 +59,10 @@ def categorical_outline_items(df):
         return []
     items = []
     seen = set()
-    for _, row in df[[OUTLINE_TAG_COL, BORDER_COLOR_COL]].drop_duplicates().iterrows():
-        label = _as_label(row[OUTLINE_TAG_COL])
+    cols = [OUTLINE_TAG_COL, BORDER_COLOR_COL, OUTLINE_LEGEND_TITLE_COL]
+    for _, row in _track_ordered(df, cols).iterrows():
+        title = _as_label(row[OUTLINE_LEGEND_TITLE_COL])
+        label = f"{title}: {_as_label(row[OUTLINE_TAG_COL])}"
         if label in seen:
             continue
         seen.add(label)
@@ -59,7 +70,7 @@ def categorical_outline_items(df):
     return items
 
 
-def _quantitative_info(df, tag_col, color_col, title_col):
+def _quantitative_info(df, tag_col, fill_col, title_col):
     if tag_col not in df.columns:
         return None
     values = pd.to_numeric(df[tag_col], errors="coerce")
@@ -67,14 +78,14 @@ def _quantitative_info(df, tag_col, color_col, title_col):
     if not mask.any():
         return None
 
-    qdf = pd.DataFrame({"value": values[mask], "color": df.loc[mask, color_col]})
+    qdf = pd.DataFrame({"value": values[mask], "fill": df.loc[mask, fill_col]})
     qdf = qdf.drop_duplicates("value").sort_values("value")
     vmin = float(qdf["value"].min())
     vmax = float(qdf["value"].max())
     if vmin == vmax:
         vmax = vmin + 1
 
-    colors = [mcolors.to_hex(color) for color in qdf["color"]]
+    colors = [mcolors.to_hex(color) for color in qdf["fill"]]
     if len(colors) == 1:
         colors = colors * 2
     title = _first_present(df, title_col, "")

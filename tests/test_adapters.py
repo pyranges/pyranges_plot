@@ -70,9 +70,8 @@ def test_plot_calls_mrna_adapter_before_rendering():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
-        _gtf_like_annotation(),
-        adapter="mRNA",
-        color_col="Feature",
+        pre.Track(_gtf_like_annotation(), "mRNA"),
+        fill_col="Feature",
         colormap={"exon": "lightgrey", "CDS": "gold"},
         return_plot="fig",
         warnings=False,
@@ -86,20 +85,16 @@ def test_plot_passes_adapter_specific_arguments_and_rejects_unknown_arguments():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
-        _gtf_like_annotation(),
-        adapter="mRNA",
-        utr_height=0.5,
+        pre.Track(_gtf_like_annotation(), "mRNA", utr_height=0.5),
         return_plot="fig",
         warnings=False,
     )
     heights = sorted(round(patch.get_height(), 3) for patch in _patches(fig))
     assert heights == [0.3, 0.3, 0.6, 0.6]
 
-    with pytest.raises(Exception, match="do not match any customizable features"):
+    with pytest.raises(Exception, match="Unknown Track option"):
         pre.plot(
-            _gtf_like_annotation(),
-            adapter="mRNA",
-            not_an_adapter_arg=True,
+            pre.Track(_gtf_like_annotation(), "mRNA", not_an_adapter_arg=True),
             return_plot="fig",
             warnings=False,
         )
@@ -128,8 +123,7 @@ def test_adapter_options_are_printable_settable_and_used_by_plot(capsys):
     assert sorted(prepared["__mrna_height__"].unique()) == [0.5, 1.0]
 
     fig = pre.plot(
-        _gtf_like_annotation(),
-        adapter="mRNA",
+        pre.Track(_gtf_like_annotation(), "mRNA"),
         return_plot="fig",
         warnings=False,
     )
@@ -170,8 +164,10 @@ def test_plot_accepts_one_adapter_per_input_object():
     pre.set_engine("matplotlib")
 
     fig = pre.plot(
-        [_gtf_like_annotation(), _snp_like_variants()],
-        adapter=["mRNA", "SNP"],
+        [
+            pre.Track(_gtf_like_annotation(), "mRNA"),
+            pre.Track(_snp_like_variants(), "SNP"),
+        ],
         return_plot="fig",
         warnings=False,
     )
@@ -180,8 +176,8 @@ def test_plot_accepts_one_adapter_per_input_object():
 
 
 def test_plot_rejects_adapter_list_length_mismatch():
-    with pytest.raises(ValueError, match="one adapter per track"):
-        pre.plot([_gtf_like_annotation(), _snp_like_variants()], adapter=["mRNA"])
+    with pytest.raises(Exception, match="adapter"):
+        pre.plot(_gtf_like_annotation(), adapter="mRNA")
 
 
 def test_mrna_adapter_rejects_missing_transcript_identifier():

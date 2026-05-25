@@ -11,6 +11,7 @@ from ..names import (
     PR_INDEX_COL,
     BORDER_COLOR_COL,
     COLOR_INFO,
+    COLOR_TAG_COL,
     COLOR_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     OUTLINE_LEGEND_KIND_COL,
@@ -19,6 +20,7 @@ from ..names import (
     THICK_COL,
 )
 from ..legend import (
+    categorical_fill_items,
     categorical_outline_items,
     quantitative_fill_info,
     quantitative_outline_info,
@@ -38,6 +40,8 @@ def _bottom_legend_layout(categorical_count, quantitative_count):
         "margin": {"l": 60, "r": 30, "t": 35, "b": bottom_margin},
         "legend": {
             "orientation": "h",
+            "entrywidth": 95,
+            "entrywidthmode": "pixels",
             "x": 0.5,
             "xanchor": "center",
             "y": -0.10,
@@ -61,32 +65,58 @@ def _postprocess_legend(fig, subdf, legend):
         if qinfo is not None
     ]
 
+    fill_rows = (
+        subdf[[PR_INDEX_COL, COLOR_TAG_COL, COLOR_INFO, COLOR_LEGEND_TITLE_COL]]
+        .drop_duplicates()
+        .sort_values([PR_INDEX_COL], kind="stable")
+    )
+    fill_meta = {}
+    for rank, row in enumerate(fill_rows.itertuples(index=False), start=1):
+        _pr_ix, tag, fill, title = row
+        label = f"{title}: {tag}"
+        fill_meta.setdefault((str(tag), str(fill)), (label, rank))
+        fill_meta.setdefault((str(tag),), (label, rank))
     seen_fill = set()
     for trace in fig.data:
-        if getattr(trace, "fill", None) != "toself" or trace.fillcolor == "white":
+        if getattr(trace, "fill", None) == "toself":
+            trace_color = trace.fillcolor
+        elif "markers" in str(getattr(trace, "mode", "")):
+            trace_color = getattr(getattr(trace, "marker", None), "color", None)
+        else:
+            continue
+        if trace_color == "white":
             continue
         if fill_kind == "quantitative":
             trace.showlegend = False
             continue
         key = str(trace.name)
+        legend_key, rank = fill_meta.get(
+            (key, str(trace_color)),
+            fill_meta.get((key,), (f"{fill_title}: {key}", 1000)),
+        )
         trace.legendgroup = None
-        trace.name = f"{fill_title}: {key}"
+        trace.name = legend_key
+        trace.legendrank = rank
         trace.legendgrouptitle = None
-        if key in seen_fill:
+        if legend_key in seen_fill:
             trace.showlegend = False
         else:
             trace.showlegend = True
-            seen_fill.add(key)
+            seen_fill.add(legend_key)
 
     if outline_kind == "categorical":
-        for label, outline in categorical_outline_items(subdf):
+        fill_count = len(categorical_fill_items(subdf))
+        for rank, (label, outline) in enumerate(
+            categorical_outline_items(subdf), start=fill_count + 1
+        ):
             fig.add_trace(
                 go.Scatter(
                     x=[None],
                     y=[None],
                     mode="lines",
                     line=dict(color=outline, width=3),
-                    name=f"{outline_title}: {label}",
+                    name=label,
+                    legendrank=rank,
                     legendgroup=None,
                     legendgrouptitle=None,
                     showlegend=True,
@@ -147,10 +177,10 @@ def plot_exons_ply(
     legend=False,
     return_plot=None,
     add_aligned_plots=None,
-    track_labels=False,
-    text=True,
-    title_chr=None,
-    packed=True,
+    track_names=False,
+    label=True,
+    panel_title=None,
+    pack=True,
     to_file=None,
     file_size=None,
     warnings=None,
@@ -162,20 +192,21 @@ def plot_exons_ply(
 
     # Get default plot features
     intron_color = feat_dict["intron_color"]
-    fig_bkg = feat_dict["fig_bkg"]
-    plot_bkg = feat_dict["plot_bkg"]
+    figure_bg = feat_dict["figure_bg"]
+    track_bg = feat_dict["track_bg"]
+    track_bg_by_pr = feat_dict.get("track_bg_by_pr", {})
     plot_border = feat_dict["plot_border"]
     title_dict_ply = feat_dict["title_dict_ply"]
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["outline_color"]
     exon_height = feat_dict["interval_height"]
     v_spacer = feat_dict["v_spacer"]
-    text_size = feat_dict["text_size"]
+    label_size = feat_dict["label_size"]
     plotly_port = feat_dict["plotly_port"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
-    shrunk_bkg = feat_dict["shrunk_bkg"]
+    shrunk_bg = feat_dict["shrunk_bg"]
     x_ticks = feat_dict["x_ticks"]
 
     # Create figure and chromosome plots
@@ -186,19 +217,20 @@ def plot_exons_ply(
         genesmd_df,
         id_col,
         ts_data,
-        title_chr,
+        panel_title,
         title_dict_ply,
         grid_color,
-        packed,
-        track_labels,
+        pack,
+        track_names,
         x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
-        shrunk_bkg,
+        shrunk_bg,
         v_spacer,
         exon_height,
         plot_border,
         add_aligned_plots,
+        track_bg_by_pr,
     )
 
     # Plot genes
@@ -216,11 +248,11 @@ def plot_exons_ply(
             legend,
             return_plot,
             transcript_str,
-            text,
-            text_size,
+            label,
+            label_size,
             exon_height,
             exon_border,
-            plot_bkg,
+            track_bg,
             arrow_line_width,
             arrow_color,
             arrow_size,
@@ -231,10 +263,10 @@ def plot_exons_ply(
 
     # Adjust plot display
     fig.update_layout(
-        plot_bgcolor=plot_bkg,
+        plot_bgcolor=track_bg,
         font_color=plot_border,
         showlegend=legend,
-        paper_bgcolor=fig_bkg,
+        paper_bgcolor=figure_bg,
     )
     fig.update_xaxes(
         showline=True,
@@ -304,7 +336,7 @@ def gby_plot_exons(
     return_plot,
     transcript_str,
     text,
-    text_size,
+    label_size,
     exon_height,
     exon_border,
     plot_background,
@@ -421,7 +453,7 @@ def gby_plot_exons(
     apply_gene_bridge(
         transcript_str,
         text,
-        text_size,
+        label_size,
         df,
         fig,
         draw_strand,

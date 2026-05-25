@@ -57,7 +57,7 @@ for pr_obj in [a_ov_b, a_ov_b_slack, a_ov_b_nostrand, a_ov_b_opstrand]:
 # count overlaps
 a_count_b = a.count_overlaps(b)
 a_count_b["to_color"] = ["a"] * len(a_count_b)
-a_count_b["text"] = a_count_b["Count"]
+a_count_b["label"] = a_count_b["Count"]
 
 # intersection
 a_inters_b = a.intersect_overlaps(b)
@@ -89,7 +89,7 @@ a_max_disjoint["to_color"] = ["a2"] * len(a_max_disjoint)
 # cluster
 a_cluster = a.cluster_overlaps()
 a_cluster["to_color"] = ["a"] * len(a_cluster)
-a_cluster["text"] = a_cluster["Cluster"]
+a_cluster["label"] = a_cluster["Cluster"]
 
 # concatenate
 a_concat_b = pr.concat([a, b])
@@ -124,8 +124,8 @@ data = [
 ]
 
 for i, x in enumerate(data):
-    if not "text" in x.columns:
-        x["text"] = ""
+    if "label" not in x.columns:
+        x["label"] = ""
     # overriding color
     ## x["to_color"] = str(i)
 
@@ -150,12 +150,12 @@ for ext in ["png"]:  # , 'pdf']:
             "a.subtract_overlaps(b)",
             "pyranges.concat([a, b])",
         ],
-        title_chr=" ",
+        panel_title=" ",
         warnings=False,
-        text="{text}",
-        text_size=8,
+        label="{text}",
+        label_size=8,
         to_file=(f"cheatsheet_overlap.{ext}", (700, 800)),
-        color_col="to_color",
+        fill_col="to_color",
         arrow_line_width=1,
         arrow_color="#4A4A4A",
         outline_color="#4A4A4A",

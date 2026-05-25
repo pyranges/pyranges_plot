@@ -963,7 +963,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.1
+        1.4000000000000001
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -995,16 +995,16 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "t4",
         "textangle": 0.0,
-        "x": 5993.0,
-        "xanchor": "right",
+        "x": 6350.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       }
     ],

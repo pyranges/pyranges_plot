@@ -39,19 +39,16 @@ def _legend_title(subdf, title_col, fallback):
 
 def _categorical_legend_entries(subdf):
     """Return ``[(label, artist), ...]`` for Matplotlib categorical legends."""
-    fill_title = _legend_title(subdf, COLOR_LEGEND_TITLE_COL, "color")
-    outline_title = _legend_title(subdf, OUTLINE_LEGEND_TITLE_COL, "outline")
-
     entries = [
         (
-            f"{fill_title}: {label}",
+            label,
             Rectangle((0, 0), 1, 1, facecolor=fill, edgecolor=outline),
         )
         for label, fill, outline in categorical_fill_items(subdf)
     ]
     entries.extend(
         (
-            f"{outline_title}: {label}",
+            label,
             Rectangle((0, 0), 1, 1, facecolor="white", edgecolor=outline, linewidth=2),
         )
         for label, outline in categorical_outline_items(subdf)
@@ -103,8 +100,11 @@ def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
         sm.set_array([])
         cax = fig.add_axes([0.15, y, 0.7, 0.02])
         cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
-        cbar.set_label(qinfo["title"])
-        y += 0.10
+        # Put the quantitative legend title above the horizontal colorbar and
+        # make it visually unambiguous in static tutorial renders.
+        cbar.ax.xaxis.set_label_position("top")
+        cbar.ax.set_xlabel(qinfo["title"], labelpad=8, fontweight="bold")
+        y += 0.11
 
     if categorical_entries:
         labels, handles = zip(*categorical_entries)
@@ -134,10 +134,10 @@ def plot_exons_plt(
     legend=False,
     return_plot=None,
     add_aligned_plots=None,
-    track_labels=False,
-    text=True,
-    title_chr=None,
-    packed=True,
+    track_names=False,
+    label=True,
+    panel_title=None,
+    pack=True,
     to_file=None,
     file_size=None,
     warnings=None,
@@ -155,19 +155,20 @@ def plot_exons_plt(
     # store values
     intron_color = feat_dict["intron_color"]
     tag_bkg = feat_dict["tag_bkg"]
-    fig_bkg = feat_dict["fig_bkg"]
-    plot_bkg = feat_dict["plot_bkg"]
+    figure_bg = feat_dict["figure_bg"]
+    track_bg = feat_dict["track_bg"]
+    track_bg_by_pr = feat_dict.get("track_bg_by_pr", {})
     plot_border = feat_dict["plot_border"]
     title_dict_plt = feat_dict["title_dict_plt"]
     grid_color = feat_dict["grid_color"]
     exon_border = feat_dict["outline_color"]
     exon_height = feat_dict["interval_height"]
     v_spacer = feat_dict["v_spacer"]
-    text_size = feat_dict["text_size"]
+    label_size = feat_dict["label_size"]
     arrow_line_width = feat_dict["arrow_line_width"]
     arrow_color = feat_dict["arrow_color"]
     arrow_size = feat_dict["arrow_size"]
-    shrunk_bkg = feat_dict["shrunk_bkg"]
+    shrunk_bg = feat_dict["shrunk_bg"]
     x_ticks = feat_dict["x_ticks"]
 
     # Create figure and axes
@@ -199,23 +200,24 @@ def plot_exons_plt(
         id_col,
         ts_data,
         legend_item_d,
-        title_chr,
+        panel_title,
         title_dict_plt,
-        plot_bkg,
+        track_bg,
         plot_border,
         grid_color,
-        packed,
+        pack,
         legend,
-        track_labels,
+        track_names,
         x_ticks,
         tick_pos_d,
         ori_tick_pos_d,
         tag_bkg,
-        fig_bkg,
-        shrunk_bkg,
+        figure_bg,
+        shrunk_bg,
         v_spacer,
         exon_height,
         add_aligned_plots,
+        track_bg_by_pr,
     )
 
     if legend:
@@ -239,8 +241,8 @@ def plot_exons_plt(
             tag_bkg,
             plot_border,
             transcript_str,
-            text,
-            text_size,
+            label,
+            label_size,
             exon_height,
             exon_border,
             arrow_line_width,
@@ -291,7 +293,7 @@ def gby_plot_exons(
     plot_border,
     transcript_str,
     text,
-    text_size,
+    label_size,
     exon_height,
     exon_border,
     arrow_line_width,
@@ -384,7 +386,7 @@ def gby_plot_exons(
     apply_gene_bridge(
         transcript_str,
         text,
-        text_size,
+        label_size,
         df,
         fig,
         ax,

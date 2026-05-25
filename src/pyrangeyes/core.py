@@ -8,6 +8,7 @@ from .plot_features import (
     plot_features_dict,
     plot_features_dict_in_use,
     builtin_themes,
+    print_option_categories,
 )
 from . import adapters
 
@@ -204,11 +205,11 @@ def set_options(varname=None, value=None, *, adapter=None, variable=None):
     --------
     >>> import pyrangeyes as pe
 
-    >>> pe.set_options('plot_background', 'magenta')
+    >>> pe.set_options('track_bg', 'magenta')
 
     >>> pe.set_options('title_size', 20)
 
-    >>> pe.set_options({'plot_background': 'magenta', 'title_size': 20})
+    >>> pe.set_options({'track_bg': 'magenta', 'title_size': 20})
 
     >>> pe.set_options(adapter='mRNA', variable='utr_height', value=0.5)
 
@@ -317,7 +318,7 @@ def reset_options(varname="all", *, adapter=None):
 
     >>> pe.reset_options('tag_bkg')
 
-    >>> pe.reset_options(['title_size', 'tag_background'])
+    >>> pe.reset_options(['title_size', 'tag_bkg'])
 
     >>> pe.reset_options(adapter='mRNA')
 
@@ -358,7 +359,7 @@ def divide_desc(desc, cutoff):
     return textwrap.wrap(str(desc), width=cutoff, break_long_words=False) or [""]
 
 
-def _format_options_table(options_dict, *, feature_label="Feature"):
+def _format_options_table(options_dict, *, feature_label="Feature", categories=None):
     feat_df = pd.DataFrame.from_dict(
         options_dict,
         orient="index",
@@ -381,10 +382,40 @@ def _format_options_table(options_dict, *, feature_label="Feature"):
             fstr += f"\n| {empty:^{name_sz}} | {empty:^{value_sz}} | {empty:^{mod_sz}} | {lines_l[i]:<{desc_sz}} |"
         return fstr
 
+    def format_category_row(category):
+        total_width = name_sz + value_sz + mod_sz + desc_sz + 13
+        inner_width = total_width - 4
+        title = f" {category} "
+        if len(title) >= inner_width:
+            content = title[:inner_width]
+        else:
+            left = (inner_width - len(title)) // 2
+            right = inner_width - len(title) - left
+            content = "=" * left + title + "=" * right
+        return f"| {content} |"
+
     header = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+\n"
     header += f"| {feature_label:^{name_sz}} | {'Value':^{value_sz}} | {'Edited?':^{mod_sz}} | {'Description':^{desc_sz}} |\n"
     header += f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
-    rows = "\n".join([format_row(key, value) for key, value in feat_df.iterrows()])
+    if categories is None:
+        row_parts = [format_row(key, value) for key, value in feat_df.iterrows()]
+    else:
+        row_parts = []
+        seen = set()
+        for category, keys in categories:
+            present_keys = [key for key in keys if key in feat_df.index]
+            if not present_keys:
+                continue
+            row_parts.append(format_category_row(category))
+            row_parts.extend(format_row(key, feat_df.loc[key]) for key in present_keys)
+            seen.update(present_keys)
+        remaining_keys = [key for key in feat_df.index if key not in seen]
+        if remaining_keys:
+            row_parts.append(format_category_row("Other"))
+            row_parts.extend(
+                format_row(key, feat_df.loc[key]) for key in remaining_keys
+            )
+    rows = "\n".join(row_parts)
     footer = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
     print(header)
     print(rows)
@@ -421,7 +452,9 @@ def print_options(return_keys=False, *, adapter=None):
 
     # prepare data to print
     if not return_keys:
-        _format_options_table(plot_features_dict_in_use)
+        _format_options_table(
+            plot_features_dict_in_use, categories=print_option_categories
+        )
 
     if return_keys:
         return set(plot_features_dict_in_use.keys())

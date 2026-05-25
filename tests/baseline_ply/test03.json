@@ -21,7 +21,7 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[+] (500, 3700)<br>ID: ['t1', 'a']",
+      "text": "[+] (500, 3700)<br>ID: ('t1', 'a')",
       "x": [
         500,
         3700,
@@ -68,7 +68,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t1', 'a']",
+      "name": "('t1', 'a')",
       "showlegend": false,
       "x": [
         2478.88,
@@ -89,7 +89,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t1', 'a']",
+      "name": "('t1', 'a')",
       "showlegend": false,
       "x": [
         2521.12,
@@ -113,7 +113,7 @@
       "mode": "lines",
       "name": "t1",
       "showlegend": false,
-      "text": "<br>[+] (500, 1500)<br>ID: t1",
+      "text": "<br>[+] (500, 1500)<br>ID: ('t1', 'a')",
       "x": [
         500,
         1500,
@@ -142,7 +142,7 @@
       "mode": "lines",
       "name": "t1",
       "showlegend": false,
-      "text": "<br>[+] (3500, 3700)<br>ID: t1",
+      "text": "<br>[+] (3500, 3700)<br>ID: ('t1', 'a')",
       "x": [
         3500,
         3700,
@@ -171,7 +171,7 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[-] (300, 1700)<br>ID: ['t2', 'a']",
+      "text": "[-] (300, 1700)<br>ID: ('t2', 'a')",
       "x": [
         300,
         1700,
@@ -218,7 +218,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t2', 'a']",
+      "name": "('t2', 'a')",
       "showlegend": false,
       "x": [
         928.88,
@@ -239,7 +239,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t2', 'a']",
+      "name": "('t2', 'a')",
       "showlegend": false,
       "x": [
         971.12,
@@ -263,7 +263,7 @@
       "mode": "lines",
       "name": "t2",
       "showlegend": false,
-      "text": "<br>[-] (300, 600)<br>ID: t2",
+      "text": "<br>[-] (300, 600)<br>ID: ('t2', 'a')",
       "x": [
         300,
         600,
@@ -292,7 +292,7 @@
       "mode": "lines",
       "name": "t2",
       "showlegend": false,
-      "text": "<br>[-] (1300, 1700)<br>ID: t2",
+      "text": "<br>[-] (1300, 1700)<br>ID: ('t2', 'a')",
       "x": [
         1300,
         1700,
@@ -321,7 +321,7 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[-] (3500, 3900)<br>ID: ['t2', 'b']",
+      "text": "[-] (3500, 3900)<br>ID: ('t2', 'b')",
       "x": [
         3500,
         3900,
@@ -371,7 +371,7 @@
       "mode": "lines",
       "name": "t2",
       "showlegend": false,
-      "text": "<br>[-] (3500, 3900)<br>ID: t2",
+      "text": "<br>[-] (3500, 3900)<br>ID: ('t2', 'b')",
       "x": [
         3500,
         3900,
@@ -397,7 +397,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t2', 'b']",
+      "name": "('t2', 'b')",
       "showlegend": false,
       "x": [
         3678.88,
@@ -418,7 +418,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t2', 'b']",
+      "name": "('t2', 'b')",
       "showlegend": false,
       "x": [
         3721.12,
@@ -442,7 +442,7 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[+] (4500, 5700)<br>ID: ['t3', 'b']",
+      "text": "[+] (4500, 5700)<br>ID: ('t3', 'b')",
       "x": [
         4500,
         5700,
@@ -489,7 +489,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t3', 'b']",
+      "name": "('t3', 'b')",
       "showlegend": false,
       "x": [
         4778.88,
@@ -510,7 +510,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t3', 'b']",
+      "name": "('t3', 'b')",
       "showlegend": false,
       "x": [
         4821.12,
@@ -552,7 +552,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t3', 'b']",
+      "name": "('t3', 'b')",
       "showlegend": false,
       "x": [
         5328.88,
@@ -573,7 +573,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t3', 'b']",
+      "name": "('t3', 'b')",
       "showlegend": false,
       "x": [
         5371.12,
@@ -597,7 +597,7 @@
       "mode": "lines",
       "name": "t3",
       "showlegend": false,
-      "text": "<br>[+] (4500, 4700)<br>ID: t3",
+      "text": "<br>[+] (4500, 4700)<br>ID: ('t3', 'b')",
       "x": [
         4500,
         4700,
@@ -626,7 +626,7 @@
       "mode": "lines",
       "name": "t3",
       "showlegend": false,
-      "text": "<br>[+] (4900, 5100)<br>ID: t3",
+      "text": "<br>[+] (4900, 5100)<br>ID: ('t3', 'b')",
       "x": [
         4900,
         5100,
@@ -655,7 +655,7 @@
       "mode": "lines",
       "name": "t3",
       "showlegend": false,
-      "text": "<br>[+] (5600, 5700)<br>ID: t3",
+      "text": "<br>[+] (5600, 5700)<br>ID: ('t3', 'b')",
       "x": [
         5600,
         5700,
@@ -684,7 +684,7 @@
       },
       "mode": "lines",
       "showlegend": false,
-      "text": "[-] (6000, 6700)<br>ID: ['t4', 'b']",
+      "text": "[-] (6000, 6700)<br>ID: ('t4', 'b')",
       "x": [
         6000,
         6700,
@@ -734,7 +734,7 @@
       "mode": "lines",
       "name": "t4",
       "showlegend": false,
-      "text": "<br>[-] (6000, 6700)<br>ID: t4",
+      "text": "<br>[-] (6000, 6700)<br>ID: ('t4', 'b')",
       "x": [
         6000,
         6700,
@@ -760,7 +760,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t4', 'b']",
+      "name": "('t4', 'b')",
       "showlegend": false,
       "x": [
         6328.88,
@@ -781,7 +781,7 @@
         "width": 1.0
       },
       "mode": "lines",
-      "name": "['t4', 'b']",
+      "name": "('t4', 'b')",
       "showlegend": false,
       "x": [
         6371.12,

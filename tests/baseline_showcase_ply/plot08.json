@@ -1396,7 +1396,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.1
+        1.4000000000000001
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1428,106 +1428,106 @@
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx1",
         "textangle": 0.0,
-        "x": 99.6,
-        "xanchor": "right",
+        "x": 102.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx2",
         "textangle": 0.0,
-        "x": 105.6,
-        "xanchor": "right",
+        "x": 108.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx3",
         "textangle": 0.0,
-        "x": 111.6,
-        "xanchor": "right",
+        "x": 114.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx4",
         "textangle": 0.0,
-        "x": 117.6,
-        "xanchor": "right",
+        "x": 120.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx5",
         "textangle": 0.0,
-        "x": 123.6,
-        "xanchor": "right",
+        "x": 126.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx6",
         "textangle": 0.0,
-        "x": 129.6,
-        "xanchor": "right",
+        "x": 132.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
         "font": {
           "color": "black",
-          "size": 10.0
+          "size": 12.0
         },
         "showarrow": false,
         "text": "tx7",
         "textangle": 0.0,
-        "x": 135.6,
-        "xanchor": "right",
+        "x": 138.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       }
     ],

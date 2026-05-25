@@ -53,11 +53,10 @@ def _filled_rectangle_centers(fig):
     return centers
 
 
-def test_squish_bool_reduces_interval_height_and_hides_default_text():
+def test_track_squish_reduces_interval_height_and_hides_default_labels():
     fig = pe.plot(
-        DATA,
+        pe.Track(DATA, squish=True),
         id_col="transcript_id",
-        squish=True,
         squish_factor=0.25,
         return_plot="fig",
     )
@@ -69,12 +68,11 @@ def test_squish_bool_reduces_interval_height_and_hides_default_text():
     assert _annotation_texts(fig) == ["Chromosome 1"]
 
 
-def test_squish_reduces_stacked_row_spacing():
+def test_track_squish_reduces_stacked_row_spacing():
     normal = pe.plot(DATA, id_col="transcript_id", return_plot="fig")
     squished = pe.plot(
-        DATA,
+        pe.Track(DATA, squish=True),
         id_col="transcript_id",
-        squish=True,
         squish_factor=0.25,
         return_plot="fig",
     )
@@ -86,30 +84,35 @@ def test_squish_reduces_stacked_row_spacing():
     )
 
 
-def test_squish_text_true_still_hides_labels():
+def test_track_squish_label_true_still_hides_labels():
     fig = pe.plot(
-        DATA, id_col="transcript_id", squish=True, text=True, return_plot="fig"
-    )
-
-    assert _annotation_texts(fig) == ["Chromosome 1"]
-
-
-def test_squish_format_text_still_hides_labels():
-    fig = pe.plot(
-        DATA,
+        pe.Track(DATA, squish=True),
         id_col="transcript_id",
-        squish=True,
-        text="{transcript_id}",
+        label=True,
         return_plot="fig",
     )
 
     assert _annotation_texts(fig) == ["Chromosome 1"]
 
 
-def test_squish_works_with_matplotlib():
+def test_track_squish_format_label_still_hides_labels():
+    fig = pe.plot(
+        pe.Track(DATA, squish=True),
+        id_col="transcript_id",
+        label="{transcript_id}",
+        return_plot="fig",
+    )
+
+    assert _annotation_texts(fig) == ["Chromosome 1"]
+
+
+def test_track_squish_works_with_matplotlib():
     pe.set_engine("plt")
     fig = pe.plot(
-        DATA, id_col="transcript_id", squish=True, text=True, return_plot="fig"
+        pe.Track(DATA, squish=True),
+        id_col="transcript_id",
+        label=True,
+        return_plot="fig",
     )
 
     assert sum(len(ax.patches) for ax in fig.axes) > 0
@@ -118,40 +121,32 @@ def test_squish_works_with_matplotlib():
     )
 
 
-def test_squish_list_selects_tracks():
+def test_track_squish_selects_tracks():
     fig = pe.plot(
-        [DATA, DATA],
+        [DATA, pe.Track(DATA, squish=True)],
         id_col="transcript_id",
-        squish=[False, True],
         return_plot="fig",
     )
 
-    # Default text labels remain for the normal track and are hidden for the squished track.
+    # Default labels remain for the normal track and are hidden for the squished track.
     label_texts = [text for text in _annotation_texts(fig) if text != "Chromosome 1"]
     assert sorted(label_texts) == ["tx1", "tx2", "tx3"]
 
 
-def test_squish_list_must_match_tracks():
-    with pytest.raises(ValueError, match="one bool per track"):
-        pe.plot([DATA, DATA], id_col="transcript_id", squish=[True], return_plot="fig")
+def test_squish_is_not_a_plot_argument():
+    with pytest.raises(Exception, match="squish"):
+        pe.plot(DATA, id_col="transcript_id", squish=True, return_plot="fig")
 
 
-def test_track_labels_must_match_tracks():
-    with pytest.raises(ValueError, match="track_labels"):
-        pe.plot(
-            [DATA, DATA, DATA, DATA],
-            id_col="transcript_id",
-            track_labels=["one", "two", "three"],
-            return_plot="fig",
-        )
-
-
-def test_all_track_labels_render_for_squished_multitrack():
+def test_track_names_come_from_track_name():
     fig = pe.plot(
-        [DATA, DATA, DATA, DATA],
+        [
+            pe.Track(DATA, name="one"),
+            pe.Track(DATA, name="two", squish=True),
+            pe.Track(DATA, name="three"),
+            pe.Track(DATA, name="four", squish=True),
+        ],
         id_col="transcript_id",
-        track_labels=["one", "two", "three", "four"],
-        squish=[False, True, False, True],
         return_plot="fig",
     )
 
@@ -160,9 +155,12 @@ def test_all_track_labels_render_for_squished_multitrack():
 
 def test_first_track_renders_on_top():
     fig = pe.plot(
-        [DATA, DATA, DATA],
+        [
+            pe.Track(DATA, name="first"),
+            pe.Track(DATA, name="second"),
+            pe.Track(DATA, name="third"),
+        ],
         id_col="transcript_id",
-        track_labels=["first", "second", "third"],
         return_plot="fig",
     )
 
@@ -176,28 +174,14 @@ def test_first_track_renders_on_top():
     assert top_to_bottom_labels == ["first", "second", "third"]
 
 
-def test_packed_list_must_match_tracks():
-    with pytest.raises(ValueError, match="one bool per track"):
-        pe.plot([DATA, DATA], id_col="transcript_id", packed=[True], return_plot="fig")
-
-
-def test_packed_list_entries_must_be_bool():
-    with pytest.raises(TypeError, match="list entries"):
-        pe.plot(
-            [DATA, DATA],
-            id_col="transcript_id",
-            packed=[True, "no"],
-            return_plot="fig",
-        )
-
-
-def test_packed_list_controls_track_layout():
+def test_track_pack_option_controls_track_layout():
     fig = pe.plot(
-        [DATA, DATA],
+        [
+            pe.Track(DATA, name="pack", pack=True),
+            pe.Track(DATA, name="unpack", pack=False),
+        ],
         id_col="transcript_id",
-        track_labels=["packed", "unpacked"],
-        packed=[True, False],
-        text=False,
+        label=False,
         return_plot="fig",
     )
 
@@ -213,28 +197,32 @@ def test_packed_list_controls_track_layout():
         filled_centers_by_track[center] += 1
 
     divider = min(shape.y0 for shape in fig.layout.shapes if shape.y0 != 0)
-    packed_centers = [center for center in filled_centers_by_track if center > divider]
-    unpacked_centers = [
-        center for center in filled_centers_by_track if center < divider
-    ]
+    pack_centers = [center for center in filled_centers_by_track if center > divider]
+    unpack_centers = [center for center in filled_centers_by_track if center < divider]
 
-    assert len(packed_centers) == 2
-    assert len(unpacked_centers) == 3
+    assert len(pack_centers) == 2
+    assert len(unpack_centers) == 3
 
 
 def test_mixed_squish_compacts_panel_height():
     unsquished_fig = pe.plot(
-        [DATA, DATA, DATA, DATA],
+        [
+            pe.Track(DATA, name="one"),
+            pe.Track(DATA, name="two"),
+            pe.Track(DATA, name="three"),
+            pe.Track(DATA, name="four"),
+        ],
         id_col="transcript_id",
-        track_labels=["one", "two", "three", "four"],
-        squish=False,
         return_plot="fig",
     )
     squished_fig = pe.plot(
-        [DATA, DATA, DATA, DATA],
+        [
+            pe.Track(DATA, name="one"),
+            pe.Track(DATA, name="two", squish=True),
+            pe.Track(DATA, name="three"),
+            pe.Track(DATA, name="four", squish=True),
+        ],
         id_col="transcript_id",
-        track_labels=["one", "two", "three", "four"],
-        squish=[False, True, False, True],
         return_plot="fig",
     )
 
@@ -248,19 +236,11 @@ def test_mixed_squish_compacts_panel_height():
     assert squished_span < unsquished_span
 
 
-def test_squish_list_entries_must_be_bool():
-    with pytest.raises(TypeError, match="list entries"):
-        pe.plot(
-            [DATA, DATA], id_col="transcript_id", squish=[True, 1], return_plot="fig"
-        )
-
-
 def test_squish_factor_range():
     with pytest.raises(ValueError, match="squish_factor"):
         pe.plot(
-            DATA,
+            pe.Track(DATA, squish=True),
             id_col="transcript_id",
-            squish=True,
             squish_factor=0,
             return_plot="fig",
         )

@@ -105,35 +105,34 @@ def test_browser_modes_update_axis_geometry_and_clear_stale_labels():
     fig = pre.browse(_browser_data(), id_col="id")
 
     squish_button = fig.layout.updatemenus[0].buttons[1]
-    packed_button = fig.layout.updatemenus[0].buttons[2]
+    pack_button = fig.layout.updatemenus[0].buttons[2]
     full_button = fig.layout.updatemenus[0].buttons[3]
 
     assert "yaxis.domain" in squish_button.args[1]
     assert "yaxis2.domain" in squish_button.args[1]
     assert "yaxis.range" in squish_button.args[1]
-    assert squish_button.args[1]["yaxis.range"] != packed_button.args[1]["yaxis.range"]
+    assert squish_button.args[1]["yaxis.range"] != pack_button.args[1]["yaxis.range"]
 
     squish_height = (
         squish_button.args[1]["yaxis.domain"][1]
         - squish_button.args[1]["yaxis.domain"][0]
     ) * (squish_button.args[1]["height"] - 120)
-    packed_height = (
-        packed_button.args[1]["yaxis.domain"][1]
-        - packed_button.args[1]["yaxis.domain"][0]
-    ) * (packed_button.args[1]["height"] - 120)
+    pack_height = (
+        pack_button.args[1]["yaxis.domain"][1] - pack_button.args[1]["yaxis.domain"][0]
+    ) * (pack_button.args[1]["height"] - 120)
     squish_other_height = (
         squish_button.args[1]["yaxis2.domain"][1]
         - squish_button.args[1]["yaxis2.domain"][0]
     ) * (squish_button.args[1]["height"] - 120)
-    packed_other_height = (
-        packed_button.args[1]["yaxis2.domain"][1]
-        - packed_button.args[1]["yaxis2.domain"][0]
-    ) * (packed_button.args[1]["height"] - 120)
-    assert squish_height < packed_height
-    assert abs(squish_other_height - packed_other_height) < 1e-6
+    pack_other_height = (
+        pack_button.args[1]["yaxis2.domain"][1]
+        - pack_button.args[1]["yaxis2.domain"][0]
+    ) * (pack_button.args[1]["height"] - 120)
+    assert squish_height < pack_height
+    assert abs(squish_other_height - pack_other_height) < 1e-6
 
-    assert full_button.args[1]["yaxis.domain"] != packed_button.args[1]["yaxis.domain"]
-    assert packed_button.args[1]["yaxis.ticktext"] == []
+    assert full_button.args[1]["yaxis.domain"] != pack_button.args[1]["yaxis.domain"]
+    assert pack_button.args[1]["yaxis.ticktext"] == []
 
 
 def test_browser_zip_hides_axes_and_is_shorter_than_squish_for_single_panel():
@@ -184,7 +183,7 @@ def test_browser_titles_have_pixel_gap_above_each_panel_after_resizing():
                 assert (title_y - domain_top) * plot_height >= 16
 
 
-def test_squish_ignores_text_padding_when_packing_rows():
+def test_squish_ignores_label_padding_when_packing_rows():
     pre.set_engine("ply")
     data = pr.PyRanges(
         {
@@ -198,7 +197,4 @@ def test_squish_ignores_text_padding_when_packing_rows():
 
     squish_button = fig.layout.updatemenus[0].buttons[1]
 
-    assert squish_button.args[1]["yaxis.range"] == [
-        1.3877787807814457e-17,
-        0.41000000000000003,
-    ]
+    assert squish_button.args[1]["yaxis.range"] == [0.0, 0.123]

@@ -28,17 +28,17 @@ gr_2 = gr_2[["Chromosome", "Feature", "Start", "End", "Strand", "Parent"]]
 # Figure 1
 # interactive plot to show tooltip (Figure 1.A)
 pre.set_engine("plt")
-pre.plot(gr, title_size=30, text_size=15)
+pre.plot(gr, title_size=30, label_size=15)
 
 # show id, color col and cmap and save as png (Figure 1.B)
 pre.plot(
     gr_1,
     id_col="transcript_id",
-    color_col="Strand",
+    fill_col="Strand",
     colormap={"+": "lightgreen", "-": "lightblue"},
     to_file=("fig_1b.png", (500, 200)),
     limits=(-5, None),
-    text_pad=2,
+    label_pad=2,
 )
 
 
@@ -48,7 +48,7 @@ pre.plot(
     gr_2,
     "mRNA",
     id_col="Parent",
-    text=False,
+    label=False,
     to_file=("fig_2a.png", (500, 300)),
     arrow_size=0.04,
 )
@@ -60,6 +60,6 @@ pre.plot(
     shrink=True,
     to_file=("fig_2b.png", (500, 300)),
     arrow_size=0.04,
-    text_pad=2,
+    label_pad=2,
     limits=(5, None),
 )

@@ -116,7 +116,7 @@ def plot_direction(
 def apply_gene_bridge(
     transcript_str,
     text,
-    text_size,
+    label_size,
     df,
     fig,
     strand,
@@ -164,7 +164,7 @@ def apply_gene_bridge(
             arrow_line_width,
             dir_flag,
             text,
-            text_size,
+            label_size,
         ),
         axis=1,
     )
@@ -185,7 +185,7 @@ def plot_row(
     arrow_line_width,
     dir_flag,
     text,
-    text_size,
+    label_size,
 ):
     """Plot elements corresponding to one row of one gene."""
 
@@ -280,26 +280,26 @@ def plot_row(
     # Add ID annotation if it is the first exon
     text_enabled = text.get("enabled", True) if isinstance(text, dict) else bool(text)
     if row[EXON_IX_COL] == 0 and text_enabled:
-        text_pad = row[TEXT_PAD_COL]
+        label_pad = row[TEXT_PAD_COL]
         if isinstance(text, dict):
             ann = str(row.get(TEXT_LABEL_COL, genename))
             position = text.get("position", "left")
             color = row.get(TEXT_COLOR_COL)
             angle = text.get("angle", 0)
-            font_size = text_size
+            font_size = label_size
         elif isinstance(text, bool):
             ann = str(genename)
             position = "left"
             color = row.get(TEXT_COLOR_COL)
             angle = 0
-            font_size = text_size
+            font_size = label_size
         else:
             row_dict = row.to_dict()
             ann = text.format(**row_dict)
             position = "left"
             color = row.get(TEXT_COLOR_COL)
             angle = 0
-            font_size = text_size
+            font_size = label_size
         if ann != "":
             vertical_pad = row.get(TEXT_PAD_Y_COL, 0)
 
@@ -307,12 +307,12 @@ def plot_row(
             group_end = row.get(TEXT_END_COL, x1)
             group_mid = row.get(TEXT_MID_COL, (group_start + group_end) / 2)
 
-            x = group_start - text_pad
+            x = group_start - label_pad
             y = (y0 + y1) / 2
             xanchor = "right"
             yanchor = "middle"
             if position == "right":
-                x = group_end + text_pad
+                x = group_end + label_pad
                 xanchor = "left"
             elif position == "center":
                 x = group_mid

@@ -1,4 +1,5 @@
 import pyranges1 as pr
+import pyrangeyes as pre
 from pyrangeyes.example_data import ncbi_gff
 
 COLORS = ["#5b8ff9", "#61dDAA", "#65789B", "#F6BD16", "#7262fd", "#78D3F8", "#9661BC"]
@@ -35,82 +36,82 @@ def transcript_list_data():
 SIMPLE_CASES = [
     dict(
         data=overlapping_data,
-        kwargs=dict(id_col="id", packed=True, text="{id}"),
+        kwargs=dict(id_col="id", pack=True, label="{id}"),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            text="{label}",
-            text_position="right",
-            text_fit=False,
-            text_pad=1,
-            text_size=8,
+            pack=True,
+            label="{label}",
+            label_position="right",
+            label_fit=False,
+            label_pad=1,
+            label_size=8,
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            text="{label}",
-            text_position="right",
-            text_fit=True,
-            text_pad=1,
-            text_size=8,
+            pack=True,
+            label="{label}",
+            label_position="right",
+            label_fit=True,
+            label_pad=1,
+            label_size=8,
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            text="{kind}",
-            text_position="above",
-            text_size=9,
+            pack=True,
+            label="{kind}",
+            label_position="above",
+            label_size=9,
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            text="{kind}",
-            text_position="below",
-            text_size=9,
+            pack=True,
+            label="{kind}",
+            label_position="below",
+            label_size=9,
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            color_col="fill",
+            pack=True,
+            fill_col="fill",
             outline_col="outline",
             colormap="direct",
             interval_height=0.7,
-            text="{id}:{kind}",
-            text_position="center",
-            text_color="white",
-            text_size=8,
+            label="{id}:{kind}",
+            label_position="center",
+            label_color="white",
+            label_size=8,
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            color_col="score",
+            pack=True,
+            fill_col="score",
             height_col="height",
             interval_height=0.9,
             colormap={
-                "color": {"type": "quantitative", "colors": ["#d9f7be", "#237804"]}
+                "fill": {"type": "quantitative", "colors": ["#d9f7be", "#237804"]}
             },
-            text="{score}",
-            text_position="above",
-            text_angle=25,
-            text_size=8,
+            label="{score}",
+            label_position="above",
+            label_angle=25,
+            label_size=8,
         ),
     ),
 ]
@@ -129,10 +130,10 @@ TEXT_COLORMAP_CASES = [
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            color_col="kind",
+            pack=True,
+            fill_col="kind",
             colormap={
-                "color": {
+                "fill": {
                     "exon": "#d9e8ff",
                     "CDS": "#f6bd16",
                     "UTR": "#b7eb8f",
@@ -141,7 +142,7 @@ TEXT_COLORMAP_CASES = [
                     "peak": "#87e8de",
                     "repeat": "#ffd591",
                 },
-                "text": {
+                "label": {
                     "exon": "#003a8c",
                     "CDS": "#ad4e00",
                     "UTR": "#237804",
@@ -151,18 +152,18 @@ TEXT_COLORMAP_CASES = [
                     "repeat": "#ad6800",
                 },
             },
-            text="{kind}",
-            text_position="above",
-            text_size=9,
-            text_color_col="kind",
+            label="{kind}",
+            label_position="above",
+            label_size=9,
+            label_color_col="kind",
         ),
     ),
     dict(
         data=overlapping_data,
         kwargs=dict(
             id_col="id",
-            packed=True,
-            color_col="kind",
+            pack=True,
+            fill_col="kind",
             colormap={
                 "exon": "#d9e8ff",
                 "CDS": "#f6bd16",
@@ -172,10 +173,10 @@ TEXT_COLORMAP_CASES = [
                 "peak": "#87e8de",
                 "repeat": "#ffd591",
             },
-            text="{kind}",
-            text_position="center",
-            text_size=8,
-            text_color="#262626",
+            label="{kind}",
+            label_position="center",
+            label_size=8,
+            label_color="#262626",
         ),
     ),
 ]
@@ -192,15 +193,14 @@ def iter_showcase_cases(engine):
         for pad in pads:
             yield (
                 plot_no,
-                transcript_data(),
+                pre.Track(transcript_data(), "mRNA"),
                 dict(
-                    adapter="mRNA",
-                    packed=True,
-                    text="{transcript_id}",
-                    text_position=position,
-                    text_pad=pad,
-                    text_size=12,
-                    color_col="Feature",
+                    pack=True,
+                    label="{transcript_id}",
+                    label_position=position,
+                    label_pad=pad,
+                    label_size=12,
+                    fill_col="Feature",
                     colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
                     sort_ranges=True,
                 ),
@@ -211,15 +211,14 @@ def iter_showcase_cases(engine):
     for position, pad in (("right", 5), ("above", 5)):
         yield (
             plot_no,
-            transcript_list_data(),
+            [pre.Track(data, "mRNA") for data in transcript_list_data()],
             dict(
-                adapter=["mRNA", "mRNA"],
-                packed=True,
-                text="{transcript_id}",
-                text_position=position,
-                text_pad=pad,
-                text_size=12,
-                color_col="Feature",
+                pack=True,
+                label="{transcript_id}",
+                label_position=position,
+                label_pad=pad,
+                label_size=12,
+                fill_col="Feature",
                 colormap={"exon": "#d9e8ff", "CDS": "#f6bd16"},
                 sort_ranges=True,
             ),

@@ -26,7 +26,7 @@ def test_regions_list_replaces_chromosome_layout_matplotlib():
         id_col="tx",
         regions=[("1", 50_000, 60_000), ("1", 1_000, 5_000)],
         return_plot="fig",
-        title_chr="{chrom}:{start}-{end}",
+        panel_title="{chrom}:{start}-{end}",
     )
 
     assert [ax.get_title() for ax in fig.axes] == [
@@ -43,7 +43,7 @@ def test_regions_list_accepts_embedded_pyranges_matplotlib():
         id_col="tx",
         regions=[("1", 1_000, 5_000), regions_pr],
         return_plot="fig",
-        title_chr="{chrom}:{start}-{end}",
+        panel_title="{chrom}:{start}-{end}",
     )
 
     assert [ax.get_title() for ax in fig.axes] == ["1:1,000-5,000", "2:0-100"]
@@ -63,7 +63,7 @@ def test_regions_list_replaces_chromosome_layout_plotly():
         id_col="tx",
         regions=[("1", 50_000, 60_000), ("1", 1_000, 5_000)],
         return_plot="fig",
-        title_chr="{chrom}:{start}-{end}",
+        panel_title="{chrom}:{start}-{end}",
     )
 
     title_texts = [annotation.text for annotation in fig.layout.annotations[:2]]

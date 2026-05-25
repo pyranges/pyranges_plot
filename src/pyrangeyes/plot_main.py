@@ -14,6 +14,7 @@ from .core import (
     set_options,
 )
 from .plot_features import prp_cmap
+from .track import Track
 from . import adapters
 from .data_preparation import (
     make_subset,
@@ -22,6 +23,10 @@ from .data_preparation import (
     compute_thresh,
     subdf_assigncolor,
     assign_label_rows,
+    _assign_color_channel,
+    _channel_colormap,
+    _is_channel_colormap,
+    _is_quantitative_colormap,
     _normalize_limits_to_panels,
     _normalize_regions_to_panels,
 )
@@ -44,12 +49,16 @@ from .names import (
     TEXT_PAD_FRAC_COL,
     TEXT_PAD_Y_COL,
     TEXT_HEIGHT_COL,
+    TEXT_EXTRA_Y_COL,
+    TEXT_POSITION_COL,
     THICK_COL,
     SHAPE_COL,
     MARKER_SIZE_COL,
     REVERSE_COL,
     SQUISH_COL,
     SQUISH_FACTOR_COL,
+    COLOR_TAG_COL,
+    COLOR_INFO,
 )
 
 
@@ -69,30 +78,32 @@ def _normalize_track_flags(value, n_tracks, *, name):
     raise TypeError(f"{name} must be a bool or a list of bool values.")
 
 
-def _normalize_text_spec(text, packed, *, text_position, text_fit, text_angle):
-    """Normalize the public ``text=`` argument into a rendering spec."""
-    defaulted = text is None
-    if text is None:
-        text = bool(packed)
-    if not isinstance(text, (bool, str)):
-        raise TypeError("text must be None, bool, or a format string.")
+def _normalize_label_spec(label, pack, *, label_position, label_fit, label_angle):
+    """Normalize the public ``label=`` argument into a rendering spec."""
+    defaulted = label is None
+    if label is None:
+        label = bool(pack)
+    if not isinstance(label, (bool, str)):
+        raise TypeError("label must be None, bool, or a format string.")
 
+    position_aliases = {"top": "above", "bottom": "below"}
+    label_position = position_aliases.get(label_position, label_position)
     allowed_positions = {"left", "right", "center", "above", "below"}
-    if text_position not in allowed_positions:
+    if label_position not in allowed_positions:
+        public_positions = sorted(allowed_positions | set(position_aliases))
         raise ValueError(
-            f"text_position must be one of {sorted(allowed_positions)}; "
-            f"got {text_position!r}."
+            f"label_position must be one of {public_positions}; got {label_position!r}."
         )
 
-    enabled = bool(text)
+    enabled = bool(label)
     return {
         "enabled": enabled,
         "defaulted": defaulted,
-        "label": text if isinstance(text, str) else None,
-        "position": text_position,
-        "angle": text_angle,
-        "fit": bool(text_fit),
-        "use_label_for_fit": isinstance(text, str),
+        "label": label if isinstance(label, str) else None,
+        "position": label_position,
+        "angle": label_angle,
+        "fit": bool(label_fit),
+        "use_label_for_fit": isinstance(label, str),
     }
 
 
@@ -130,7 +141,153 @@ def _attach_panel_y_height(chrmd_df, genesmd_df, interval_height):
     return chrmd_df.join(panel_y_height.rename("y_height"))
 
 
-def _assign_text_pad_fraction(df, chrmd_df):
+TRACK_ID_COL = "__pe_track_id__"
+TRACK_FILL_COL = "__pe_track_fill__"
+TRACK_OUTLINE_COL = "__pe_track_outline__"
+TRACK_LABEL_COLOR_COL = "__pe_track_label_color__"
+TRACK_DEPTH_COL = "__pe_track_depth__"
+
+TRACK_OPTION_KEYS = {
+    "name",
+    "squish",
+    "id_col",
+    "pack",
+    "fill_col",
+    "outline_col",
+    "label_color_col",
+    "height_col",
+    "depth_col",
+    "shape_col",
+    "colormap",
+    "outline_color",
+    "label",
+    "label_color",
+    "label_position",
+    "label_fit",
+    "label_angle",
+}
+
+
+def _as_list(value):
+    if value is None or isinstance(value, list):
+        return value
+    if isinstance(value, tuple):
+        return list(value)
+    return [value]
+
+
+def _make_tag_column(df, columns, output_col):
+    columns = _as_list(columns)
+    if columns is None:
+        return None
+    for column in columns:
+        if column not in df.columns:
+            raise ValueError(
+                f"The provided column {column!r} is not present in the given data."
+            )
+    if len(columns) == 1:
+        df[output_col] = df[columns[0]]
+    else:
+        df[output_col] = list(zip(*[df[column] for column in columns]))
+    return [output_col]
+
+
+def _make_id_column(df, id_col):
+    id_col = _as_list(id_col)
+    if id_col is None:
+        id_col = get_id_col() or "__interval_index__"
+    id_col = _as_list(id_col)
+    for id_str in id_col:
+        if id_str not in df.columns and id_str != "__interval_index__":
+            raise ValueError(
+                "Please define a correct name of the ID column using id_col=... "
+                "or Track(..., id_col=...)."
+            )
+    if id_col == ["__interval_index__"]:
+        df[TRACK_ID_COL] = [str(i) for i in range(len(df))]
+    elif len(id_col) == 1:
+        df[TRACK_ID_COL] = df[id_col[0]]
+    else:
+        df[TRACK_ID_COL] = list(zip(*[df[column] for column in id_col]))
+    return [TRACK_ID_COL]
+
+
+def _legend_title_from_public_cols(columns, fallback_columns):
+    columns = _as_list(columns) or _as_list(fallback_columns)
+    if columns is None:
+        return None
+    if columns == ["__interval_index__"]:
+        return "interval"
+    return ", ".join(columns)
+
+
+def _shared_color_key(legend_title, value):
+    if legend_title is None:
+        return str(value)
+    return f"{legend_title}: {value}"
+
+
+def _can_share_global_colormap(colormap):
+    fill_cmap = _channel_colormap(colormap, "fill", fallback=prp_cmap)
+    return (
+        fill_cmap not in ["direct", None, False]
+        and not isinstance(fill_cmap, dict)
+        and not _is_quantitative_colormap(fill_cmap)
+    )
+
+
+def _build_shared_fill_colormap(prepared_tracks, global_colormap, warnings):
+    if not _can_share_global_colormap(global_colormap):
+        return None
+    tags = []
+    seen = set()
+    for meta in prepared_tracks.values():
+        if not meta["uses_global_colormap"]:
+            continue
+        legend_title = meta["fill_legend_title"]
+        for value in meta["df"][TRACK_FILL_COL].drop_duplicates():
+            key = _shared_color_key(legend_title, value)
+            if key not in seen:
+                tags.append(key)
+                seen.add(key)
+    if not tags:
+        return None
+
+    fill_cmap = _channel_colormap(global_colormap, "fill", fallback=prp_cmap)
+    color_df = pd.DataFrame({"tag": tags})
+    color_df = _assign_color_channel(color_df, "tag", COLOR_INFO, fill_cmap, warnings)
+    return dict(zip(color_df["tag"], color_df[COLOR_INFO], strict=False))
+
+
+def _replace_fill_channel(colormap, fill_cmap):
+    if _is_channel_colormap(colormap):
+        shared = dict(colormap)
+        shared["fill"] = fill_cmap
+        return shared
+    return fill_cmap
+
+
+def _normalize_tracks(data):
+    if not isinstance(data, list):
+        data = [data]
+    return [item if isinstance(item, Track) else Track(item) for item in data]
+
+
+def _validate_track_options(track, feature_keys, adapter_keys=()):
+    allowed = TRACK_OPTION_KEYS | set(feature_keys) | set(adapter_keys)
+    unknown = sorted(set(track.options) - allowed)
+    if unknown:
+        raise Exception(
+            f"Unknown Track option(s) {unknown!r}. Use plot(...) for global options, "
+            "Track(..., name=..., squish=..., adapter-specific options), or print_options()."
+        )
+
+
+def _track_value(track, key, global_value):
+    return track.options[key] if key in track.options else global_value
+
+
+def _assign_label_pad_fraction(df, chrmd_df):
     """Attach text pad as a fraction of the visible span on each axis."""
     chrom = df[CHROM_COL].iloc[0]
     pr_ix = df[PR_INDEX_COL].iloc[0]
@@ -362,26 +519,23 @@ def _assign_custom_tooltip_column(subdf, tooltip):
 
 def plot(
     data,
-    adapter=None,
     *,
     id_col=None,
     warnings=None,
     max_shown=25,
-    packed=True,
+    pack=True,
     return_plot=None,
     add_aligned_plots=None,
-    color_col=None,
+    fill_col=None,
     outline_col=None,
-    text_color_col=None,
+    label_color_col=None,
     shrink=False,
     limits=None,
     regions=None,
     reverse=False,
-    squish=False,
-    text=None,
+    label=None,
     legend=False,
-    title_chr=None,
-    track_labels=None,
+    panel_title=None,
     tooltip=None,
     to_file=None,
     theme=None,
@@ -396,16 +550,9 @@ def plot(
 
     Parameters
     ----------
-    data: {pyranges.PyRanges or list of pyranges.PyRanges}
-        One PyRanges object, or a list of PyRanges objects displayed as separate tracks.
-
-    adapter: {None, str, list}, default None
-        Optional shortcut for a pre-configured visualization. For example,
-        ``plot(annotation, "mRNA")`` renders GTF/GFF-like mRNA structure with
-        thin exon/UTR regions and thick CDS regions. For a list of PyRanges,
-        pass one adapter per track, such as ``plot([transcripts, variants],
-        adapter=["mRNA", "SNP"])``. Use ``pe.adapters.describe()`` to list
-        available adapters.
+    data: {pyranges.PyRanges, Track, or list}
+        One PyRanges/Track object, or a list of PyRanges/Track objects displayed as separate tracks.
+        Use ``Track(data, adapter=None, name=None, **options)`` for per-track configuration.
 
     id_col: str, default None
         Name of the column containing gene ID.
@@ -416,10 +563,10 @@ def plot(
     max_shown: int, default 20
         Maximum number of genes plotted in the dataframe order.
 
-    packed: bool or list of bool, default True
-        Disposition of the genes in the plot. Use True for a packed disposition (genes in the same line if
-        they do not overlap) and False for unpacked (one row per gene). When a list is provided, it must
-        contain one bool per track.
+    pack: bool, default True
+        Disposition of the genes in the plot. Use True for a pack disposition (genes in the same line if
+        they do not overlap) and False for unpack (one row per gene). Per-track ``Track(..., pack=...)``
+        overrides this default.
 
     return_plot: {None, "fig", "app"}, default None
         Return the backend figure/app instead of only displaying or saving it.
@@ -427,7 +574,7 @@ def plot(
     add_aligned_plots: list, default None
         Extra backend traces/axes aligned below the genomic x-axis. Currently accepts one panel/chromosome.
 
-    color_col: str, default None
+    fill_col: str, default None
         Name of the column used to color the interval fill. If not specified, id_col will be used.
         Values are mapped through ``colormap`` unless ``colormap="direct"`` is used.
 
@@ -435,27 +582,27 @@ def plot(
         Name of the column used to color interval outlines. If not specified, interval outlines use the
         resolved fill colors. For one fixed outline color, use ``outline_color="black"``.
 
-    text_color_col: str, default None
-        Name of the column used to color text labels. If provided, values are mapped through
-        ``colormap["text"]`` when present, otherwise through the fill colormap. This overrides
-        the fixed ``text_color`` option.
+    label_color_col: str, default None
+        Name of the column used to color labels. If provided, values are mapped through
+        ``colormap["label"]`` when present, otherwise through the fill colormap. This overrides
+        the fixed ``label_color`` option.
 
     colormap: str, list, dict, or "direct", default "popart"
-        Colors used for interval fills and, optionally, mapped outlines and text.
+        Colors used for interval fills and, optionally, mapped outlines and labels.
 
-        If ``"direct"``, values in ``color_col`` and ``outline_col`` are interpreted as literal colors.
+        If ``"direct"``, values in ``fill_col`` and ``outline_col`` are interpreted as literal colors.
         If a string, use the named Matplotlib/Plotly colormap or color sequence.
         If a list, assign colors from the list to distinct values.
-        If a dict, use a channel mapping with required ``"color"`` and optional ``"outline"``
-        and ``"text"`` entries. ``"outline": "color"`` reuses the fill mapping.
-        ``"text": None`` or an omitted ``"text"`` entry uses fixed ``text_color`` unless
-        ``text_color_col`` is provided; ``"text": "color"`` and ``"text": "outline"`` reuse
-        those channels. Other text colormap specs require ``text_color_col``::
+        If a dict, use a channel mapping with required ``"fill"`` and optional ``"outline"``
+        and ``"label"`` entries. ``"outline": "fill"`` reuses the fill mapping.
+        ``"label": None`` or an omitted ``"label"`` entry uses fixed ``label_color`` unless
+        ``label_color_col`` is provided; ``"label": "fill"`` and ``"label": "outline"`` reuse
+        those channels. Other label colormap specs require ``label_color_col``::
 
             colormap={
-                "color": {"exon": "skyblue", "CDS": "orange"},
-                "outline": "color",
-                "text": {"low": "black", "high": "white"},
+                "fill": {"exon": "skyblue", "CDS": "orange"},
+                "outline": "fill",
+                "label": {"low": "black", "high": "white"},
             }
 
         For quantitative coloring, use ``type="quantitative"``. Values are normalized to the observed
@@ -496,34 +643,24 @@ def plot(
         name, ``(chromosome, start, end)`` region tuple, or list of these to reverse selected
         panels; or a dict mapping selectors to booleans.
 
-    squish: bool or list of bool, default False
-        Render selected tracks in compact form. Squished tracks use
-        ``squish_factor`` to reduce interval height and vertical spacing among
-        stacked intervals. Text labels are hidden for squished tracks, even when
-        ``text=True`` or a format string is provided.
-
-    text: {None, bool, str}, default None
-        Controls interval text annotations. If None, text is enabled for packed
-        plots and disabled for unpacked plots to avoid duplicated row labels. If
-        ``packed`` is a list, the default is enabled only when all tracks are packed.
+    label: {None, bool, str}, default None
+        Controls interval labels. If None, labels are enabled for pack
+        plots and disabled for unpack plots to avoid duplicated row labels. If
+        a track sets ``pack=False``, the default is disabled for that track.
         If True, the id/index is used; if False, labels are disabled. A string
         is interpreted as a row-value format template such as ``"{Feature}: {id}"``.
-        Use ``text_pad``, ``text_size``, ``text_color``, ``text_angle``,
-        ``text_position``, and ``text_fit`` to control label appearance and layout.
+        Use ``label_pad``, ``label_size``, ``label_color``, ``label_angle``,
+        ``label_position``, and ``label_fit`` to control label appearance and layout.
 
     legend: bool, default False
         Whether the legend should appear in the plot.
 
-    title_chr: {None, str}, default None
+    panel_title: {None, str}, default None
         Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``,
         ``{orientation}`` (``"fwd"``/``"rev"``), and ``{rev_flag}`` (``""``/``" (rev)"``).
         If None, pyrangeyes chooses ``"Chromosome {chrom}{rev_flag}"`` normally
         (identical to the old default unless reversed), ``"{chrom}:{start}-{end}"``
         for explicit ``regions``, and ``"{chrom}"`` when ``regions`` is a column name.
-
-    track_labels: list, default None
-        Track labels shown when plotting multiple PyRanges objects.
-
 
     tooltip: str, default None
         Dataframe information to show in a tooltip when placing the mouse over a gene, the given
@@ -543,7 +680,7 @@ def plot(
 
     sort_ranges: bool, default False
         Whether to sort interval groups by genomic coordinates before plotting.
-        If False, the default, unpacked plots preserve the first-seen order of rows/groups in the input.
+        If False, the default, unpack plots preserve the first-seen order of rows/groups in the input.
         If True, interval groups are ordered by the internal genomic sorting behavior.
 
     height_col: str, default None
@@ -565,112 +702,64 @@ def plot(
 
     kwargs
         Customizable plot features can be defined using keyword arguments. Use print_options() function to check the variables'
-        nomenclature, description and default values. Adapter options can also be passed here when ``adapter``
-        is set; inspect them with, for example, ``print_options(adapter="mRNA")``.
+        nomenclature, description and default values. Adapter-specific options are passed via
+        ``Track(data, adapter, **options)``; inspect them with, for example, ``print_options(adapter="mRNA")``.
 
 
 
     Examples
     --------
 
-    >>> import pyranges as pr, pyrangeyes as pe
+    >>> import pyranges1 as pr, pyrangeyes as pe
 
     >>> pe.set_engine('plotly')
 
-    >>> p = pr.PyRanges({"Chromosome": [1]*5, "Strand": ["+"]*3 + ["-"]*2, "Start": [10,20,30,25,40], "End": [15,25,35,30,50], "transcript_id": ["t1"]*3 + ["t2"]*2}, "feature1": ["A", "B", "C", "A", "B"])
+    >>> p = pr.PyRanges({
+    ...     "Chromosome": ["1"] * 5,
+    ...     "Strand": ["+"] * 3 + ["-"] * 2,
+    ...     "Start": [10, 20, 30, 25, 40],
+    ...     "End": [15, 25, 35, 30, 50],
+    ...     "transcript_id": ["t1"] * 3 + ["t2"] * 2,
+    ...     "Feature": ["exon", "CDS", "exon", "CDS", "exon"],
+    ...     "feature1": ["A", "B", "C", "A", "B"],
+    ...     "fill_hex": ["#1f77b4"] * 5,
+    ...     "outline_hex": ["#333333"] * 5,
+    ... })
 
-    >>> plot(p, id_col="transcript_id",  max_shown=25, colormap='Set3', text=False)
+    >>> pe.plot(p, id_col="transcript_id", max_shown=25, colormap='Set3', label=False)
 
-    >>> plot(p, id_col="transcript_id", color_col='Strand', colormap={'+': 'green', '-': 'red'})
+    >>> pe.plot(p, id_col="transcript_id", fill_col='Strand', colormap={'+': 'green', '-': 'red'})
 
-    >>> plot(p, id_col="transcript_id", color_col='fill_hex', outline_col='outline_hex', colormap='direct')
+    >>> pe.plot(p, id_col="transcript_id", fill_col='fill_hex', outline_col='outline_hex', colormap='direct')
 
-    >>> plot(
+    >>> pe.plot(
     ...     p,
     ...     id_col="transcript_id",
-    ...     color_col='Strand',
+    ...     fill_col='Strand',
     ...     outline_col='Feature',
-    ...     colormap={'color': {'+': 'green', '-': 'red'}, 'outline': {'exon': 'black', 'CDS': 'gold'}},
+    ...     colormap={'fill': {'+': 'green', '-': 'red'}, 'outline': {'exon': 'black', 'CDS': 'gold'}},
     ... )
 
-    >>> plot(p, limits = {'1': (1000, 50000), '2': None, '3': (10000, None)}, title_chr="Chrom: {chrom}")
+    >>> pe.plot(p, limits={'1': (1000, 50000)}, panel_title="Chrom: {chrom}")
 
     >>> # Two windows on chromosome 1 shown as separate panels:
-    >>> plot(p, regions = [('1', 1_000, 5_000), ('1', 50_000, 60_000)])
+    >>> pe.plot(p, regions=[('1', 10, 30), ('1', 30, 60)])
 
     >>> # Or use a column to define region panels:
-    >>> plot(p, regions = 'transcript_id')
+    >>> pe.plot(p, regions='transcript_id')
 
-    >>> plot([p, p], id_col="transcript_id", shrink=True, tooltip = "Feature1: {feature1}")
+    >>> pe.plot([p, p], id_col="transcript_id", shrink=True, tooltip="Feature1: {feature1}")
 
-    >>> plot([p, p], id_col="transcript_id", track_labels=["first_p", "second_p"], packed=False, to_file='my_plot.pdf')
+    >>> pe.plot([pe.Track(p, name="first_p"), pe.Track(p, name="second_p")], id_col="transcript_id", pack=False, to_file='my_plot.pdf')
     """
 
-    # Treat input data as list
-    if not isinstance(data, list):
-        data = [data]
-    squish_flags = _normalize_track_flags(squish, len(data), name="squish")
-    packed_flags = _normalize_track_flags(packed, len(data), name="packed")
+    tracks = _normalize_tracks(data)
+    data = [track.data for track in tracks]
 
-    if adapter is not None:
-        if isinstance(adapter, str):
-            adapter_names = [adapter] * len(data)
-        else:
-            adapter_names = list(adapter)
-            if len(adapter_names) != len(data):
-                raise ValueError(
-                    "When adapter is a list, provide exactly one adapter per track."
-                )
-
-        plot_arg_values = {
-            "id_col": id_col,
-            "height_col": height_col,
-            "depth_col": depth_col,
-            "shape_col": shape_col,
-        }
-        adapted_data = []
-        adapter_defaults = []
-        consumed_kargs = set()
-        for adapter_name, df_item in zip(adapter_names, data):
-            adapter_func = adapters.get(adapter_name)
-            adapter_kwargs = adapters.get_options(adapter_name, "values")
-            accepted_adapter_kwargs = adapters.accepted_kwargs(adapter_name)
-            for arg_name, arg_value in plot_arg_values.items():
-                if arg_name in accepted_adapter_kwargs and arg_value is not None:
-                    adapter_kwargs[arg_name] = arg_value
-            for arg_name, arg_value in kargs.items():
-                if arg_name in accepted_adapter_kwargs:
-                    adapter_kwargs[arg_name] = arg_value
-                    consumed_kargs.add(arg_name)
-            adapted_data.append(adapter_func(df_item, **adapter_kwargs))
-            adapter_defaults.append(
-                adapters.default_plot_args(adapter_name, adapter_kwargs)
-            )
-        for arg_name in consumed_kargs:
-            kargs.pop(arg_name)
-        data = adapted_data
-        default_plot_args = {}
-        for defaults in adapter_defaults:
-            for arg_name, default_value in defaults.items():
-                if arg_name not in default_plot_args:
-                    default_plot_args[arg_name] = default_value
-                elif default_plot_args[arg_name] != default_value:
-                    default_plot_args.pop(arg_name, None)
-        if id_col is None and "id_col" in default_plot_args:
-            id_col = default_plot_args["id_col"]
-        if height_col is None and "height_col" in default_plot_args:
-            height_col = default_plot_args["height_col"]
-        if depth_col is None and "depth_col" in default_plot_args:
-            depth_col = default_plot_args["depth_col"]
-        if shape_col is None and "shape_col" in default_plot_args:
-            shape_col = default_plot_args["shape_col"]
-
-    # Ensure correct track_labels
-    if track_labels is not None and track_labels is not False:
-        if len(track_labels) != len(data):
-            raise ValueError(
-                f"The number of provided track_labels {track_labels} does not match the number of tracks ({len(data)})."
-            )
+    track_names = [track.options.get("name") for track in tracks]
+    track_names = (
+        track_names if any(name is not None for name in track_names) else False
+    )
 
     # Deal with export
     if to_file:
@@ -695,29 +784,7 @@ def plot(
     else:
         file_size = (1600, 800)
 
-    # Deal with id column
-    if id_col is None:
-        ID_COL = get_id_col()
-        if not ID_COL:
-            ID_COL = ["__interval_index__"]
-    else:
-        ID_COL = id_col
-    # treat as list
-    if isinstance(ID_COL, str):
-        ID_COL = [ID_COL]
-
-    for df_item in data:
-        for id_str in ID_COL:
-            # Ensure correct names
-            if (
-                id_str is not None
-                and id_str not in df_item.columns
-                and id_str != "__interval_index__"
-            ):
-                raise Exception(
-                    "Please define a correct name of the ID column using either set_id_col() function or plot_generic parameter as plot_generic(..., id_col = 'your_id_col')"
-                )
-            # Avoid Nan in id column
+    ID_COL = [TRACK_ID_COL]
 
     # Deal with warnings
     if warnings is None:
@@ -728,7 +795,8 @@ def plot(
 
     # PREPARE DATA for plot
     # Deal with plot features as kargs
-    wrong_keys = [k for k in kargs if k not in print_options(return_keys=True)]
+    feature_keys = print_options(return_keys=True)
+    wrong_keys = [k for k in kargs if k not in feature_keys]
     if wrong_keys:
         raise Exception(
             f"The following keys do not match any customizable features: {wrong_keys}.\nCheck the customizable variable names using the print_options function."
@@ -755,8 +823,8 @@ def plot(
         "colormap": getvalue("colormap"),
         "intron_color": getvalue("intron_color"),
         "tag_bkg": getvalue("tag_bkg"),
-        "fig_bkg": getvalue("fig_bkg"),
-        "plot_bkg": getvalue("plot_bkg"),
+        "figure_bg": getvalue("figure_bg"),
+        "track_bg": getvalue("track_bg"),
         "plot_border": getvalue("plot_border"),
         "title_dict_plt": {
             "family": "sans-serif",
@@ -773,36 +841,61 @@ def plot(
         "interval_height": float(getvalue("interval_height")),
         "transcript_utr_width": 0.3 * float(getvalue("interval_height")),
         "v_spacer": getvalue("v_spacer"),
-        "text_size": float(getvalue("text_size")),
-        "text_color": getvalue("text_color"),
-        "text_angle": float(getvalue("text_angle")),
-        "text_position": getvalue("text_position"),
-        "text_fit": getvalue("text_fit"),
-        "text_pad": float(getvalue("text_pad")) / 100,
+        "label_size": float(getvalue("label_size")),
+        "label_color": getvalue("label_color"),
+        "label_angle": float(getvalue("label_angle")),
+        "label_position": getvalue("label_position"),
+        "label_fit": getvalue("label_fit"),
+        "label_pad": float(getvalue("label_pad")) / 100,
         "plotly_port": getvalue("plotly_port"),
         "arrow_line_width": float(getvalue("arrow_line_width")),
         "arrow_color": getvalue("arrow_color"),
         "arrow_size": getvalue("arrow_size"),
         "shrink_threshold": getvalue("shrink_threshold"),
-        "shrunk_bkg": getvalue("shrunk_bkg"),
+        "shrunk_bg": getvalue("shrunk_bg"),
         "squish_factor": float(getvalue("squish_factor")),
         "x_ticks": getvalue("x_ticks"),
     }
     if not 0 < feat_dict["squish_factor"] <= 1:
         raise ValueError("squish_factor must be > 0 and <= 1.")
+    feat_dict["track_bg_by_pr"] = (
+        {
+            pr_ix: _track_value(track, "track_bg", feat_dict["track_bg"])
+            for pr_ix, track in enumerate(tracks)
+        }
+        if any("track_bg" in track.options for track in tracks)
+        else {}
+    )
+
+    squish_flags = [bool(track.options.get("squish", False)) for track in tracks]
+    pack_flags = [bool(_track_value(track, "pack", pack)) for track in tracks]
     track_scales = {
         pr_ix: feat_dict["squish_factor"] if flag else 1.0
         for pr_ix, flag in enumerate(squish_flags)
     }
-    text = _normalize_text_spec(
-        text,
-        all(packed_flags),
-        text_position=feat_dict["text_position"],
-        text_fit=feat_dict["text_fit"],
-        text_angle=feat_dict["text_angle"],
-    )
-    packed_by_track = dict(enumerate(packed_flags))
-    packed_for_axes = all(packed_flags)
+    label_specs = {
+        pr_ix: _normalize_label_spec(
+            _track_value(track, "label", label),
+            pack_flags[pr_ix],
+            label_position=_track_value(
+                track, "label_position", feat_dict["label_position"]
+            ),
+            label_fit=_track_value(track, "label_fit", feat_dict["label_fit"]),
+            label_angle=_track_value(track, "label_angle", feat_dict["label_angle"]),
+        )
+        for pr_ix, track in enumerate(tracks)
+    }
+    label = {
+        "enabled": any(spec["enabled"] for spec in label_specs.values()),
+        "fit": any(spec["enabled"] and spec["fit"] for spec in label_specs.values()),
+        "use_label_for_fit": any(
+            spec.get("use_label_for_fit") for spec in label_specs.values()
+        ),
+        "position": feat_dict["label_position"],
+        "angle": feat_dict["label_angle"],
+    }
+    pack_by_track = dict(enumerate(pack_flags))
+    pack_for_axes = all(pack_flags)
     shrink_threshold = feat_dict["shrink_threshold"]
     colormap = feat_dict["colormap"]
     if colormap == "popart":
@@ -814,25 +907,125 @@ def plot(
 
     # Make DataFrame subset if needed
     df_d = {}
+    prepared_tracks = {}
     tot_ngenes_l = []
-    for pr_ix, df_item in enumerate(data):
+    depth_cols = {}
+    height_cols = {}
+    shape_cols = {}
+    for pr_ix, track in enumerate(tracks):
+        df_item = track.data
+        track_id_col = _track_value(track, "id_col", id_col)
+        track_fill_col = _track_value(track, "fill_col", fill_col)
+        track_outline_col = _track_value(track, "outline_col", outline_col)
+        track_label_color_col = _track_value(track, "label_color_col", label_color_col)
+        legend_id_col = track_id_col or get_id_col() or "__interval_index__"
+        fill_legend_title = _legend_title_from_public_cols(
+            track_fill_col, legend_id_col
+        )
+        outline_legend_title = _legend_title_from_public_cols(track_outline_col, None)
+        track_height_col = _track_value(track, "height_col", height_col)
+        track_depth_col = _track_value(track, "depth_col", depth_col)
+        track_shape_col = _track_value(track, "shape_col", shape_col)
+        adapter_name = track.adapter
+
+        if adapter_name is not None:
+            adapter_func = adapters.get(adapter_name)
+            adapter_kwargs = adapters.get_options(adapter_name, "values")
+            accepted_adapter_kwargs = adapters.accepted_kwargs(adapter_name)
+            _validate_track_options(track, feature_keys, accepted_adapter_kwargs)
+            for arg_name, arg_value in {
+                "id_col": track_id_col,
+                "height_col": track_height_col,
+                "depth_col": track_depth_col,
+                "shape_col": track_shape_col,
+            }.items():
+                if arg_name in accepted_adapter_kwargs and arg_value is not None:
+                    adapter_kwargs[arg_name] = arg_value
+            for arg_name, arg_value in track.options.items():
+                if arg_name in accepted_adapter_kwargs:
+                    adapter_kwargs[arg_name] = arg_value
+            df_item = adapter_func(df_item, **adapter_kwargs)
+            defaults = adapters.default_plot_args(adapter_name, adapter_kwargs)
+            if track_id_col is None:
+                track_id_col = defaults.get("id_col")
+            if track_height_col is None:
+                track_height_col = defaults.get("height_col")
+            if track_depth_col is None:
+                track_depth_col = defaults.get("depth_col")
+            if track_shape_col is None:
+                track_shape_col = defaults.get("shape_col")
+        else:
+            _validate_track_options(track, feature_keys)
+
         # deal with empty PyRanges
         if df_item.empty:
             continue
         df_item = df_item.copy()
 
-        # consider not known id_col, plot each interval individually
-        if ID_COL == ["__interval_index__"]:
-            df_item["__interval_index__"] = [str(i) for i in range(len(df_item))]
-            df_d[pr_ix], tot_ngenes = make_subset(
-                df_item, "__interval_index__", max_shown
-            )
-            tot_ngenes_l.append(tot_ngenes)
-
-        # known id_col
+        _make_id_column(df_item, track_id_col)
+        if track_fill_col is None:
+            df_item[TRACK_FILL_COL] = df_item[TRACK_ID_COL]
         else:
-            df_d[pr_ix], tot_ngenes = make_subset(df_item, ID_COL, max_shown)
-            tot_ngenes_l.append(tot_ngenes)
+            _make_tag_column(df_item, track_fill_col, TRACK_FILL_COL)
+        outline_cols = _make_tag_column(df_item, track_outline_col, TRACK_OUTLINE_COL)
+        label_color_cols = _make_tag_column(
+            df_item, track_label_color_col, TRACK_LABEL_COLOR_COL
+        )
+
+        df_d[pr_ix], tot_ngenes = make_subset(df_item, ID_COL, max_shown)
+        tot_ngenes_l.append(tot_ngenes)
+
+        track_colormap = _track_value(track, "colormap", colormap)
+        if track_colormap == "popart":
+            track_colormap = prp_cmap
+        prepared_tracks[pr_ix] = {
+            "df": df_d[pr_ix],
+            "colormap": track_colormap,
+            "uses_global_colormap": "colormap" not in track.options,
+            "outline_cols": outline_cols,
+            "label_color_cols": label_color_cols,
+            "outline_color": _track_value(
+                track, "outline_color", feat_dict["outline_color"]
+            ),
+            "label_color": _track_value(track, "label_color", feat_dict["label_color"]),
+            "fill_legend_title": fill_legend_title,
+            "outline_legend_title": outline_legend_title,
+        }
+        depth_cols[pr_ix] = track_depth_col
+        height_cols[pr_ix] = track_height_col
+        shape_cols[pr_ix] = track_shape_col
+
+    shared_fill_colormap = _build_shared_fill_colormap(
+        prepared_tracks, colormap, warnings
+    )
+    for pr_ix, meta in prepared_tracks.items():
+        fill_cols = [TRACK_FILL_COL]
+        track_colormap = meta["colormap"]
+        df_to_color = meta["df"]
+        if meta["uses_global_colormap"] and shared_fill_colormap is not None:
+            df_to_color = df_to_color.copy()
+            shared_key_col = "__pe_shared_color_key__"
+            df_to_color[shared_key_col] = [
+                _shared_color_key(meta["fill_legend_title"], value)
+                for value in df_to_color[TRACK_FILL_COL]
+            ]
+            fill_cols = [shared_key_col]
+            track_colormap = _replace_fill_channel(track_colormap, shared_fill_colormap)
+
+        df_d[pr_ix] = subdf_assigncolor(
+            df_to_color,
+            track_colormap,
+            fill_cols,
+            meta["outline_cols"],
+            meta["outline_color"],
+            meta["label_color"],
+            meta["label_color_cols"],
+            warnings,
+            fill_legend_title=meta["fill_legend_title"],
+            outline_legend_title=meta["outline_legend_title"],
+        )
+        if fill_cols != [TRACK_FILL_COL]:
+            df_d[pr_ix][COLOR_TAG_COL] = df_d[pr_ix][TRACK_FILL_COL]
 
     for tot_ngenes in tot_ngenes_l:
         if tot_ngenes > max_shown:
@@ -854,13 +1047,13 @@ def plot(
     # requested region panels and ignore `limits` for this call. Otherwise,
     # keep legacy `limits` behavior as coordinate customization for chromosome
     # panels.
-    if title_chr is None:
+    if panel_title is None:
         if isinstance(regions, str):
-            title_chr = "{chrom}"
+            panel_title = "{chrom}"
         elif regions is not None:
-            title_chr = "{chrom}:{start}-{end}"
+            panel_title = "{chrom}:{start}-{end}"
         else:
-            title_chr = "Chromosome {chrom}{rev_flag}"
+            panel_title = "Chromosome {chrom}{rev_flag}"
 
     if regions is not None:
         subdf, limits, panel_display = _normalize_regions_to_panels(subdf, regions)
@@ -874,7 +1067,7 @@ def plot(
     subdf["__id_col_2count__"] = list(
         zip(*[subdf[c] for c in [CHROM_COL] + [PR_INDEX_COL] + ID_COL])
     )
-    if text["enabled"]:
+    if label["enabled"]:
 
         def _row_genename(row):
             vals = [row[c] for c in ID_COL]
@@ -883,47 +1076,56 @@ def plot(
         subdf[TEXT_LABEL_COL] = [
             ""
             if bool(row.get(SQUISH_COL, False))
-            else _format_text_label(row, text, _row_genename(row))
+            else _format_text_label(
+                row,
+                label_specs[int(row[PR_INDEX_COL])],
+                _row_genename(row),
+            )
             for _, row in subdf.iterrows()
         ]
 
-    # Validate depth_col before rendering. Higher depth values are drawn later,
-    # so they appear on top of lower-depth intervals when intervals overlap.
-    if depth_col is not None:
-        if depth_col not in subdf.columns:
-            raise ValueError(
-                f"The provided depth_col {depth_col!r} is not present in the given data."
-            )
-        depth_values = pd.to_numeric(subdf[depth_col], errors="coerce")
-        if depth_values.isna().any():
-            raise ValueError(
-                f"depth_col {depth_col!r} must contain only numeric, non-missing values."
-            )
-        subdf[depth_col] = depth_values
+    # Validate per-track depth columns before rendering. Higher depth values are
+    # drawn later, so they appear on top of lower-depth intervals.
+    depth_col_for_render = None
+    if any(col is not None for col in depth_cols.values()):
+        subdf[TRACK_DEPTH_COL] = 0
+        for pr_ix, col in depth_cols.items():
+            if col is None:
+                continue
+            mask = subdf[PR_INDEX_COL] == pr_ix
+            if col not in subdf.columns:
+                raise ValueError(
+                    f"The provided depth_col {col!r} is not present in the given data."
+                )
+            depth_values = pd.to_numeric(subdf.loc[mask, col], errors="coerce")
+            if depth_values.isna().any():
+                raise ValueError(
+                    f"depth_col {col!r} must contain only numeric, non-missing values."
+                )
+            subdf.loc[mask, TRACK_DEPTH_COL] = depth_values
+        depth_col_for_render = TRACK_DEPTH_COL
 
     # Deal with height_col
     # set proper height values
-    if height_col:
-        # Is it present in data?
-        if height_col not in subdf.columns:
+    subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
+    for pr_ix, col in height_cols.items():
+        if col is None:
+            continue
+        mask = subdf[PR_INDEX_COL] == pr_ix
+        if col not in subdf.columns:
             raise ValueError(
-                f"The provided height_col {height_col!r} is not present in the given data."
+                f"The provided height_col {col!r} is not present in the given data."
             )
-
-        height_values = pd.to_numeric(subdf[height_col], errors="coerce")
+        height_values = pd.to_numeric(subdf.loc[mask, col], errors="coerce")
         if height_values.isna().any():
             raise ValueError(
-                f"height_col {height_col!r} must contain only numeric, non-missing values."
+                f"height_col {col!r} must contain only numeric, non-missing values."
             )
         if ((height_values < 0) | (height_values > 1)).any():
             raise ValueError(
-                f"height_col {height_col!r} values must range from 0 to 1; "
-                "1 is rendered at the full interval_height."
+                f"height_col {col!r} values must range from 0 to 1; 1 is rendered at the full interval_height."
             )
-        subdf[THICK_COL] = height_values * feat_dict["interval_height"]
-
-    else:
-        subdf[THICK_COL] = [feat_dict["interval_height"]] * len(subdf)
+        subdf.loc[mask, THICK_COL] = height_values * feat_dict["interval_height"]
 
     if any(squish_flags):
         subdf[THICK_COL] = subdf[THICK_COL] * subdf[SQUISH_FACTOR_COL]
@@ -933,68 +1135,30 @@ def plot(
         else feat_dict["interval_height"]
     )
 
-    if shape_col is not None:
-        if shape_col not in subdf.columns:
+    subdf[SHAPE_COL] = "rectangle"
+    accepted_shapes = {"rectangle", "diamond", "triangle-up", "triangle-down", "circle"}
+    for pr_ix, col in shape_cols.items():
+        if col is None:
+            continue
+        mask = subdf[PR_INDEX_COL] == pr_ix
+        if col not in subdf.columns:
             raise ValueError(
-                f"The provided shape_col {shape_col!r} is not present in the given data."
+                f"The provided shape_col {col!r} is not present in the given data."
             )
-        subdf[SHAPE_COL] = subdf[shape_col].fillna("rectangle")
-        accepted_shapes = {
-            "rectangle",
-            "diamond",
-            "triangle-up",
-            "triangle-down",
-            "circle",
-        }
-        unknown_shapes = set(subdf[SHAPE_COL]) - accepted_shapes
+        subdf.loc[mask, SHAPE_COL] = subdf.loc[mask, col].fillna("rectangle")
+        unknown_shapes = set(subdf.loc[mask, SHAPE_COL]) - accepted_shapes
         if unknown_shapes:
             raise ValueError(
-                f"shape_col {shape_col!r} contains unsupported shapes: {sorted(unknown_shapes)}. "
+                f"shape_col {col!r} contains unsupported shapes: {sorted(unknown_shapes)}. "
                 f"Supported shapes are: {sorted(accepted_shapes)}."
             )
-    else:
-        subdf[SHAPE_COL] = "rectangle"
 
     if adapters.ADAPTER_MARKER_SIZE_COL in subdf.columns:
         subdf[MARKER_SIZE_COL] = subdf[adapters.ADAPTER_MARKER_SIZE_COL]
         if any(squish_flags):
             subdf[MARKER_SIZE_COL] = subdf[MARKER_SIZE_COL] * subdf[SQUISH_FACTOR_COL]
 
-    # Store color information in data
-    # color_col as list
-    if color_col is None:
-        color_col = ID_COL
-    elif isinstance(color_col, str):
-        color_col = [color_col]
-
-    if outline_col is not None:
-        if isinstance(outline_col, str):
-            outline_col = [outline_col]
-        for outline_str in outline_col:
-            if outline_str not in subdf.columns:
-                raise Exception(
-                    f"The provided outline_col {outline_str} is not present in the given data."
-                )
-
-    if text_color_col is not None:
-        if isinstance(text_color_col, str):
-            text_color_col = [text_color_col]
-        for text_color_str in text_color_col:
-            if text_color_str not in subdf.columns:
-                raise Exception(
-                    f"The provided text_color_col {text_color_str} is not present in the given data."
-                )
-
-    subdf = subdf_assigncolor(
-        subdf,
-        colormap,
-        color_col,
-        outline_col,
-        feat_dict["outline_color"],
-        feat_dict["text_color"],
-        text_color_col,
-        warnings,
-    )
+    fill_col = [TRACK_FILL_COL]
 
     # This is needed to maintain the order of the rows when adding multiple pr
     if len(ID_COL) == 1:
@@ -1013,15 +1177,15 @@ def plot(
     genesmd_df = get_genes_metadata(
         subdf,
         ID_COL,
-        color_col,
-        packed,
+        fill_col,
+        pack_for_axes,
         feat_dict["interval_height"],
         feat_dict["v_spacer"],
         order,
         sort_ranges,
     )
 
-    if text["enabled"]:
+    if label["enabled"]:
         labels = subdf.groupby(
             [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
         )[TEXT_LABEL_COL].first()
@@ -1031,16 +1195,20 @@ def plot(
         genesmd_df,
         ID_COL,
         PR_INDEX_COL,
-        text_pad=feat_dict["text_pad"],
-        packed=packed,
+        label_pad=feat_dict["label_pad"],
+        pack=pack_for_axes,
         sort_ranges=sort_ranges,
         interval_height=feat_dict["interval_height"],
         v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
-        text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
-        text_avoid=text["enabled"] and text["fit"],
+        text_label_col=TEXT_LABEL_COL if label.get("use_label_for_fit") else None,
+        text_avoid=label["enabled"] and label["fit"],
         track_scales=track_scales,
-        packed_by_track=packed_by_track,
+        pack_by_track=pack_by_track,
+        text_position_by_track={
+            pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
+        },
+        label_size=feat_dict["label_size"],
     )
 
     # Create chromosome metadata DataFrame
@@ -1048,7 +1216,7 @@ def plot(
         subdf,
         limits,
         genesmd_df,
-        packed,
+        pack_for_axes,
         feat_dict["v_spacer"],
         feat_dict["layout_interval_height"],
     )
@@ -1099,15 +1267,15 @@ def plot(
     genesmd_df = get_genes_metadata(
         subdf,
         ID_COL,
-        color_col,
-        packed,
+        fill_col,
+        pack_for_axes,
         feat_dict["interval_height"],
         feat_dict["v_spacer"],
         order,
         sort_ranges,
     )
 
-    if text["enabled"]:
+    if label["enabled"]:
         labels = subdf.groupby(
             [CHROM_COL, PR_INDEX_COL] + ID_COL, observed=True, sort=False
         )[TEXT_LABEL_COL].first()
@@ -1117,23 +1285,27 @@ def plot(
         genesmd_df,
         ID_COL,
         PR_INDEX_COL,
-        text_pad=feat_dict["text_pad"],
-        packed=packed,
+        label_pad=feat_dict["label_pad"],
+        pack=pack_for_axes,
         sort_ranges=sort_ranges,
         interval_height=feat_dict["interval_height"],
         v_spacer=feat_dict["v_spacer"],
         plot_limits=None,  # You can pass limits if needed
-        text_label_col=TEXT_LABEL_COL if text.get("use_label_for_fit") else None,
-        text_avoid=text["enabled"] and text["fit"],
+        text_label_col=TEXT_LABEL_COL if label.get("use_label_for_fit") else None,
+        text_avoid=label["enabled"] and label["fit"],
         track_scales=track_scales,
-        packed_by_track=packed_by_track,
+        pack_by_track=pack_by_track,
+        text_position_by_track={
+            pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
+        },
+        label_size=feat_dict["label_size"],
     )
 
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(
         subdf,
         plot_limits,
         genesmd_df,
-        packed,
+        pack_for_axes,
         feat_dict["v_spacer"],
         feat_dict["layout_interval_height"],
         ts_data=ts_data if shrink else None,
@@ -1159,17 +1331,17 @@ def plot(
     subdf[EXON_IX_COL] = subdf.groupby(
         [CHROM_COL, PR_INDEX_COL] + ID_COL, group_keys=False, observed=True
     ).cumcount()
-    if text["enabled"]:
+    if label["enabled"]:
         subdf = _assign_text_group_spans(subdf, ID_COL, feat_dict["interval_height"])
     genesmd_df.sort_values([CHROM_COL, PR_INDEX_COL] + [START_COL], inplace=True)
 
-    # Deal with text_pad
-    text_pad = feat_dict["text_pad"]
-    subdf[TEXT_PAD_FRAC_COL] = [text_pad] * len(subdf)
-    subdf[TEXT_PAD_COL] = [text_pad] * len(subdf)
+    # Deal with label_pad
+    label_pad = feat_dict["label_pad"]
+    subdf[TEXT_PAD_FRAC_COL] = [label_pad] * len(subdf)
+    subdf[TEXT_PAD_COL] = [label_pad] * len(subdf)
     subdf = subdf.groupby([CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True)[
         subdf.columns
-    ].apply(lambda x: _assign_text_pad_fraction(x, chrmd_df))
+    ].apply(lambda x: _assign_label_pad_fraction(x, chrmd_df))
 
     # Deal with added plots
     if (len(chrmd_df_grouped) > 1) and add_aligned_plots:
@@ -1218,7 +1390,7 @@ def plot(
             if not missing_plt_flag:
                 return plot_exons_plt(
                     subdf=subdf,
-                    depth_col=depth_col,
+                    depth_col=depth_col_for_render,
                     tot_ngenes_l=tot_ngenes_l,
                     feat_dict=feat_dict,
                     genesmd_df=genesmd_df,
@@ -1232,10 +1404,10 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    track_labels=track_labels,
-                    text=text,
-                    title_chr=title_chr,
-                    packed=packed_for_axes,
+                    track_names=track_names,
+                    label=label,
+                    panel_title=panel_title,
+                    pack=pack_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1252,7 +1424,7 @@ def plot(
             if not missing_ply_flag:
                 return plot_exons_ply(
                     subdf=subdf,
-                    depth_col=depth_col,
+                    depth_col=depth_col_for_render,
                     feat_dict=feat_dict,
                     genesmd_df=genesmd_df,
                     chrmd_df=chrmd_df,
@@ -1265,10 +1437,10 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    track_labels=track_labels,
-                    text=text,
-                    title_chr=title_chr,
-                    packed=packed_for_axes,
+                    track_names=track_names,
+                    label=label,
+                    panel_title=panel_title,
+                    pack=pack_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1288,7 +1460,7 @@ def plot(
             if not missing_plt_flag:
                 plot_exons_plt(
                     subdf=subdf,
-                    depth_col=depth_col,
+                    depth_col=depth_col_for_render,
                     tot_ngenes_l=tot_ngenes_l,
                     feat_dict=feat_dict,
                     genesmd_df=genesmd_df,
@@ -1302,10 +1474,10 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    track_labels=track_labels,
-                    text=text,
-                    title_chr=title_chr,
-                    packed=packed_for_axes,
+                    track_names=track_names,
+                    label=label,
+                    panel_title=panel_title,
+                    pack=pack_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
@@ -1320,7 +1492,7 @@ def plot(
             if not missing_ply_flag:
                 plot_exons_ply(
                     subdf=subdf,
-                    depth_col=depth_col,
+                    depth_col=depth_col_for_render,
                     feat_dict=feat_dict,
                     genesmd_df=genesmd_df,
                     chrmd_df=chrmd_df,
@@ -1333,10 +1505,10 @@ def plot(
                     legend=legend,
                     return_plot=return_plot,
                     add_aligned_plots=add_aligned_plots,
-                    track_labels=track_labels,
-                    text=text,
-                    title_chr=title_chr,
-                    packed=packed_for_axes,
+                    track_names=track_names,
+                    label=label,
+                    panel_title=panel_title,
+                    pack=pack_for_axes,
                     to_file=to_file,
                     file_size=file_size,
                     warnings=warnings,
