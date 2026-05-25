@@ -174,6 +174,17 @@ mrna1 = pr.PyRanges(
     }
 )
 
+snps1 = pr.PyRanges(
+    {
+        "Chromosome": ["chr1", "chr1", "chr1", "chr1", "chr1"],
+        "Start": [35, 105, 165, 235, 355],
+        "End": [36, 106, 166, 236, 356],
+        "ID": ["rs1", "rs2", "rs3", "rs4", "rs5"],
+        "REF": ["A", "G", "C", "T", "A"],
+        "ALT": ["T", "A", "G", "C", "G"],
+    }
+)
+
 mrna2 = pr.PyRanges(
     {
         "Chromosome": ["chr1"] * 18,

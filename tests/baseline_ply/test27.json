@@ -1228,7 +1228,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.1
+        1.7000000000000002
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1298,7 +1298,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.1
+        1.7000000000000002
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1348,7 +1348,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.1
+        1.7000000000000002
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1415,11 +1415,11 @@
         "showarrow": false,
         "text": "rs1",
         "textangle": 0.0,
-        "x": 79.34,
-        "xanchor": "right",
+        "x": 80.5,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
@@ -1430,11 +1430,11 @@
         "showarrow": false,
         "text": "rs2",
         "textangle": 0.0,
-        "x": 144.34,
-        "xanchor": "right",
+        "x": 145.5,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
@@ -1445,11 +1445,11 @@
         "showarrow": false,
         "text": "rs3",
         "textangle": 0.0,
-        "x": 11.67,
-        "xanchor": "right",
+        "x": 12.5,
+        "xanchor": "center",
         "xref": "x2",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y2"
       },
       {
@@ -1460,11 +1460,11 @@
         "showarrow": false,
         "text": "rs4",
         "textangle": 0.0,
-        "x": 43.67,
-        "xanchor": "right",
+        "x": 44.5,
+        "xanchor": "center",
         "xref": "x2",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y2"
       },
       {
@@ -1475,11 +1475,11 @@
         "showarrow": false,
         "text": "rs5",
         "textangle": 0.0,
-        "x": 34.99,
-        "xanchor": "right",
+        "x": 35.5,
+        "xanchor": "center",
         "xref": "x3",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y3"
       }
     ],

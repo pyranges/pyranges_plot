@@ -37,6 +37,8 @@ from .names import (
     OUTLINE_LEGEND_TITLE_COL,
     TEXT_COLOR_COL,
     TEXT_COLOR_TAG_COL,
+    TEXT_EXTRA_Y_COL,
+    TEXT_POSITION_COL,
     SQUISH_FACTOR_COL,
     THICK_COL,
     PANEL_SEP,
@@ -391,8 +393,15 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
 
     # 1-plt colormap to list
     if not missing_plt_flag and isinstance(colormap, mcolors.ListedColormap):
-        colormap = list(colormap.colors)  # colors of plt object
-        colormap = [mcolors.to_hex(color) for color in colormap]
+        # Many continuous Matplotlib colormaps (e.g. viridis) are implemented
+        # as 256-color ListedColormaps.  Taking the first N entries makes all
+        # early categories nearly identical, so sample large palettes evenly.
+        if getattr(colormap, "N", len(colormap.colors)) > 20:
+            positions = np.linspace(0, 1, max(n_color_tags, 1))
+            colormap = [mcolors.to_hex(colormap(position)) for position in positions]
+        else:
+            colormap = list(colormap.colors)  # colors of plt object
+            colormap = [mcolors.to_hex(color) for color in colormap]
     elif not missing_plt_flag and isinstance(colormap, mcolors.Colormap):
         positions = np.linspace(0, 1, max(n_color_tags, 1))
         colormap = [mcolors.to_hex(colormap(position)) for position in positions]
@@ -404,11 +413,13 @@ def _assign_color_channel(subdf, tag_col, output_col, colormap, warnings):
             engine = get_engine()
             if warnings is None:
                 warnings = get_warnings()
-            if engine in ["plt", "matplotlib"] and warnings:
+            # A one-color list is an intentional uniform-color shorthand, not
+            # an accidental palette wrap.
+            if len(colormap) > 1 and engine in ["plt", "matplotlib"] and warnings:
                 plt_popup_warning(
                     "The genes are colored by iterating over the given color list."
                 )
-            elif engine in ["ply", "plotly"] and warnings:
+            elif len(colormap) > 1 and engine in ["ply", "plotly"] and warnings:
                 subdf["_iterwarning!"] = [1] * len(subdf)
         else:
             colormap = colormap[:n_color_tags]
@@ -887,12 +898,35 @@ def get_chromosome_metadata(
     else:
         pr_render_height = pr_top_y.copy() * 0 + exon_height
     chrmd_df = chrmd_df.join(pr_render_height.rename("pr_render_height"))
+    if TEXT_EXTRA_Y_COL in genesmd_df.columns:
+        text_extra_y = genesmd_df.groupby(
+            [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+        )[TEXT_EXTRA_Y_COL].max()
+        text_position = genesmd_df.groupby(
+            [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
+        )[TEXT_POSITION_COL].first()
+    else:
+        text_extra_y = pr_top_y.copy() * 0
+        text_position = pr_top_y.copy().astype(object)
+        text_position[:] = "left"
+    chrmd_df = chrmd_df.join(text_extra_y.rename(TEXT_EXTRA_Y_COL))
+    chrmd_df = chrmd_df.join(text_position.rename(TEXT_POSITION_COL))
 
     pr_bottom_y = genesmd_df.groupby(
         [CHROM_COL, PR_INDEX_COL], group_keys=False, observed=True
     )["ycoord"].min()
-    chrmd_df["__render_top__"] = chrmd_df["pr_top_y"] + 0.5 + pr_render_height / 2
-    chrmd_df["__render_bottom__"] = pr_bottom_y + 0.5 - pr_render_height / 2
+    top_label_extra = chrmd_df[TEXT_EXTRA_Y_COL].where(
+        chrmd_df[TEXT_POSITION_COL] == "above", 0
+    )
+    bottom_label_extra = chrmd_df[TEXT_EXTRA_Y_COL].where(
+        chrmd_df[TEXT_POSITION_COL] == "below", 0
+    )
+    chrmd_df["__render_top__"] = (
+        chrmd_df["pr_top_y"] + 0.5 + pr_render_height / 2 + top_label_extra
+    )
+    chrmd_df["__render_bottom__"] = (
+        pr_bottom_y + 0.5 - pr_render_height / 2 - bottom_label_extra
+    )
     chrmd_df["track_gap"] = v_spacer * chrmd_df["pr_scale"]
     chrmd_df["__track_top__"] = chrmd_df["__render_top__"] + chrmd_df["track_gap"]
     chrmd_df["__track_bottom__"] = chrmd_df["__render_bottom__"] - chrmd_df["track_gap"]
@@ -951,6 +985,8 @@ def get_chromosome_metadata(
             "pr_top_y",
             "pr_render_height",
             "pr_scale",
+            TEXT_EXTRA_Y_COL,
+            TEXT_POSITION_COL,
             "track_gap",
             "__render_top__",
             "__render_bottom__",
@@ -998,6 +1034,8 @@ def assign_label_rows(
     text_avoid=True,
     track_scales=None,
     pack_by_track=None,
+    text_position_by_track=None,
+    label_size=None,
 ):
     """
     Assign non-overlapping ycoord rows to groups defined by (PR_INDEX_COL, id_col).
@@ -1027,6 +1065,8 @@ def assign_label_rows(
 
     ycoord_map = {}
     interval_height = 0.6 if interval_height is None else interval_height
+    s[TEXT_EXTRA_Y_COL] = 0.0
+    s[TEXT_POSITION_COL] = "left"
 
     # Iterating in sorted cromosomes if sort_ranges == True else in original order
     chrom_iter = sorted(s["chrix"].unique()) if sort_ranges else pd.unique(s["chrix"])
@@ -1064,7 +1104,23 @@ def assign_label_rows(
             track_pack = (
                 pack if pack_by_track is None else bool(pack_by_track.get(pr_val, pack))
             )
+            text_position = (
+                "left"
+                if text_position_by_track is None
+                else text_position_by_track.get(pr_val, "left")
+            )
             effective_text_avoid = text_avoid and track_scale >= 1
+            # Font size is specified in points by the rendering engines, while
+            # layout is expressed in pyrangeyes' row units.  The default 12 pt
+            # label visually occupies about one default interval-height row
+            # (0.6), so use that conversion to reserve vertical label room for
+            # above/below labels without making horizontal pack artificially
+            # sparse.
+            text_extra_y = (
+                0.0
+                if not (effective_text_avoid and text_position in {"above", "below"})
+                else float(label_size or 12) / 20.0
+            )
             track_height = interval_height * track_scale
             track_gap = v_spacer * track_scale
             sub = chrom_df[chrom_df[PR_INDEX_COL] == pr_val]
@@ -1111,7 +1167,7 @@ def assign_label_rows(
             for _, g in gdf.iterrows():
                 if track_pack:
                     label_len = 0
-                    if effective_text_avoid:
+                    if effective_text_avoid and text_position in {"left", "right"}:
                         if text_label_col and text_label_col in g:
                             label_len = len(str(g[text_label_col]))
                         else:
@@ -1159,6 +1215,12 @@ def assign_label_rows(
                             - 0.5
                         )
                         ycoord_map[key] = round(ycoord, 10)
+                        s.loc[
+                            (s["chrix"] == chrom)
+                            & (s[PR_INDEX_COL] == g[PR_INDEX_COL])
+                            & (s[id_col].apply(tuple, axis=1) == tuple(g[id_col])),
+                            [TEXT_EXTRA_Y_COL, TEXT_POSITION_COL],
+                        ] = [text_extra_y, text_position]
 
                 else:
                     interval = (
@@ -1177,9 +1239,16 @@ def assign_label_rows(
                         - 0.5
                     )
                     ycoord_map[key] = round(ycoord, 10)
+                    s.loc[
+                        (s["chrix"] == chrom)
+                        & (s[PR_INDEX_COL] == g[PR_INDEX_COL])
+                        & (s[id_col].apply(tuple, axis=1) == tuple(g[id_col])),
+                        [TEXT_EXTRA_Y_COL, TEXT_POSITION_COL],
+                    ] = [text_extra_y, text_position]
 
             next_track_bottom += (
-                max(len(rows), 1) * track_height + (max(len(rows), 1) + 1) * track_gap
+                max(len(rows), 1) * (track_height + text_extra_y)
+                + (max(len(rows), 1) + 1) * track_gap
             )
 
     # Assign ycoord back to all rows

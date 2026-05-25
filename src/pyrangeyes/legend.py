@@ -9,6 +9,7 @@ from .names import (
     COLOR_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     COLOR_TAG_COL,
+    PR_INDEX_COL,
     OUTLINE_LEGEND_KIND_COL,
     OUTLINE_LEGEND_TITLE_COL,
     OUTLINE_TAG_COL,
@@ -25,16 +26,24 @@ def _as_label(value):
     return str(value)
 
 
+def _track_ordered(df, columns):
+    order_cols = ([PR_INDEX_COL] if PR_INDEX_COL in df.columns else []) + columns
+    out = df[order_cols].drop_duplicates()
+    if PR_INDEX_COL in out.columns:
+        out = out.sort_values([PR_INDEX_COL], kind="stable")
+    return out
+
+
 def categorical_fill_items(df):
     """Return ``[(label, fill_color, outline_color), ...]`` for fill legend."""
     if _first_present(df, COLOR_LEGEND_KIND_COL) == "quantitative":
         return []
     items = []
     seen = set()
-    for _, row in (
-        df[[COLOR_TAG_COL, COLOR_INFO, BORDER_COLOR_COL]].drop_duplicates().iterrows()
-    ):
-        label = _as_label(row[COLOR_TAG_COL])
+    cols = [COLOR_TAG_COL, COLOR_INFO, BORDER_COLOR_COL, COLOR_LEGEND_TITLE_COL]
+    for _, row in _track_ordered(df, cols).iterrows():
+        title = _as_label(row[COLOR_LEGEND_TITLE_COL])
+        label = f"{title}: {_as_label(row[COLOR_TAG_COL])}"
         if label in seen:
             continue
         seen.add(label)
@@ -50,8 +59,10 @@ def categorical_outline_items(df):
         return []
     items = []
     seen = set()
-    for _, row in df[[OUTLINE_TAG_COL, BORDER_COLOR_COL]].drop_duplicates().iterrows():
-        label = _as_label(row[OUTLINE_TAG_COL])
+    cols = [OUTLINE_TAG_COL, BORDER_COLOR_COL, OUTLINE_LEGEND_TITLE_COL]
+    for _, row in _track_ordered(df, cols).iterrows():
+        title = _as_label(row[OUTLINE_LEGEND_TITLE_COL])
+        label = f"{title}: {_as_label(row[OUTLINE_TAG_COL])}"
         if label in seen:
             continue
         seen.add(label)

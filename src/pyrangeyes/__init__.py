@@ -23,6 +23,7 @@ from .example_data import (  # noqa: F401
     p2,
     p3,
     mrna1,
+    snps1,
     mrna2,
     p_ala,
     p_cys,

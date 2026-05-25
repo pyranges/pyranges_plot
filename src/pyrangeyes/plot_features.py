@@ -86,7 +86,7 @@ plot_features_dict = {
     ),
     "label_angle": (0, "Rotation angle of interval labels, in degrees.", " "),
     "label_position": (
-        "top",
+        "above",
         "Position of interval labels: 'left', 'right', 'center', 'top'/'above', or 'bottom'/'below'.",
         " ",
     ),
@@ -95,9 +95,9 @@ plot_features_dict = {
         "Whether text labels reserve space during pack layout to reduce overlaps.",
         " ",
     ),
-    "title_color": ("black", "Color of the plots' titles.", " "),
-    "title_size": (18, "Size of the plots' titles.", " "),
-    "title_font": ("Arial", "Font of the plots' titles.", " "),
+    "title_color": ("black", "Color of panel titles.", " "),
+    "title_size": (18, "Font size of panel titles.", " "),
+    "title_font": ("Arial", "Font family of panel titles.", " "),
     "v_spacer": (0.25, "Vertical distance between the intervals and plot border.", " "),
     "x_ticks": (
         None,
@@ -105,6 +105,57 @@ plot_features_dict = {
         " ",
     ),
 }
+
+print_option_categories = [
+    (
+        "General and plot appearance",
+        [
+            "figure_bg",
+            "plot_border",
+            "plotly_port",
+            "return_plot",
+        ],
+    ),
+    (
+        "Panels and axes",
+        [
+            "grid_color",
+            "shrunk_bg",
+            "shrink_threshold",
+            "v_spacer",
+            "x_ticks",
+            "title_color",
+            "title_size",
+            "title_font",
+        ],
+    ),
+    (
+        "Tracks and interval appearance",
+        [
+            "track_bg",
+            "interval_height",
+            "squish_factor",
+            "colormap",
+            "outline_color",
+            "intron_color",
+            "arrow_color",
+            "arrow_line_width",
+            "arrow_size",
+        ],
+    ),
+    (
+        "Text options per-track",
+        [
+            "label_pad",
+            "label_size",
+            "label_color",
+            "label_angle",
+            "label_position",
+            "label_fit",
+            "tag_bkg",
+        ],
+    ),
+]
 
 # Normal (light theme)
 plot_features_dict_in_use = copy.deepcopy(plot_features_dict)

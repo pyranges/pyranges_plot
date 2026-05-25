@@ -23,6 +23,10 @@ from .data_preparation import (
     compute_thresh,
     subdf_assigncolor,
     assign_label_rows,
+    _assign_color_channel,
+    _channel_colormap,
+    _is_channel_colormap,
+    _is_quantitative_colormap,
     _normalize_limits_to_panels,
     _normalize_regions_to_panels,
 )
@@ -45,12 +49,16 @@ from .names import (
     TEXT_PAD_FRAC_COL,
     TEXT_PAD_Y_COL,
     TEXT_HEIGHT_COL,
+    TEXT_EXTRA_Y_COL,
+    TEXT_POSITION_COL,
     THICK_COL,
     SHAPE_COL,
     MARKER_SIZE_COL,
     REVERSE_COL,
     SQUISH_COL,
     SQUISH_FACTOR_COL,
+    COLOR_TAG_COL,
+    COLOR_INFO,
 )
 
 
@@ -211,6 +219,50 @@ def _legend_title_from_public_cols(columns, fallback_columns):
     if columns == ["__interval_index__"]:
         return "interval"
     return ", ".join(columns)
+
+
+def _shared_color_key(legend_title, value):
+    if legend_title is None:
+        return str(value)
+    return f"{legend_title}: {value}"
+
+
+def _can_share_global_colormap(colormap):
+    fill_cmap = _channel_colormap(colormap, "fill", fallback=prp_cmap)
+    return fill_cmap not in ["direct", None, False] and not isinstance(
+        fill_cmap, dict
+    ) and not _is_quantitative_colormap(fill_cmap)
+
+
+def _build_shared_fill_colormap(prepared_tracks, global_colormap, warnings):
+    if not _can_share_global_colormap(global_colormap):
+        return None
+    tags = []
+    seen = set()
+    for meta in prepared_tracks.values():
+        if not meta["uses_global_colormap"]:
+            continue
+        legend_title = meta["fill_legend_title"]
+        for value in meta["df"][TRACK_FILL_COL].drop_duplicates():
+            key = _shared_color_key(legend_title, value)
+            if key not in seen:
+                tags.append(key)
+                seen.add(key)
+    if not tags:
+        return None
+
+    fill_cmap = _channel_colormap(global_colormap, "fill", fallback=prp_cmap)
+    color_df = pd.DataFrame({"tag": tags})
+    color_df = _assign_color_channel(color_df, "tag", COLOR_INFO, fill_cmap, warnings)
+    return dict(zip(color_df["tag"], color_df[COLOR_INFO], strict=False))
+
+
+def _replace_fill_channel(colormap, fill_cmap):
+    if _is_channel_colormap(colormap):
+        shared = dict(colormap)
+        shared["fill"] = fill_cmap
+        return shared
+    return fill_cmap
 
 
 def _normalize_tracks(data):
@@ -804,6 +856,14 @@ def plot(
     }
     if not 0 < feat_dict["squish_factor"] <= 1:
         raise ValueError("squish_factor must be > 0 and <= 1.")
+    feat_dict["track_bg_by_pr"] = (
+        {
+            pr_ix: _track_value(track, "track_bg", feat_dict["track_bg"])
+            for pr_ix, track in enumerate(tracks)
+        }
+        if any("track_bg" in track.options for track in tracks)
+        else {}
+    )
 
     squish_flags = [bool(track.options.get("squish", False)) for track in tracks]
     pack_flags = [bool(_track_value(track, "pack", pack)) for track in tracks]
@@ -845,6 +905,7 @@ def plot(
 
     # Make DataFrame subset if needed
     df_d = {}
+    prepared_tracks = {}
     tot_ngenes_l = []
     depth_cols = {}
     height_cols = {}
@@ -915,21 +976,54 @@ def plot(
         track_colormap = _track_value(track, "colormap", colormap)
         if track_colormap == "popart":
             track_colormap = prp_cmap
-        df_d[pr_ix] = subdf_assigncolor(
-            df_d[pr_ix],
-            track_colormap,
-            [TRACK_FILL_COL],
-            outline_cols,
-            _track_value(track, "outline_color", feat_dict["outline_color"]),
-            _track_value(track, "label_color", feat_dict["label_color"]),
-            label_color_cols,
-            warnings,
-            fill_legend_title=fill_legend_title,
-            outline_legend_title=outline_legend_title,
-        )
+        prepared_tracks[pr_ix] = {
+            "df": df_d[pr_ix],
+            "colormap": track_colormap,
+            "uses_global_colormap": "colormap" not in track.options,
+            "outline_cols": outline_cols,
+            "label_color_cols": label_color_cols,
+            "outline_color": _track_value(
+                track, "outline_color", feat_dict["outline_color"]
+            ),
+            "label_color": _track_value(track, "label_color", feat_dict["label_color"]),
+            "fill_legend_title": fill_legend_title,
+            "outline_legend_title": outline_legend_title,
+        }
         depth_cols[pr_ix] = track_depth_col
         height_cols[pr_ix] = track_height_col
         shape_cols[pr_ix] = track_shape_col
+
+    shared_fill_colormap = _build_shared_fill_colormap(
+        prepared_tracks, colormap, warnings
+    )
+    for pr_ix, meta in prepared_tracks.items():
+        fill_cols = [TRACK_FILL_COL]
+        track_colormap = meta["colormap"]
+        df_to_color = meta["df"]
+        if meta["uses_global_colormap"] and shared_fill_colormap is not None:
+            df_to_color = df_to_color.copy()
+            shared_key_col = "__pe_shared_color_key__"
+            df_to_color[shared_key_col] = [
+                _shared_color_key(meta["fill_legend_title"], value)
+                for value in df_to_color[TRACK_FILL_COL]
+            ]
+            fill_cols = [shared_key_col]
+            track_colormap = _replace_fill_channel(track_colormap, shared_fill_colormap)
+
+        df_d[pr_ix] = subdf_assigncolor(
+            df_to_color,
+            track_colormap,
+            fill_cols,
+            meta["outline_cols"],
+            meta["outline_color"],
+            meta["label_color"],
+            meta["label_color_cols"],
+            warnings,
+            fill_legend_title=meta["fill_legend_title"],
+            outline_legend_title=meta["outline_legend_title"],
+        )
+        if fill_cols != [TRACK_FILL_COL]:
+            df_d[pr_ix][COLOR_TAG_COL] = df_d[pr_ix][TRACK_FILL_COL]
 
     for tot_ngenes in tot_ngenes_l:
         if tot_ngenes > max_shown:
@@ -1109,6 +1203,10 @@ def plot(
         text_avoid=label["enabled"] and label["fit"],
         track_scales=track_scales,
         pack_by_track=pack_by_track,
+        text_position_by_track={
+            pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
+        },
+        label_size=feat_dict["label_size"],
     )
 
     # Create chromosome metadata DataFrame
@@ -1195,6 +1293,10 @@ def plot(
         text_avoid=label["enabled"] and label["fit"],
         track_scales=track_scales,
         pack_by_track=pack_by_track,
+        text_position_by_track={
+            pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
+        },
+        label_size=feat_dict["label_size"],
     )
 
     chrmd_df, chrmd_df_grouped = get_chromosome_metadata(

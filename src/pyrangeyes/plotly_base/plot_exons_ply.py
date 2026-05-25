@@ -11,6 +11,7 @@ from ..names import (
     PR_INDEX_COL,
     BORDER_COLOR_COL,
     COLOR_INFO,
+    COLOR_TAG_COL,
     COLOR_LEGEND_KIND_COL,
     COLOR_LEGEND_TITLE_COL,
     OUTLINE_LEGEND_KIND_COL,
@@ -19,6 +20,7 @@ from ..names import (
     THICK_COL,
 )
 from ..legend import (
+    categorical_fill_items,
     categorical_outline_items,
     quantitative_fill_info,
     quantitative_outline_info,
@@ -38,6 +40,8 @@ def _bottom_legend_layout(categorical_count, quantitative_count):
         "margin": {"l": 60, "r": 30, "t": 35, "b": bottom_margin},
         "legend": {
             "orientation": "h",
+            "entrywidth": 95,
+            "entrywidthmode": "pixels",
             "x": 0.5,
             "xanchor": "center",
             "y": -0.10,
@@ -61,32 +65,59 @@ def _postprocess_legend(fig, subdf, legend):
         if qinfo is not None
     ]
 
+    fill_rows = (
+        subdf[
+            [PR_INDEX_COL, COLOR_TAG_COL, COLOR_INFO, COLOR_LEGEND_TITLE_COL]
+        ]
+        .drop_duplicates()
+        .sort_values([PR_INDEX_COL], kind="stable")
+    )
+    fill_meta = {}
+    for rank, row in enumerate(fill_rows.itertuples(index=False), start=1):
+        _pr_ix, tag, fill, title = row
+        label = f"{title}: {tag}"
+        fill_meta.setdefault((str(tag), str(fill)), (label, rank))
+        fill_meta.setdefault((str(tag),), (label, rank))
     seen_fill = set()
     for trace in fig.data:
-        if getattr(trace, "fill", None) != "toself" or trace.fillcolor == "white":
+        if getattr(trace, "fill", None) == "toself":
+            trace_color = trace.fillcolor
+        elif "markers" in str(getattr(trace, "mode", "")):
+            trace_color = getattr(getattr(trace, "marker", None), "color", None)
+        else:
+            continue
+        if trace_color == "white":
             continue
         if fill_kind == "quantitative":
             trace.showlegend = False
             continue
         key = str(trace.name)
+        legend_key, rank = fill_meta.get(
+            (key, str(trace_color)), fill_meta.get((key,), (f"{fill_title}: {key}", 1000))
+        )
         trace.legendgroup = None
-        trace.name = f"{fill_title}: {key}"
+        trace.name = legend_key
+        trace.legendrank = rank
         trace.legendgrouptitle = None
-        if key in seen_fill:
+        if legend_key in seen_fill:
             trace.showlegend = False
         else:
             trace.showlegend = True
-            seen_fill.add(key)
+            seen_fill.add(legend_key)
 
     if outline_kind == "categorical":
-        for label, outline in categorical_outline_items(subdf):
+        fill_count = len(categorical_fill_items(subdf))
+        for rank, (label, outline) in enumerate(
+            categorical_outline_items(subdf), start=fill_count + 1
+        ):
             fig.add_trace(
                 go.Scatter(
                     x=[None],
                     y=[None],
                     mode="lines",
                     line=dict(color=outline, width=3),
-                    name=f"{outline_title}: {label}",
+                    name=label,
+                    legendrank=rank,
                     legendgroup=None,
                     legendgrouptitle=None,
                     showlegend=True,
@@ -164,6 +195,7 @@ def plot_exons_ply(
     intron_color = feat_dict["intron_color"]
     figure_bg = feat_dict["figure_bg"]
     track_bg = feat_dict["track_bg"]
+    track_bg_by_pr = feat_dict.get("track_bg_by_pr", {})
     plot_border = feat_dict["plot_border"]
     title_dict_ply = feat_dict["title_dict_ply"]
     grid_color = feat_dict["grid_color"]
@@ -199,6 +231,7 @@ def plot_exons_ply(
         exon_height,
         plot_border,
         add_aligned_plots,
+        track_bg_by_pr,
     )
 
     # Plot genes

@@ -39,19 +39,16 @@ def _legend_title(subdf, title_col, fallback):
 
 def _categorical_legend_entries(subdf):
     """Return ``[(label, artist), ...]`` for Matplotlib categorical legends."""
-    fill_title = _legend_title(subdf, COLOR_LEGEND_TITLE_COL, "fill")
-    outline_title = _legend_title(subdf, OUTLINE_LEGEND_TITLE_COL, "outline")
-
     entries = [
         (
-            f"{fill_title}: {label}",
+            label,
             Rectangle((0, 0), 1, 1, facecolor=fill, edgecolor=outline),
         )
         for label, fill, outline in categorical_fill_items(subdf)
     ]
     entries.extend(
         (
-            f"{outline_title}: {label}",
+            label,
             Rectangle((0, 0), 1, 1, facecolor="white", edgecolor=outline, linewidth=2),
         )
         for label, outline in categorical_outline_items(subdf)
@@ -103,8 +100,11 @@ def _add_bottom_legends(fig, categorical_entries, quantitative_infos):
         sm.set_array([])
         cax = fig.add_axes([0.15, y, 0.7, 0.02])
         cbar = fig.colorbar(sm, cax=cax, orientation="horizontal")
-        cbar.set_label(qinfo["title"])
-        y += 0.10
+        # Put the quantitative legend title above the horizontal colorbar and
+        # make it visually unambiguous in static tutorial renders.
+        cbar.ax.xaxis.set_label_position("top")
+        cbar.ax.set_xlabel(qinfo["title"], labelpad=8, fontweight="bold")
+        y += 0.11
 
     if categorical_entries:
         labels, handles = zip(*categorical_entries)
@@ -157,6 +157,7 @@ def plot_exons_plt(
     tag_bkg = feat_dict["tag_bkg"]
     figure_bg = feat_dict["figure_bg"]
     track_bg = feat_dict["track_bg"]
+    track_bg_by_pr = feat_dict.get("track_bg_by_pr", {})
     plot_border = feat_dict["plot_border"]
     title_dict_plt = feat_dict["title_dict_plt"]
     grid_color = feat_dict["grid_color"]
@@ -216,6 +217,7 @@ def plot_exons_plt(
         v_spacer,
         exon_height,
         add_aligned_plots,
+        track_bg_by_pr,
     )
 
     if legend:

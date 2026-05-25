@@ -63,6 +63,7 @@ def create_fig(
     exon_height,
     plot_border,
     add_aligned_plots,
+    track_bg_by_pr=None,
 ):
     """Generate the figure and axes fitting the data."""
 
@@ -278,6 +279,32 @@ def create_fig(
             else:
                 y_min = 0.5 - exon_height / 2
                 y_max = chrmd_df_grouped.loc[chrom]["y_height"]
+
+            if track_bg_by_pr:
+                pr_line_y_l = chrmd_df.loc[chrom]["pr_line"].tolist()
+                if isinstance(pr_line_y_l, int):
+                    pr_line_y_l = [pr_line_y_l]
+                pr_line_y_l = sorted(
+                    [pr_line_y for pr_line_y in pr_line_y_l if pr_line_y != 0],
+                    reverse=True,
+                )
+                pr_line_y_l = [y_max + y_pad] + pr_line_y_l + [y_min - y_pad]
+                present_pr_l = chrmd_df_grouped.loc[chrom]["present_pr"]
+                for j, pr_ix in enumerate(present_pr_l):
+                    if j + 1 >= len(pr_line_y_l):
+                        continue
+                    bg = track_bg_by_pr.get(int(pr_ix))
+                    if bg:
+                        fig.add_hrect(
+                            y0=pr_line_y_l[j + 1],
+                            y1=pr_line_y_l[j],
+                            fillcolor=bg,
+                            line_width=0,
+                            layer="below",
+                            row=i + 1,
+                            col=1,
+                        )
+
             y_ticks_val = []
             y_ticks_name = []
 

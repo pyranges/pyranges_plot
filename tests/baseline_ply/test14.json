@@ -30,11 +30,11 @@
         10
       ],
       "y": [
-        1.64625,
-        1.64625,
-        1.6537499999999998,
-        1.6537499999999998,
-        1.64625
+        2.24625,
+        2.24625,
+        2.25375,
+        2.25375,
+        2.24625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -54,8 +54,8 @@
         NaN
       ],
       "y": [
-        1.65,
-        1.65
+        2.25,
+        2.25
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -80,11 +80,11 @@
         10
       ],
       "y": [
-        1.3499999999999999,
-        1.3499999999999999,
         1.95,
         1.95,
-        1.3499999999999999
+        2.55,
+        2.55,
+        1.95
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -109,11 +109,11 @@
         30
       ],
       "y": [
-        1.3499999999999999,
-        1.3499999999999999,
         1.95,
         1.95,
-        1.3499999999999999
+        2.55,
+        2.55,
+        1.95
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -124,7 +124,7 @@
       "fillcolor": "white",
       "hoverinfo": "text",
       "line": {
-        "color": "#f05f89",
+        "color": "#f0db36",
         "width": 0
       },
       "mode": "lines",
@@ -151,7 +151,7 @@
     {
       "hoverinfo": "skip",
       "line": {
-        "color": "#f05f89",
+        "color": "#f0db36",
         "dash": "solid",
         "width": 0.7
       },
@@ -171,10 +171,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f0db36",
+      "fillcolor": "#f05f89",
       "hoverinfo": "text",
       "line": {
-        "color": "#f0db36"
+        "color": "#f05f89"
       },
       "mode": "lines",
       "name": "0",
@@ -200,10 +200,10 @@
     },
     {
       "fill": "toself",
-      "fillcolor": "#f05f89",
+      "fillcolor": "#f0db36",
       "hoverinfo": "text",
       "line": {
-        "color": "#f05f89"
+        "color": "#f0db36"
       },
       "mode": "lines",
       "name": "1",
@@ -1060,7 +1060,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        2.2
+        3.4
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1097,11 +1097,11 @@
         "showarrow": false,
         "text": "1",
         "textangle": 0.0,
-        "x": 9.5,
-        "xanchor": "right",
+        "x": 35.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 1.65,
-        "yanchor": "middle",
+        "y": 2.561,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
@@ -1112,11 +1112,11 @@
         "showarrow": false,
         "text": "1",
         "textangle": 0.0,
-        "x": 9.5,
-        "xanchor": "right",
+        "x": 35.0,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       }
     ],
@@ -1131,8 +1131,8 @@
         "x0": 0,
         "x1": 1,
         "xref": "x domain",
-        "y0": 2.2,
-        "y1": 2.2,
+        "y0": 3.4,
+        "y1": 3.4,
         "yref": "y"
       },
       {
@@ -1145,8 +1145,8 @@
         "x0": 0,
         "x1": 1,
         "xref": "x domain",
-        "y0": 1.1,
-        "y1": 1.1,
+        "y0": 1.7,
+        "y1": 1.7,
         "yref": "y"
       }
     ],

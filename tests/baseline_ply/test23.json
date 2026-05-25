@@ -88,7 +88,8 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendrank": 1
     },
     {
       "fill": "toself",
@@ -109,11 +110,11 @@
         30
       ],
       "y": [
-        1.39625,
-        1.39625,
-        1.4037499999999998,
-        1.4037499999999998,
-        1.39625
+        0.54625,
+        0.54625,
+        0.5537500000000001,
+        0.5537500000000001,
+        0.54625
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -133,8 +134,8 @@
         NaN
       ],
       "y": [
-        1.4,
-        1.4
+        0.55,
+        0.55
       ],
       "type": "scatter",
       "xaxis": "x",
@@ -159,15 +160,16 @@
         30
       ],
       "y": [
-        1.0999999999999999,
-        1.0999999999999999,
-        1.7,
-        1.7,
-        1.0999999999999999
+        0.25000000000000006,
+        0.25000000000000006,
+        0.8500000000000001,
+        0.8500000000000001,
+        0.25000000000000006
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendrank": 2
     },
     {
       "fill": "toself",
@@ -246,10 +248,12 @@
       ],
       "type": "scatter",
       "xaxis": "x",
-      "yaxis": "y"
+      "yaxis": "y",
+      "legendrank": 3
     },
     {
       "hoverinfo": "skip",
+      "legendrank": 4,
       "line": {
         "color": "black",
         "width": 3
@@ -267,6 +271,7 @@
     },
     {
       "hoverinfo": "skip",
+      "legendrank": 5,
       "line": {
         "color": "gold",
         "width": 3
@@ -284,6 +289,7 @@
     },
     {
       "hoverinfo": "skip",
+      "legendrank": 6,
       "line": {
         "color": "navy",
         "width": 3
@@ -1132,7 +1138,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.95
+        1.7000000000000002
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1169,11 +1175,11 @@
         "showarrow": false,
         "text": "a",
         "textangle": 0.0,
-        "x": 9.45,
-        "xanchor": "right",
+        "x": 17.5,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
@@ -1184,11 +1190,11 @@
         "showarrow": false,
         "text": "b",
         "textangle": 0.0,
-        "x": 29.45,
-        "xanchor": "right",
+        "x": 37.5,
+        "xanchor": "center",
         "xref": "x",
-        "y": 1.4,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       },
       {
@@ -1199,11 +1205,11 @@
         "showarrow": false,
         "text": "c",
         "textangle": 0.0,
-        "x": 49.45,
-        "xanchor": "right",
+        "x": 57.5,
+        "xanchor": "center",
         "xref": "x",
-        "y": 0.55,
-        "yanchor": "middle",
+        "y": 0.8610000000000001,
+        "yanchor": "bottom",
         "yref": "y"
       }
     ],
@@ -1215,6 +1221,8 @@
     },
     "legend": {
       "orientation": "h",
+      "entrywidth": 95,
+      "entrywidthmode": "pixels",
       "x": 0.5,
       "xanchor": "center",
       "y": -0.1,
