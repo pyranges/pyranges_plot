@@ -9,4 +9,4 @@ reading of VCF files into PyRanges objects and flexible manipulation of their fi
 
 .. autofunction:: pyrangeyes.vcf.split_fields
 
-.. autofunction:: pyrangeyes.ncbi_vcf
+.. autofunction:: pyrangeyes.example_data.ncbi_vcf
