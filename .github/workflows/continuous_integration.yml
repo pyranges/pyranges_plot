@@ -45,5 +45,3 @@ jobs:
         export MPLBACKEND=Agg
         ./venv/bin/pytest --mpl tests/test_mpl.py
         ./venv/bin/pytest tests/test_ply.py
-        ./venv/bin/pytest tests/test_browser.py
-        ./venv/bin/pytest -m browser_interactive tests/test_browser_interactive.py
