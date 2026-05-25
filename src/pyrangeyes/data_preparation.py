@@ -1111,15 +1111,14 @@ def assign_label_rows(
             )
             effective_text_avoid = text_avoid and track_scale >= 1
             # Font size is specified in points by the rendering engines, while
-            # layout is expressed in pyrangeyes' row units.  The default 12 pt
-            # label visually occupies about one default interval-height row
-            # (0.6), so use that conversion to reserve vertical label room for
-            # above/below labels without making horizontal pack artificially
-            # sparse.
+            # layout is expressed in pyrangeyes' row units. Reserve a modest
+            # vertical text band for above/below labels: enough to prevent
+            # clipping/overlap, but not a full interval row, which leaves large
+            # empty bands in plots with one or few tracks.
             text_extra_y = (
                 0.0
                 if not (effective_text_avoid and text_position in {"above", "below"})
-                else float(label_size or 12) / 20.0
+                else float(label_size or 12) / 40.0
             )
             track_height = interval_height * track_scale
             track_gap = v_spacer * track_scale
