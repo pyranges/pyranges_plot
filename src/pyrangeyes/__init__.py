@@ -18,17 +18,6 @@ from .track import Track  # noqa: F401
 from .browser import browse  # noqa: F401
 from . import adapters  # noqa: F401
 from .pr_register_plot import register_methods  # noqa: F401
-from .example_data import (  # noqa: F401
-    p1,
-    p2,
-    p3,
-    mrna1,
-    snps1,
-    mrna2,
-    p_ala,
-    p_cys,
-    ncbi_gff,
-    ncbi_vcf,
-)
+from . import example_data  # noqa: F401
 from . import vcf  # noqa: F401
 from .make_subsets import make_scatter  # noqa: F401
