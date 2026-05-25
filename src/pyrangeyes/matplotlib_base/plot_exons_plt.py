@@ -14,8 +14,6 @@ from ..names import (
     PR_INDEX_COL,
     BORDER_COLOR_COL,
     COLOR_INFO,
-    COLOR_LEGEND_TITLE_COL,
-    OUTLINE_LEGEND_TITLE_COL,
     SQUISH_COL,
     THICK_COL,
 )

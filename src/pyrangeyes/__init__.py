@@ -15,9 +15,28 @@ from .core import (
 )
 from .plot_main import plot  # noqa: F401
 from .track import Track  # noqa: F401
-from .browser import browse  # noqa: F401
 from . import adapters  # noqa: F401
 from .pr_register_plot import register_methods  # noqa: F401
 from . import example_data  # noqa: F401
 from . import vcf  # noqa: F401
 from .make_subsets import make_scatter  # noqa: F401
+
+
+def browse(*args, **kwargs):
+    """Experimental interactive browser.
+
+    Plotly is an optional dependency; importing pyrangeyes must not require it.
+    Import the browser implementation lazily so environments installed without
+    the plotly extra can still use the rest of pyrangeyes.
+    """
+    try:
+        from .browser import browse as _browse
+    except ModuleNotFoundError as exc:
+        if exc.name and exc.name.startswith("plotly"):
+            raise ModuleNotFoundError(
+                "pyrangeyes.browse is experimental and requires the optional "
+                "plotly dependencies. Install with `pip install pyrangeyes[plotly]` "
+                "or `pip install pyrangeyes[all]` to use it."
+            ) from exc
+        raise
+    return _browse(*args, **kwargs)
