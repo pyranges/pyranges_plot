@@ -229,9 +229,11 @@ def _shared_color_key(legend_title, value):
 
 def _can_share_global_colormap(colormap):
     fill_cmap = _channel_colormap(colormap, "fill", fallback=prp_cmap)
-    return fill_cmap not in ["direct", None, False] and not isinstance(
-        fill_cmap, dict
-    ) and not _is_quantitative_colormap(fill_cmap)
+    return (
+        fill_cmap not in ["direct", None, False]
+        and not isinstance(fill_cmap, dict)
+        and not _is_quantitative_colormap(fill_cmap)
+    )
 
 
 def _build_shared_fill_colormap(prepared_tracks, global_colormap, warnings):

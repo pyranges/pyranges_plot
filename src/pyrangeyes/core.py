@@ -412,7 +412,9 @@ def _format_options_table(options_dict, *, feature_label="Feature", categories=N
         remaining_keys = [key for key in feat_df.index if key not in seen]
         if remaining_keys:
             row_parts.append(format_category_row("Other"))
-            row_parts.extend(format_row(key, feat_df.loc[key]) for key in remaining_keys)
+            row_parts.extend(
+                format_row(key, feat_df.loc[key]) for key in remaining_keys
+            )
     rows = "\n".join(row_parts)
     footer = f"+{'-' * (name_sz + 2)}+{'-' * (value_sz + 2)}+{'-' * (mod_sz + 2)}+{'-' * (desc_sz + 2)}+"
     print(header)

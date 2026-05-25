@@ -66,9 +66,7 @@ def _postprocess_legend(fig, subdf, legend):
     ]
 
     fill_rows = (
-        subdf[
-            [PR_INDEX_COL, COLOR_TAG_COL, COLOR_INFO, COLOR_LEGEND_TITLE_COL]
-        ]
+        subdf[[PR_INDEX_COL, COLOR_TAG_COL, COLOR_INFO, COLOR_LEGEND_TITLE_COL]]
         .drop_duplicates()
         .sort_values([PR_INDEX_COL], kind="stable")
     )
@@ -93,7 +91,8 @@ def _postprocess_legend(fig, subdf, legend):
             continue
         key = str(trace.name)
         legend_key, rank = fill_meta.get(
-            (key, str(trace_color)), fill_meta.get((key,), (f"{fill_title}: {key}", 1000))
+            (key, str(trace_color)),
+            fill_meta.get((key,), (f"{fill_title}: {key}", 1000)),
         )
         trace.legendgroup = None
         trace.name = legend_key
