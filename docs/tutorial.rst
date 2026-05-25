@@ -305,15 +305,12 @@ and a short description.
     +------------------+-------------+---------+--------------------------------------------------------------+
     |     Feature      |    Value    | Edited? |                         Description                          |
     +------------------+-------------+---------+--------------------------------------------------------------+
-    |                                               Whole plot                                                |
+    | ===================================== General and plot appearance ===================================== |
     |    figure_bg     |    white    |         | Bakground color of the whole figure.                         |
     |   plot_border    |    black    |         | Color of the line delimiting the plots.                      |
     |   plotly_port    |    8050     |         | Port to run plotly app.                                      |
     |   return_plot    |   <infer>   |         | Whether the plot is returned or not.                         |
-    |   title_color    |    black    |         | Color of the plots' titles.                                  |
-    |    title_size    |     18      |         | Size of the plots' titles.                                   |
-    |    title_font    |    Arial    |         | Font of the plots' titles.                                   |
-    |                                             Panels and axes                                             |
+    | =========================================== Panels and axes =========================================== |
     |    grid_color    |  lightgrey  |         | Color of x coordinates grid lines.                           |
     |    shrunk_bg     | lightyellow |         | Color of the shrunk region background.                       |
     | shrink_threshold |    0.01     |         | Minimum length of an intron or intergenic region in order    |
@@ -331,7 +328,10 @@ and a short description.
     |                  |             |         | of int it corresponds to de values used as ticks. Note that  |
     |                  |             |         | when the tick falls within a shrunk region it will not be    |
     |                  |             |         | diplayed.                                                    |
-    |                                          Tracks and intervals                                           |
+    |   title_color    |    black    |         | Color of panel titles.                                       |
+    |    title_size    |     18      |         | Font size of panel titles.                                   |
+    |    title_font    |    Arial    |         | Font family of panel titles.                                 |
+    | =================================== Tracks and interval appearance ==================================== |
     |     track_bg     |    white    |         | Background color of the plots.                               |
     | interval_height  |     0.6     |         | Default (and maximum) height of rendered interval blocks.    |
     |  squish_factor   |     0.3     |         | Factor applied to rendered interval height and stacked-row   |
@@ -351,7 +351,7 @@ and a short description.
     |    arrow_size    |    0.006    |         | Float corresponding to the fraction of the plot or int       |
     |                  |             |         | corresponding to the number of positions occupied by a       |
     |                  |             |         | direction arrow.                                             |
-    |                                             Text and labels                                             |
+    | ======================================= Text options per-track ======================================== |
     |    label_pad     |      1      |         | Space, in percent of the visible plot span, between interval |
     |                  |             |         | labels and intervals. For example, label_pad=1 means 1%.     |
     |    label_size    |     12      |         | Fontsize of the text annotation beside the intervals.        |
