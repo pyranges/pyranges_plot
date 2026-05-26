@@ -54,6 +54,7 @@ an address is printed in the console. The plot can be accessed by opening this a
 
 .. image:: images/prp_rtd_01_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Interactive navigation is intuitive:
 
 * Hover over intervals to see their details in a **tooltip**
@@ -87,6 +88,7 @@ indicating the column name that defines the groups of intervals.
 
 .. image:: images/prp_rtd_02_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Because the ``id_col`` parameter is used frequently, it can be set as default for all plots using function
 :func:`set_id_col <pyrangeyes.set_id_col>`. The following code is equivalent to the previous one:
 
@@ -119,6 +121,7 @@ The ``limits`` parameter accepts different input types:
 
 .. image:: images/prp_rtd_04_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 To plot with specified limits, use the following code:
 
     >>> pe.plot(x, limits=(0,300))
@@ -127,6 +130,7 @@ To plot with specified limits, use the following code:
 
 .. image:: images/prp_rtd_05_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Defining regions for panels
 ----------------------------
 
@@ -139,6 +143,7 @@ For example, this makes one panel per transcript by using a column name:
 
 .. image:: images/prp_rtd_29_mpl.png
 
+*Figure size: 1000 × 620 px (10.00 × 6.20 in).*
 Explicit regions are also supported with ``(chromosome, start, end)`` tuples or PyRanges rows:
 
     >>> pe.plot(x, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
@@ -147,6 +152,7 @@ Explicit regions are also supported with ``(chromosome, start, end)`` tuples or 
 
 .. image:: images/prp_rtd_43_mpl.png
 
+*Figure size: 1000 × 620 px (10.00 × 6.20 in).*
 Plotting intervals in strand direction
 --------------------------------------
 
@@ -160,6 +166,7 @@ Note the decreasing X axis.
 
 .. image:: images/prp_rtd_38_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 ``reverse`` also accepts explicit inputs such as ``True``, a list of chromosomes, or a ``{chrom: bool}`` mapping.
 
 Coloring
@@ -177,6 +184,7 @@ For example, let's color by the Strand column:
 
 .. image:: images/prp_rtd_06_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Now the "+" strand transcripts are displayed in one color and the ones on the "-" strand in another color.
 Note that pyrangeyes used its default color scheme, and mapped each value in the  ``fill_col`` column to a color.
 
@@ -192,6 +200,7 @@ Using a dictionary allows to exert full control over the coloring, explicitly se
 
 .. image:: images/prp_rtd_07_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Alternatively, the user may just define the sequence of colors used
 (letting pyrangeyes pick which color to assign to each value).
 One can provide a list of colors in hex or rgb; or a string recognized as the name of an available
@@ -204,6 +213,7 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
 
 .. image:: images/prp_rtd_08_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 If a column already stores literal colors (for example hex strings), set ``colormap="direct"``
 to use those values directly instead of mapping them as categories:
 
@@ -214,6 +224,7 @@ to use those values directly instead of mapping them as categories:
 
 .. image:: images/prp_rtd_30_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Enable ``legend=True`` to label the colors used in the plot. Also, by default,
 interval outlines use the same resolved color as the fill. For one fixed outline
 color, use the ``outline_color`` option:
@@ -224,6 +235,7 @@ color, use the ``outline_color`` option:
 
 .. image:: images/prp_rtd_31_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Use ``outline_col`` to map outlines from a column. When fill and outline columns use
 different value domains, provide a channel mapping with separate ``"fill"`` and
 ``"outline"`` entries:
@@ -242,6 +254,7 @@ different value domains, provide a channel mapping with separate ``"fill"`` and
 
 .. image:: images/prp_rtd_32_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Numeric columns can be colored as a continuous gradient with ``type="quantitative"``.
 Values are normalized to the observed minimum and maximum by default:
 
@@ -252,6 +265,7 @@ Values are normalized to the observed minimum and maximum by default:
 
 .. image:: images/prp_rtd_33_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Set ``range=(min, max)`` to choose the normalization range manually. The gradient
 can be a named continuous colormap, a list of colors, or normalized color stops:
 
@@ -266,6 +280,7 @@ can be a named continuous colormap, a list of colors, or normalized color stops:
 
 .. image:: images/prp_rtd_34_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Text labels and annotations
 ---------------------------
 
@@ -284,6 +299,7 @@ and distance from intervals with ``label_pad``.
 
 .. image:: images/prp_rtd_39_mpl.png
 
+*Figure size: 1100 × 520 px (11.00 × 5.20 in).*
 Labels can also be styled independently from interval fill colors. Use a channel
 ``colormap`` to provide separate mappings for ``"fill"`` and ``"label"``.
 
@@ -300,6 +316,7 @@ Labels can also be styled independently from interval fill colors. Use a channel
 
 .. image:: images/prp_rtd_40_mpl.png
 
+*Figure size: 1100 × 520 px (11.00 × 5.20 in).*
 Quick option reference
 ----------------------
 
@@ -383,6 +400,7 @@ Any listed option can be provided directly to :func:`plot <pyrangeyes.plot>` for
 
 .. image:: images/prp_rtd_15_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 To set options as defaults for later plots, use :func:`set_options <pyrangeyes.set_options>`:
 
     >>> pe.reset_options()
@@ -427,6 +445,7 @@ documentation. For example, here's the "dark" theme:
 
 .. image:: images/prp_rtd_16_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Reset options before continuing, so later examples do not inherit the dark theme:
 
     >>> pe.reset_options()
@@ -446,6 +465,7 @@ To instead display one transcript per row, set the ``pack`` parameter as ``False
 
 .. image:: images/prp_rtd_09_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 When ``pack=False``, rows are shown in the first-seen order of the input by default.
 This is useful when a PyRanges object was assembled by concatenating groups in a specific order,
 or when the order of rows already carries meaning. To instead let pyrangeyes order groups by
@@ -467,6 +487,7 @@ Then compare the unshrunk and shrunk views::
 
 .. image:: images/prp_rtd_13_mpl.png
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 ::
 
     >>> pe.plot(ppp, shrink=True, label=False)
@@ -476,6 +497,7 @@ Then compare the unshrunk and shrunk views::
 .. image:: images/prp_rtd_14_mpl.png
 
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Displaying multiple tracks
 --------------------------
 
@@ -505,6 +527,7 @@ when tracks use different ID columns.
 
 .. image:: images/prp_rtd_17_mpl.png
 
+*Figure size: 1240 × 1258 px (12.40 × 12.58 in).*
 Track-specific options override plot defaults for only that track. Use them for
 per-track coloring, compact squished tracks, and labels based on each track's ID:
 
@@ -535,6 +558,7 @@ per-track coloring, compact squished tracks, and labels based on each track's ID
 
 .. image:: images/prp_rtd_18_mpl.png
 
+*Figure size: 1000 × 620 px (10.00 × 6.20 in).*
 If a track specifies its own ``colormap``, that track gets an independent mapping,
 even when the colormap name is the same as another track's.
 
@@ -563,6 +587,7 @@ are combined as tracks:
 
 .. image:: images/prp_rtd_35_mpl.png
 
+*Figure size: 1000 × 620 px (10.00 × 6.20 in).*
 List all available adapters with ``pe.adapters.describe()`` and inspect adapter
 options with ``pe.print_options(adapter="mRNA")``.
 
@@ -583,6 +608,7 @@ Add columns with ``tooltip`` templates, and customize panel titles with ``panel_
 .. image:: images/prp_rtd_10_mpl.png
 
 
+*Figure size: 1000 × 500 px (10.00 × 5.00 in).*
 Adding aligned plots
 --------------------
 
@@ -608,6 +634,7 @@ See :func:`make_scatter() <pyrangeyes.make_scatter>` for scatter helper options.
 .. image:: images/prp_rtd_21_mpl.png
 
 
+*Figure size: 1000 × 620 px (10.00 × 6.20 in).*
 Integrating Pyrangeyes with External Visualizations
 ---------------------------------------------------
 
@@ -623,3 +650,5 @@ and compose it with other Dash components.
 *Plotly engine*
 
 .. image:: images/prp_rtd_27.png
+
+*Figure size: 1600 × 800 px (16.00 × 8.00 in).*
