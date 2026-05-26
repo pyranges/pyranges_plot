@@ -57,6 +57,12 @@ def test_auto_height_px_per_unit_can_be_set_globally():
     assert global_fig.layout.height == local_fig.layout.height
 
 
+def test_auto_size_is_height_only_even_with_legend():
+    fig = pe.plot(DATA, id_col="transcript_id", legend=True, return_plot="fig")
+
+    assert fig.layout.width == 1120
+
+
 def test_explicit_file_size_overrides_auto_height(tmp_path):
     output = tmp_path / "plot.pdf"
     fig = pe.plot(DATA, id_col="transcript_id", to_file=(str(output), (640, 480)), return_plot="fig")

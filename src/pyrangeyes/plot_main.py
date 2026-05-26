@@ -191,12 +191,9 @@ def _auto_file_size(
         )
     )
 
+    # Auto sizing is height-only. Keep width fixed unless the caller supplies
+    # an explicit ``to_file=(filename, (width, height))`` override.
     width = 1120
-    if track_names:
-        width += 190
-    if legend:
-        width += 120
-    width = int(max(900, min(2200, width)))
     return (width, height)
 
 
