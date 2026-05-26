@@ -43,7 +43,7 @@ plot_features_dict = {
         " ",
     ),
     "auto_height_px_per_unit": (
-        44,
+        80,
         "Pixels assigned to one vertical layout unit when pyrangeyes infers figure height automatically.",
         " ",
     ),

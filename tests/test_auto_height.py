@@ -2,6 +2,9 @@ import pytest
 import pyranges1 as pr
 import pyrangeyes as pe
 
+import matplotlib
+matplotlib.use("Agg")
+
 
 DATA = pr.PyRanges(
     {
@@ -34,7 +37,7 @@ def test_auto_height_px_per_unit_controls_inferred_height():
     taller_fig = pe.plot(
         DATA,
         id_col="transcript_id",
-        auto_height_px_per_unit=88,
+        auto_height_px_per_unit=120,
         return_plot="fig",
     )
 
@@ -42,12 +45,12 @@ def test_auto_height_px_per_unit_controls_inferred_height():
 
 
 def test_auto_height_px_per_unit_can_be_set_globally():
-    pe.set_options("auto_height_px_per_unit", 88)
+    pe.set_options("auto_height_px_per_unit", 120)
     global_fig = pe.plot(DATA, id_col="transcript_id", return_plot="fig")
     local_fig = pe.plot(
         DATA,
         id_col="transcript_id",
-        auto_height_px_per_unit=88,
+        auto_height_px_per_unit=120,
         return_plot="fig",
     )
 
@@ -60,6 +63,35 @@ def test_explicit_file_size_overrides_auto_height(tmp_path):
 
     assert fig.layout.width == 640
     assert fig.layout.height == 480
+
+
+def test_auto_height_keeps_matplotlib_interval_pixel_height_across_tracks():
+    pe.set_engine("matplotlib")
+    data = pe.example_data.p1
+    regions = pr.PyRanges(
+        {
+            "Chromosome": [1, 1, 2, 2],
+            "Start": [15, 75, 35, 130],
+            "End": [30, 95, 55, 165],
+            "group": ["g1", "g2", "g3", "g4"],
+        }
+    )
+
+    single = pe.plot(data, id_col="transcript_id", return_plot="fig")
+    multi = pe.plot(
+        [pe.Track(data), pe.Track(regions, id_col="group", pack=False)],
+        id_col="transcript_id",
+        return_plot="fig",
+    )
+
+    def interval_px(fig):
+        fig.canvas.draw()
+        ax = fig.axes[0]
+        y_min, y_max = ax.get_ylim()
+        px_per_unit = ax.get_window_extent().height / abs(y_max - y_min)
+        return px_per_unit * pe.get_options("interval_height")
+
+    assert interval_px(multi) == pytest.approx(interval_px(single), rel=0.02)
 
 
 def test_auto_height_px_per_unit_must_be_positive():

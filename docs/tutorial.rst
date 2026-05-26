@@ -334,7 +334,7 @@ and a short description.
     |                         |             |         | of int it corresponds to de values used as ticks. Note that  |
     |                         |             |         | when the tick falls within a shrunk region it will not be    |
     |                         |             |         | diplayed.                                                    |
-    | auto_height_px_per_unit |     44      |         | Pixels assigned to one vertical layout unit when pyrangeyes  |
+    | auto_height_px_per_unit |     80      |         | Pixels assigned to one vertical layout unit when pyrangeyes  |
     |                         |             |         | infers figure height automatically.                          |
     |       title_color       |    black    |         | Color of panel titles.                                       |
     |       title_size        |     18      |         | Font size of panel titles.                                   |

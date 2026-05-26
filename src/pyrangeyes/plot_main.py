@@ -149,51 +149,45 @@ def _auto_file_size(
     count. Then non-data parts (panel titles, chromosome/x-axis labels, legend,
     margins) are added in pixels.
     """
-    n_panels = max(1, len(chrmd_df_grouped))
-
-    # Default interval_height=0.6 with 44 px/unit renders at ~26 px. Squished
-    # tracks get proportionally smaller data-space heights and therefore smaller
-    # pixels. Keep a minimum panel height for readability.
+    # Default interval_height=0.6 with 80 px/unit renders at ~48 px.
+    # Squished tracks get proportionally smaller data-space heights and
+    # therefore smaller pixels. The figure height is solved from Matplotlib's
+    # GridSpec geometry so axes retain approximately this same px/unit scale
+    # when more panels/tracks are added.
     row_unit_px = float(auto_height_px_per_unit)
     if row_unit_px <= 0:
         raise ValueError("auto_height_px_per_unit must be a positive number.")
-    min_interval_px = 18
-    min_panel_px = max(80, min_interval_px / max(float(interval_height), 0.001))
 
-    panel_plot_px = 0
+    render_spans = []
     for _, row in chrmd_df_grouped.iterrows():
         if bool(row.get("use_render_y_limits", False)):
             span = float(row["y_max"] - row["y_min"] + 2 * row.get("y_pad", 0))
         else:
             span = float(row.get("y_height", 1.0) + 2 * row.get("y_pad", 0))
-        panel_plot_px += max(min_panel_px, span * row_unit_px)
+        render_spans.append(max(span, float(interval_height)))
 
-    panel_title_px = max(26, float(title_size) * 1.7)
-    chrom_axis_px = 46
-    inter_panel_gap_px = 18
-    outer_margin_px = 55
-    legend_px = 125 if legend else 0
-    aligned_px = 0
     if add_aligned_plots:
         extras = (
             add_aligned_plots
             if isinstance(add_aligned_plots, list)
             else [add_aligned_plots]
         )
-        aligned_px = 150 * len(extras)
+        # Matplotlib's default extra aligned plot height in create_fig().
+        render_spans.extend([2.0] * len(extras))
 
+    total_rows = len(render_spans)
+    hspace = 0.34
+    top = 0.88
+    # Matplotlib legends reserve a bottom band after axes creation. Account for
+    # the common categorical-legend case so adding a legend does not silently
+    # shrink rendered intervals.
+    bottom = 0.155 if legend else 0.11
+    axes_fraction = max(0.1, top - bottom)
+    grid_factor = (total_rows + hspace * max(0, total_rows - 1)) / total_rows
     height = int(
         max(
             260,
-            min(
-                6000,
-                panel_plot_px
-                + n_panels * (panel_title_px + chrom_axis_px)
-                + max(0, n_panels - 1) * inter_panel_gap_px
-                + outer_margin_px
-                + legend_px
-                + aligned_px,
-            ),
+            min(6000, row_unit_px * sum(render_spans) * grid_factor / axes_fraction),
         )
     )
 
