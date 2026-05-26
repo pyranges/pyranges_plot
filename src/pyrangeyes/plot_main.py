@@ -132,6 +132,80 @@ def _assign_text_group_spans(subdf, id_col, interval_height):
     return subdf
 
 
+def _auto_file_size(
+    chrmd_df_grouped,
+    *,
+    interval_height,
+    auto_height_px_per_unit,
+    title_size=18,
+    legend=False,
+    track_names=False,
+    add_aligned_plots=None,
+):
+    """Infer pixel canvas size from explicit vertical layout parts.
+
+    Data-space units map to ``auto_height_px_per_unit`` pixels, so a global
+    interval_height renders at a stable screen height independent of panel/track
+    count. Then non-data parts (panel titles, chromosome/x-axis labels, legend,
+    margins) are added in pixels.
+    """
+    n_panels = max(1, len(chrmd_df_grouped))
+
+    # Default interval_height=0.6 with 44 px/unit renders at ~26 px. Squished
+    # tracks get proportionally smaller data-space heights and therefore smaller
+    # pixels. Keep a minimum panel height for readability.
+    row_unit_px = float(auto_height_px_per_unit)
+    if row_unit_px <= 0:
+        raise ValueError("auto_height_px_per_unit must be a positive number.")
+    min_interval_px = 18
+    min_panel_px = max(80, min_interval_px / max(float(interval_height), 0.001))
+
+    panel_plot_px = 0
+    for _, row in chrmd_df_grouped.iterrows():
+        if bool(row.get("use_render_y_limits", False)):
+            span = float(row["y_max"] - row["y_min"] + 2 * row.get("y_pad", 0))
+        else:
+            span = float(row.get("y_height", 1.0) + 2 * row.get("y_pad", 0))
+        panel_plot_px += max(min_panel_px, span * row_unit_px)
+
+    panel_title_px = max(26, float(title_size) * 1.7)
+    chrom_axis_px = 46
+    inter_panel_gap_px = 18
+    outer_margin_px = 55
+    legend_px = 125 if legend else 0
+    aligned_px = 0
+    if add_aligned_plots:
+        extras = (
+            add_aligned_plots
+            if isinstance(add_aligned_plots, list)
+            else [add_aligned_plots]
+        )
+        aligned_px = 150 * len(extras)
+
+    height = int(
+        max(
+            260,
+            min(
+                6000,
+                panel_plot_px
+                + n_panels * (panel_title_px + chrom_axis_px)
+                + max(0, n_panels - 1) * inter_panel_gap_px
+                + outer_margin_px
+                + legend_px
+                + aligned_px,
+            ),
+        )
+    )
+
+    width = 1120
+    if track_names:
+        width += 190
+    if legend:
+        width += 120
+    width = int(max(900, min(2200, width)))
+    return (width, height)
+
+
 def _attach_panel_y_height(chrmd_df, genesmd_df, interval_height):
     """Attach per-PyRanges-object panel height for percentage text padding."""
     grouped = genesmd_df.groupby([CHROM_COL, PR_INDEX_COL], observed=True)["ycoord"]
@@ -670,8 +744,10 @@ def plot(
 
     to_file: {str, tuple}, default None
         Name of the file to export specifying the desired extension. The supported extensions are '.png' and '.pdf'.
-        Optionally, a tuple can be privided where the file name is specified as a str in the first position and in the
-        second position there is a tuple specifying the height and width of the figure in px.
+        When no explicit size is provided, pyrangeyes infers the figure height from the vertical layout. The global
+        ``auto_height_px_per_unit`` option controls the pixel length assigned to one vertical layout unit.
+        Optionally, a tuple can be provided where the file name is specified as a str in the first position and in the
+        second position there is a tuple specifying the width and height of the figure in px.
 
     theme: str, default "light"
         General color appearance of the plot. Available modes: "light", "dark", "pastel", "swimming_pool".
@@ -759,7 +835,10 @@ def plot(
         track_names if any(name is not None for name in track_names) else False
     )
 
-    # Deal with export
+    # Deal with export. When no explicit pixel size is provided, compute the
+    # canvas size after layout metadata is available instead of forcing every
+    # plot into a fixed 1600x800 box.
+    auto_file_size = True
     if to_file:
         # given str file name
         if isinstance(to_file, str):
@@ -768,7 +847,7 @@ def plot(
                 raise Exception(
                     "Please specify the desired format to export the file including either '.png' or '.pdf' as an extension."
                 )
-            file_size = (1600, 800)
+            file_size = None
         # given tuple (name, size)
         else:
             ext = to_file[0][-4:]
@@ -777,10 +856,11 @@ def plot(
                     "Please specify the desired format to export the file including either '.png' or '.pdf' as an extension."
                 )
             file_size = to_file[1]
+            auto_file_size = False
             to_file = to_file[0]
-    # not given to_file, store default size
+    # not given to_file, size is inferred from the layout later
     else:
-        file_size = (1600, 800)
+        file_size = None
 
     ID_COL = [TRACK_ID_COL]
 
@@ -837,6 +917,7 @@ def plot(
         "grid_color": getvalue("grid_color"),
         "outline_color": getvalue("outline_color"),
         "interval_height": float(getvalue("interval_height")),
+        "auto_height_px_per_unit": float(getvalue("auto_height_px_per_unit")),
         "transcript_utr_width": 0.3 * float(getvalue("interval_height")),
         "v_spacer": getvalue("v_spacer"),
         "label_size": float(getvalue("label_size")),
@@ -1381,6 +1462,17 @@ def plot(
 
     if tooltip is None:
         tooltip = "{__tooltip__}"
+
+    if auto_file_size:
+        file_size = _auto_file_size(
+            chrmd_df_grouped,
+            interval_height=feat_dict["interval_height"],
+            auto_height_px_per_unit=feat_dict["auto_height_px_per_unit"],
+            title_size=feat_dict["title_dict_plt"].get("size", 13),
+            legend=legend,
+            track_names=bool(track_names),
+            add_aligned_plots=add_aligned_plots,
+        )
 
     if return_plot is not None:
         # deal with engine and call proper plot

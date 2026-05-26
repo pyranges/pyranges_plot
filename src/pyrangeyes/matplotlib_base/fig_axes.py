@@ -192,6 +192,7 @@ def create_fig(
         total_rows,
         1,
         height_ratios=chrmd_df_grouped["y_height"].to_list() + row_heights_additional,
+        hspace=0.34,
     )  # size of chromosome subplot according to number of gene rows
 
     # one plot per chromosome

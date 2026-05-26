@@ -307,6 +307,9 @@ def plot_exons_ply(
     else:
         fig.data[0].customdata = np.array(["no warnings"])
 
+    if file_size is not None:
+        fig.update_layout(width=file_size[0], height=file_size[1])
+
     if to_file is None:
         if return_plot is None:
             app_instance = initialize_dash_app(fig, max_shown)
@@ -317,8 +320,9 @@ def plot_exons_ply(
         elif return_plot == "fig":
             return fig
     else:
-        fig.update_layout(width=file_size[0], height=file_size[1])
         pio.write_image(fig, to_file, width=file_size[0], height=file_size[1])
+        if return_plot == "fig":
+            return fig
 
 
 def gby_plot_exons(

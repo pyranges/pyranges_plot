@@ -42,6 +42,11 @@ plot_features_dict = {
         "Default (and maximum) height of rendered interval blocks.",
         " ",
     ),
+    "auto_height_px_per_unit": (
+        44,
+        "Pixels assigned to one vertical layout unit when pyrangeyes infers figure height automatically.",
+        " ",
+    ),
     "figure_bg": ("white", "Bakground color of the whole figure.", " "),
     "grid_color": ("lightgrey", "Color of x coordinates grid lines.", " "),
     "intron_color": (
@@ -124,6 +129,7 @@ print_option_categories = [
             "shrink_threshold",
             "v_spacer",
             "x_ticks",
+            "auto_height_px_per_unit",
             "title_color",
             "title_size",
             "title_font",

@@ -66,6 +66,12 @@ use the ``to_file`` parameter of :func:`plot <pyrangeyes.plot>`.
 
     >>> pe.plot(x, to_file="my_plot.png")
 
+When no explicit size is provided, pyrangeyes now infers the figure height automatically from the number of panels and stacked interval rows. The global option ``auto_height_px_per_unit`` controls the pixel length assigned to one vertical layout unit:
+
+    >>> pe.set_options("auto_height_px_per_unit", 52)
+
+Pass ``to_file=("my_plot.png", (width, height))`` when you need to override the inferred canvas size for a specific export.
+
 Because we called ``register_methods()``, PyRanges objects now have a ``.plot(...)`` method.
 This is equivalent to the last code block:
 
@@ -302,69 +308,72 @@ The table shows each option name, its current value, whether it differs from the
 and a short description.
 
     >>> pe.print_options()
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    |     Feature      |    Value    | Edited? |                         Description                          |
-    +------------------+-------------+---------+--------------------------------------------------------------+
-    | ===================================== General and plot appearance ===================================== |
-    |    figure_bg     |    white    |         | Bakground color of the whole figure.                         |
-    |   plot_border    |    black    |         | Color of the line delimiting the plots.                      |
-    |   plotly_port    |    8050     |         | Port to run plotly app.                                      |
-    |   return_plot    |   <infer>   |         | Whether the plot is returned or not.                         |
-    | =========================================== Panels and axes =========================================== |
-    |    grid_color    |  lightgrey  |         | Color of x coordinates grid lines.                           |
-    |    shrunk_bg     | lightyellow |         | Color of the shrunk region background.                       |
-    | shrink_threshold |    0.01     |         | Minimum length of an intron or intergenic region in order    |
-    |                  |             |         | for it to be shrunk while using the “shrink” feature. When   |
-    |                  |             |         | threshold is float, it represents the fraction of the plot   |
-    |                  |             |         | space, while an int threshold represents number of positions |
-    |                  |             |         | or base pairs.                                               |
-    |     v_spacer     |    0.25     |         | Vertical distance between the intervals and plot border.     |
-    |     x_ticks      |   <infer>   |         | Int, list or dict defining the x_ticks to be displayed. When |
-    |                  |             |         | int, number of ticks to be placed on each plot. When list,   |
-    |                  |             |         | it corresponds to de values used as ticks. When dict, the    |
-    |                  |             |         | keys must match the Chromosome values of the data, while the |
-    |                  |             |         | values can be either int or list of int; when int it         |
-    |                  |             |         | corresponds to the number of ticks to be placed; when list   |
-    |                  |             |         | of int it corresponds to de values used as ticks. Note that  |
-    |                  |             |         | when the tick falls within a shrunk region it will not be    |
-    |                  |             |         | diplayed.                                                    |
-    |   title_color    |    black    |         | Color of panel titles.                                       |
-    |    title_size    |     18      |         | Font size of panel titles.                                   |
-    |    title_font    |    Arial    |         | Font family of panel titles.                                 |
-    | =================================== Tracks and interval appearance ==================================== |
-    |     track_bg     |    white    |         | Background color of the plots.                               |
-    | interval_height  |     0.6     |         | Default (and maximum) height of rendered interval blocks.    |
-    |  squish_factor   |     0.3     |         | Factor applied to rendered interval height and stacked-row   |
-    |                  |             |         | spacing for tracks with squish=True.                         |
-    |     colormap     |   popart    |         | Colors to assign to interval fills. Use 'direct' when        |
-    |                  |             |         | fill_col/outline_col/label_color_col already contain literal |
-    |                  |             |         | colors. A dict channel mapping must have 'fill' and may also |
-    |                  |             |         | have 'outline' and 'label'; 'fill'/'outline' aliases reuse   |
-    |                  |             |         | channels. Values may be Matplotlib/Plotly colormap names,    |
-    |                  |             |         | color lists, value-to-color mappings, or quantitative specs. |
-    |  outline_color   |   <infer>   |         | Fixed color for interval outlines. When None, outlines use   |
-    |                  |             |         | the resolved interval fill colors.                           |
-    |   intron_color   |   <infer>   |         | Color of the intron lines. When None, the color of the first |
-    |                  |             |         | interval will be used.                                       |
-    |   arrow_color    |    grey     |         | Color of the arrow indicating strand.                        |
-    | arrow_line_width |      1      |         | Line width of the arrow lines                                |
-    |    arrow_size    |    0.006    |         | Float corresponding to the fraction of the plot or int       |
-    |                  |             |         | corresponding to the number of positions occupied by a       |
-    |                  |             |         | direction arrow.                                             |
-    | ======================================= Text options per-track ======================================== |
-    |    label_pad     |      1      |         | Space, in percent of the visible plot span, between interval |
-    |                  |             |         | labels and intervals. For example, label_pad=1 means 1%.     |
-    |    label_size    |     12      |         | Fontsize of the text annotation beside the intervals.        |
-    |   label_color    |    black    |         | Fixed color of interval labels unless label_color_col or     |
-    |                  |             |         | colormap['label'] maps them.                                 |
-    |   label_angle    |      0      |         | Rotation angle of interval labels, in degrees.               |
-    |  label_position  |    above    |         | Position of interval labels: 'left', 'right', 'center',      |
-    |                  |             |         | 'top'/'above', or 'bottom'/'below'.                          |
-    |    label_fit     |    True     |         | Whether text labels reserve space during pack layout to      |
-    |                  |             |         | reduce overlaps.                                             |
-    |     tag_bkg      |    grey     |         | Background color of the tooltip annotation for the gene in   |
-    |                  |             |         | Matplotlib.                                                  |
-    +------------------+-------------+---------+--------------------------------------------------------------+
+    +-------------------------+-------------+---------+--------------------------------------------------------------+
+    |         Feature         |    Value    | Edited? |                         Description                          |
+    +-------------------------+-------------+---------+--------------------------------------------------------------+
+    | ======================================== General and plot appearance ========================================= |
+    |        figure_bg        |    white    |         | Bakground color of the whole figure.                         |
+    |       plot_border       |    black    |         | Color of the line delimiting the plots.                      |
+    |       plotly_port       |    8050     |         | Port to run plotly app.                                      |
+    |       return_plot       |   <infer>   |         | Whether the plot is returned or not.                         |
+    | ============================================== Panels and axes =============================================== |
+    |       grid_color        |  lightgrey  |         | Color of x coordinates grid lines.                           |
+    |        shrunk_bg        | lightyellow |         | Color of the shrunk region background.                       |
+    |    shrink_threshold     |    0.01     |         | Minimum length of an intron or intergenic region in order    |
+    |                         |             |         | for it to be shrunk while using the “shrink” feature. When   |
+    |                         |             |         | threshold is float, it represents the fraction of the plot   |
+    |                         |             |         | space, while an int threshold represents number of positions |
+    |                         |             |         | or base pairs.                                               |
+    |        v_spacer         |    0.25     |         | Vertical distance between the intervals and plot border.     |
+    |         x_ticks         |   <infer>   |         | Int, list or dict defining the x_ticks to be displayed. When |
+    |                         |             |         | int, number of ticks to be placed on each plot. When list,   |
+    |                         |             |         | it corresponds to de values used as ticks. When dict, the    |
+    |                         |             |         | keys must match the Chromosome values of the data, while the |
+    |                         |             |         | values can be either int or list of int; when int it         |
+    |                         |             |         | corresponds to the number of ticks to be placed; when list   |
+    |                         |             |         | of int it corresponds to de values used as ticks. Note that  |
+    |                         |             |         | when the tick falls within a shrunk region it will not be    |
+    |                         |             |         | diplayed.                                                    |
+    | auto_height_px_per_unit |     44      |         | Pixels assigned to one vertical layout unit when pyrangeyes  |
+    |                         |             |         | infers figure height automatically.                          |
+    |       title_color       |    black    |         | Color of panel titles.                                       |
+    |       title_size        |     18      |         | Font size of panel titles.                                   |
+    |       title_font        |    Arial    |         | Font family of panel titles.                                 |
+    | ======================================= Tracks and interval appearance ======================================= |
+    |        track_bg         |    white    |         | Background color of the plots.                               |
+    |     interval_height     |     0.6     |         | Default (and maximum) height of rendered interval blocks.    |
+    |      squish_factor      |     0.3     |         | Factor applied to rendered interval height and stacked-row   |
+    |                         |             |         | spacing for tracks with squish=True.                         |
+    |        colormap         |   popart    |         | Colors to assign to interval fills. Use 'direct' when        |
+    |                         |             |         | fill_col/outline_col/label_color_col already contain literal |
+    |                         |             |         | colors. A dict channel mapping must have 'fill' and may also |
+    |                         |             |         | have 'outline' and 'label'; 'fill'/'outline' aliases reuse   |
+    |                         |             |         | channels. Values may be Matplotlib/Plotly colormap names,    |
+    |                         |             |         | color lists, value-to-color mappings, or quantitative specs. |
+    |      outline_color      |   <infer>   |         | Fixed color for interval outlines. When None, outlines use   |
+    |                         |             |         | the resolved interval fill colors.                           |
+    |      intron_color       |   <infer>   |         | Color of the intron lines. When None, the color of the first |
+    |                         |             |         | interval will be used.                                       |
+    |       arrow_color       |    grey     |         | Color of the arrow indicating strand.                        |
+    |    arrow_line_width     |      1      |         | Line width of the arrow lines                                |
+    |       arrow_size        |    0.006    |         | Float corresponding to the fraction of the plot or int       |
+    |                         |             |         | corresponding to the number of positions occupied by a       |
+    |                         |             |         | direction arrow.                                             |
+    | =========================================== Text options per-track =========================================== |
+    |        label_pad        |      1      |         | Space, in percent of the visible plot span, between interval |
+    |                         |             |         | labels and intervals. For example, label_pad=1 means 1%.     |
+    |       label_size        |     12      |         | Fontsize of the text annotation beside the intervals.        |
+    |       label_color       |    black    |         | Fixed color of interval labels unless label_color_col or     |
+    |                         |             |         | colormap['label'] maps them.                                 |
+    |       label_angle       |      0      |         | Rotation angle of interval labels, in degrees.               |
+    |     label_position      |    above    |         | Position of interval labels: 'left', 'right', 'center',      |
+    |                         |             |         | 'top'/'above', or 'bottom'/'below'.                          |
+    |        label_fit        |    True     |         | Whether text labels reserve space during pack layout to      |
+    |                         |             |         | reduce overlaps.                                             |
+    |         tag_bkg         |    grey     |         | Background color of the tooltip annotation for the gene in   |
+    |                         |             |         | Matplotlib.                                                  |
+    +-------------------------+-------------+---------+--------------------------------------------------------------+
+
 
 Any listed option can be provided directly to :func:`plot <pyrangeyes.plot>` for a single figure:
 

@@ -11,7 +11,14 @@ import numpy as np
 def normalize_plotly_json(obj):
 
     if isinstance(obj, dict):
-        return {k: normalize_plotly_json(v) for k, v in obj.items()}
+        # Baseline JSON tests focus on rendered content and coordinates. Figure
+        # canvas dimensions are covered separately because the default is now
+        # inferred from layout and intentionally depends on global options.
+        return {
+            k: normalize_plotly_json(v)
+            for k, v in obj.items()
+            if k not in {"width", "height"}
+        }
     elif isinstance(obj, list):
         return [normalize_plotly_json(i) for i in obj]
     elif isinstance(obj, tuple):
