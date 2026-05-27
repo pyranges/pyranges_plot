@@ -48,3 +48,21 @@ def test_track_option_overrides_plot_default():
         "packed",
         "unpacked",
     ]
+
+
+def test_track_plot_alias(monkeypatch):
+    calls = []
+
+    def fake_plot(obj, **kwargs):
+        calls.append((obj, kwargs))
+        return "ok"
+
+    import pyrangeyes.plot_main as plot_main
+
+    monkeypatch.setattr(plot_main, "plot", fake_plot)
+
+    track = pe.Track(DATA, name="example")
+    result = track.plot(id_col="transcript_id")
+
+    assert result == "ok"
+    assert calls == [(track, {"id_col": "transcript_id"})]

@@ -26,3 +26,13 @@ class Track:
     @property
     def name(self):
         return self.options.get("name")
+
+    def plot(self, **kwargs):
+        """Plot this track with :func:`pyrangeyes.plot`.
+
+        Options stored on the track are applied as track-specific options;
+        keyword arguments passed here are forwarded as regular plot options.
+        """
+        from .plot_main import plot
+
+        return plot(self, **kwargs)
