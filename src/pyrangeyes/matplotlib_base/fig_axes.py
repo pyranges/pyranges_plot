@@ -220,9 +220,7 @@ def create_fig(
         y_cursor -= title_px
         axis_h = row_data_px[row_index]
         bottom = y_cursor - axis_h
-        ax = fig.add_axes(
-            [left, bottom / fig_h_px, width, axis_h / fig_h_px]
-        )
+        ax = fig.add_axes([left, bottom / fig_h_px, width, axis_h / fig_h_px])
         y_cursor = bottom - xaxis_px - panel_gap_px
         return ax
 
