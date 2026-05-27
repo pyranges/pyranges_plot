@@ -113,6 +113,27 @@ def test_auto_height_reserves_matplotlib_title_space():
         assert title_box.y0 >= axes_box.y1 + 6
 
 
+def test_disabled_track_labels_do_not_reserve_above_label_band():
+    unlabeled = pe.plot(
+        [
+            pe.Track(DATA, id_col="transcript_id", label="{transcript_id}"),
+            pe.Track(DATA, id_col="transcript_id", pack=False, label=False),
+        ],
+        id_col="transcript_id",
+        return_plot="fig",
+    )
+    labeled = pe.plot(
+        [
+            pe.Track(DATA, id_col="transcript_id", label="{transcript_id}"),
+            pe.Track(DATA, id_col="transcript_id", pack=False, label="{transcript_id}"),
+        ],
+        id_col="transcript_id",
+        return_plot="fig",
+    )
+
+    assert labeled.layout.height > unlabeled.layout.height
+
+
 def test_auto_height_px_per_unit_must_be_positive():
     with pytest.raises(ValueError, match="auto_height_px_per_unit"):
         pe.plot(DATA, id_col="transcript_id", auto_height_px_per_unit=0, return_plot="fig")

@@ -199,7 +199,7 @@ def create_fig(
     # Figure-level legends live in a reserved bottom strip. Keeping this out of
     # the axes placement means legends do not shrink or overlap plot panels.
     if legend:
-        bottom_px += 70
+        bottom_px += 140
 
     non_data_px = (
         top_px

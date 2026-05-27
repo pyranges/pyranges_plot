@@ -188,7 +188,7 @@ def _auto_file_size(
         # Match the bottom legend helpers closely enough to reserve space before
         # axes are placed. Width is fixed at 1120 px, so eight compact legend
         # columns is a reasonable static estimate for categorical rows.
-        legend_band = 70
+        legend_band = 140
 
     height = int(
         max(
@@ -1292,6 +1292,10 @@ def plot(
         text_position_by_track={
             pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
         },
+        text_avoid_by_track={
+            pr_ix: spec["enabled"] and spec["fit"]
+            for pr_ix, spec in label_specs.items()
+        },
         label_size=feat_dict["label_size"],
     )
 
@@ -1381,6 +1385,10 @@ def plot(
         pack_by_track=pack_by_track,
         text_position_by_track={
             pr_ix: spec["position"] for pr_ix, spec in label_specs.items()
+        },
+        text_avoid_by_track={
+            pr_ix: spec["enabled"] and spec["fit"]
+            for pr_ix, spec in label_specs.items()
         },
         label_size=feat_dict["label_size"],
     )

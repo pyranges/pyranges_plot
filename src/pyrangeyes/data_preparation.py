@@ -1035,6 +1035,7 @@ def assign_label_rows(
     track_scales=None,
     pack_by_track=None,
     text_position_by_track=None,
+    text_avoid_by_track=None,
     label_size=None,
 ):
     """
@@ -1109,7 +1110,12 @@ def assign_label_rows(
                 if text_position_by_track is None
                 else text_position_by_track.get(pr_val, "left")
             )
-            effective_text_avoid = text_avoid and track_scale >= 1
+            track_text_avoid = (
+                text_avoid
+                if text_avoid_by_track is None
+                else bool(text_avoid_by_track.get(pr_val, text_avoid))
+            )
+            effective_text_avoid = track_text_avoid and track_scale >= 1
             # Font size is specified in points by the rendering engines, while
             # layout is expressed in pyrangeyes' row units. Reserve a modest
             # vertical text band for above/below labels: enough to prevent
