@@ -100,6 +100,19 @@ def test_auto_height_keeps_matplotlib_interval_pixel_height_across_tracks():
     assert interval_px(multi) == pytest.approx(interval_px(single), rel=0.02)
 
 
+def test_auto_height_reserves_matplotlib_title_space():
+    pe.set_engine("matplotlib")
+
+    fig = pe.plot(DATA, id_col="transcript_id", warnings=False, return_plot="fig")
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+
+    for ax in fig.axes:
+        title_box = ax.title.get_window_extent(renderer)
+        axes_box = ax.get_window_extent(renderer)
+        assert title_box.y0 >= axes_box.y1 + 6
+
+
 def test_auto_height_px_per_unit_must_be_positive():
     with pytest.raises(ValueError, match="auto_height_px_per_unit"):
         pe.plot(DATA, id_col="transcript_id", auto_height_px_per_unit=0, return_plot="fig")

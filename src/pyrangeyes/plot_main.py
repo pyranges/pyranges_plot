@@ -146,8 +146,10 @@ def _auto_file_size(
 
     Data-space units map to ``auto_height_px_per_unit`` pixels, so a global
     interval_height renders at a stable screen height independent of panel/track
-    count. Then non-data parts (panel titles, chromosome/x-axis labels, legend,
-    margins) are added in pixels.
+    count. Non-data parts are fixed pixel bands: each panel gets its own title
+    band and x-axis band, panels get a constant inter-panel gap, and legends get
+    a bottom band. This keeps titles/axes/legends from implicitly stealing data
+    pixels as panel or track counts change.
     """
     # Default interval_height=0.6 with 80 px/unit renders at ~48 px.
     # Squished tracks get proportionally smaller data-space heights and
@@ -176,18 +178,30 @@ def _auto_file_size(
         render_spans.extend([2.0] * len(extras))
 
     total_rows = len(render_spans)
-    hspace = 0.34
-    top = 0.88
-    # Matplotlib legends reserve a bottom band after axes creation. Account for
-    # the common categorical-legend case so adding a legend does not silently
-    # shrink rendered intervals.
-    bottom = 0.155 if legend else 0.11
-    axes_fraction = max(0.1, top - bottom)
-    grid_factor = (total_rows + hspace * max(0, total_rows - 1)) / total_rows
+    title_band = max(34, int(float(title_size) * 1.9))
+    xaxis_band = 46
+    inter_panel_gap = 24
+    top_margin = 18
+    bottom_margin = 28
+    legend_band = 0
+    if legend:
+        # Match the bottom legend helpers closely enough to reserve space before
+        # axes are placed. Width is fixed at 1120 px, so eight compact legend
+        # columns is a reasonable static estimate for categorical rows.
+        legend_band = 70
+
     height = int(
         max(
             260,
-            min(6000, row_unit_px * sum(render_spans) * grid_factor / axes_fraction),
+            min(
+                6000,
+                top_margin
+                + bottom_margin
+                + legend_band
+                + row_unit_px * sum(render_spans)
+                + total_rows * (title_band + xaxis_band)
+                + max(0, total_rows - 1) * inter_panel_gap,
+            ),
         )
     )
 
