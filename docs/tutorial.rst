@@ -320,6 +320,10 @@ Labels can also be styled independently from interval fill colors. Use a channel
 Quick option reference
 ----------------------
 
+Reset options before inspecting the built-in defaults:
+
+    >>> pe.reset_options()
+
 Use :func:`print_options <pyrangeyes.print_options>` to inspect the current global plot options.
 The table shows each option name, its current value, whether it differs from the built-in default,
 and a short description.
