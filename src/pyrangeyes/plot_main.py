@@ -863,9 +863,15 @@ def plot(
             file_size = to_file[1]
             auto_file_size = False
             to_file = to_file[0]
-    # not given to_file, size is inferred from the layout later
+    # For returned plots, infer size from layout. For side-effect plotting
+    # without export/return, preserve the legacy interactive canvas size so
+    # existing image-regression tests and user sessions remain stable.
     else:
-        file_size = None
+        if return_plot is None:
+            file_size = (1600, 800)
+            auto_file_size = False
+        else:
+            file_size = None
 
     ID_COL = [TRACK_ID_COL]
 
