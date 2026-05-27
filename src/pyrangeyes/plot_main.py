@@ -246,14 +246,16 @@ TRACK_OPTION_KEYS = {
 
 
 def _as_list(value):
-    if value is None or isinstance(value, list):
-        return value
+    if value is None or value is False or isinstance(value, list):
+        return None if value is False else value
     if isinstance(value, tuple):
         return list(value)
     return [value]
 
 
 def _make_tag_column(df, columns, output_col):
+    if columns is False:
+        return None
     columns = _as_list(columns)
     if columns is None:
         return None
@@ -436,12 +438,6 @@ def _panel_matches_selector(panel_id, row, selector):
 
     if selector == panel_id or selector == display_chrom:
         return True
-    if isinstance(selector, tuple) and len(selector) == 3:
-        return (
-            selector[0] == display_chrom
-            and selector[1] == display_start
-            and selector[2] == display_end
-        )
     return False
 
 
@@ -482,9 +478,12 @@ def _normalize_reverse(reverse, subdf, chrmd_df_grouped):
                 )
         return flags
 
-    if isinstance(reverse, tuple) and len(reverse) == 3:
-        selectors = [reverse]
-    elif isinstance(reverse, (list, tuple, set)):
+    if isinstance(reverse, tuple):
+        raise ValueError(
+            "reverse no longer accepts coordinate tuples; use a panel name, "
+            "a list of panel names, or a {panel: bool} mapping."
+        )
+    if isinstance(reverse, (list, set)):
         selectors = list(reverse)
     else:
         selectors = [reverse]
@@ -598,83 +597,93 @@ def plot(
     data,
     *,
     id_col=None,
-    warnings=None,
-    max_shown=25,
-    pack=True,
-    return_plot=None,
-    add_aligned_plots=None,
-    fill_col=None,
-    outline_col=None,
-    label_color_col=None,
-    shrink=False,
-    limits=None,
     regions=None,
+    limits=None,
     reverse=False,
+    pack=True,
+    shrink=False,
+    sort_ranges=False,
     label=None,
+    fill_col=None,
+    outline_col=False,
+    label_color_col=False,
+    colormap=None,
     legend=False,
     panel_title=None,
     tooltip=None,
-    to_file=None,
     theme=None,
-    sort_ranges=False,
+    to_file=None,
+    return_plot=None,
+    max_shown=25,
+    warnings=None,
     height_col=None,
     depth_col=None,
     shape_col=None,
+    add_aligned_plots=None,
     **kargs,
 ):
     """
-    Create genes plot from 1/+ PyRanges objects.
+    Plot genomic intervals from one or more PyRanges or Track objects.
 
     Parameters
     ----------
     data: {pyranges.PyRanges, Track, or list}
-        One PyRanges/Track object, or a list of PyRanges/Track objects displayed as separate tracks.
-        Use ``Track(data, adapter=None, name=None, **options)`` for per-track configuration.
+        Input intervals. A list is shown as separate tracks.
 
     id_col: str, default None
-        Name of the column containing gene ID.
+        Column used to group rows into one interval/group, such as exons into transcripts.
 
-    warnings: bool, default True
-        Whether the warnings should be shown or not.
+    regions: {None, list, str, pyranges.PyRanges}, default None
+        Panels to show, replacing the default one-panel-per-chromosome layout. Use
+        ``(chromosome, start, end)`` tuples, a PyRanges object, or a column name.
 
-    max_shown: int, default 20
-        Maximum number of genes plotted in the dataframe order.
+    limits: {None, dict, tuple, pyranges.PyRanges}, default None
+        Coordinate limits for panels, e.g. ``{"chr1": (1000, 5000)}``. Ignored when
+        ``regions`` is provided.
+
+    reverse: {bool, "auto", str, list, dict}, default False
+        Reverse coordinate axis. Use ``True`` for all panels, ``"auto"`` for
+        all-negative-strand panels, or explicitly specify panels, e.g.
+        ``["chr1", "chr3"]`` or ``{"chr5": True}``.
 
     pack: bool, default True
-        Disposition of the genes in the plot. Use True for a pack disposition (genes in the same line if
-        they do not overlap) and False for unpack (one row per gene). Per-track ``Track(..., pack=...)``
-        overrides this default.
+        If True, stack non-overlapping intervals/groups on the same row. If False, use
+        one row per interval/group.
 
-    return_plot: {None, "fig", "app"}, default None
-        Return the backend figure/app instead of only displaying or saving it.
+    shrink: bool, default False
+        Compress long gaps between intervals (e.g. introns).
 
-    add_aligned_plots: list, default None
-        Extra backend traces/axes aligned below the genomic x-axis. Currently accepts one panel/chromosome.
+    sort_ranges: bool, default False
+        Sort intervals/groups by genomic coordinates before plotting.
+
+    label: {None, bool, str}, default None
+        Display text label next to each interval or group. If True, uses the ``id_col``
+        value. If False, disables labels. None enables labels for packed tracks and
+        disables them for unpacked tracks. A string is formatted with row values,
+        e.g. ``"tx: {transcript_id}"``.
 
     fill_col: str, default None
-        Name of the column used to color the interval fill. If not specified, id_col will be used.
-        Values are mapped through ``colormap`` unless ``colormap="direct"`` is used.
+        Column used for interval fill colors. Defaults to ``id_col`` when possible.
 
-    outline_col: str, default None
-        Name of the column used to color interval outlines. If not specified, interval outlines use the
-        resolved fill colors. For one fixed outline color, use ``outline_color="black"``.
+    outline_col: {False, str}, default False
+        Column used for interval outline colors. False uses the resolved fill colors.
 
-    label_color_col: str, default None
-        Name of the column used to color labels. If provided, values are mapped through
-        ``colormap["label"]`` when present, otherwise through the fill colormap. This overrides
-        the fixed ``label_color`` option.
+    label_color_col: {False, str}, default False
+        Column used for label colors. False uses the fixed ``label_color`` option.
 
     colormap: str, list, dict, or "direct", default "popart"
         Colors used for interval fills and, optionally, mapped outlines and labels.
 
-        If ``"direct"``, values in ``fill_col`` and ``outline_col`` are interpreted as literal colors.
-        If a string, use the named Matplotlib/Plotly colormap or color sequence.
-        If a list, assign colors from the list to distinct values.
-        If a dict, use a channel mapping with required ``"fill"`` and optional ``"outline"``
-        and ``"label"`` entries. ``"outline": "fill"`` reuses the fill mapping.
-        ``"label": None`` or an omitted ``"label"`` entry uses fixed ``label_color`` unless
-        ``label_color_col`` is provided; ``"label": "fill"`` and ``"label": "outline"`` reuse
-        those channels. Other label colormap specs require ``label_color_col``::
+        If ``"direct"``, values in ``fill_col`` and ``outline_col`` are interpreted as
+        literal colors. If a string, use the named Matplotlib/Plotly colormap or color
+        sequence. If a list, assign colors from the list to distinct values.
+
+        If a dict, use a channel mapping with required ``"fill"`` and optional
+        ``"outline"`` and ``"label"`` entries. ``"outline": "fill"`` reuses the fill
+        mapping. ``"label": None`` or an omitted ``"label"`` entry uses fixed
+        ``label_color`` unless ``label_color_col`` is provided; ``"label": "fill"`` and
+        ``"label": "outline"`` reuse those channels. Other label colormap specs require
+        ``label_color_col``::
 
             colormap={
                 "fill": {"exon": "skyblue", "CDS": "orange"},
@@ -682,107 +691,59 @@ def plot(
                 "label": {"low": "black", "high": "white"},
             }
 
-        For quantitative coloring, use ``type="quantitative"``. Values are normalized to the observed
-        min/max by default; set ``range=(min, max)`` to choose the normalization range manually::
+        For quantitative coloring, use ``type="quantitative"``. Values are normalized to
+        the observed min/max by default; set ``range=(min, max)`` to choose the range::
 
             colormap={"type": "quantitative", "colors": "viridis"}
             colormap={"type": "quantitative", "colors": ["blue", "white", "red"], "range": (-1, 1)}
 
-        Quantitative ``colors`` may be a named continuous colormap, a list of gradient colors, or
-        normalized stops such as ``[(0, "blue"), (0.5, "white"), (1, "red")]``.
-
-    shrink: bool, default False
-        Whether to compress the intron ranges to facilitate visualization or not.
-
-    limits: {None, dict, tuple, pyranges.PyRanges}, default None
-        Customization of coordinates for the chromosome plots.
-
-        - None: minimum and maximum exon coordinate plotted plus a 5% of the range on each side.
-        - dict: {chr_name1: (min_coord, max_coord), chr_name2: (min_coord, max_coord), ...}.
-          Not all the plotted chromosomes need to be specified in the dictionary and some coordinates
-          can be indicated as None, both cases lead to the use of the default value.
-        - tuple: the coordinate limits of all chromosomes will be defined as indicated.
-        - pyranges.PyRanges: for each matching chromosome between the plotted data
-          and the limits data, the limits will be defined by the minimum and maximum coordinates
-          in the pyranges object defined as limits. If some plotted chromosomes are not present they
-          will be left as default.
-
-    regions: {None, list, str, pyranges.PyRanges}, default None
-        Optional panel layout replacing the default one-panel-per-chromosome layout.
-        If provided, panels are exactly these regions in order and ``limits`` is ignored.
-        Use a list of ``(chromosome, start, end)`` tuples and/or PyRanges objects,
-        a PyRanges object (one row per panel), or a column name whose values define panels.
-
-    reverse: {bool, "auto", str, tuple, list, dict}, default False
-        Mirror selected panels for transcript-direction views while keeping tick labels,
-        titles, and tooltips in original genomic coordinates. Use ``True`` to reverse all
-        panels; ``"auto"`` to reverse panels whose known strands are all negative; a panel
-        name, ``(chromosome, start, end)`` region tuple, or list of these to reverse selected
-        panels; or a dict mapping selectors to booleans.
-
-    label: {None, bool, str}, default None
-        Controls interval labels. If None, labels are enabled for pack
-        plots and disabled for unpack plots to avoid duplicated row labels. If
-        a track sets ``pack=False``, the default is disabled for that track.
-        If True, the id/index is used; if False, labels are disabled. A string
-        is interpreted as a row-value format template such as ``"{Feature}: {id}"``.
-        Use ``label_pad``, ``label_size``, ``label_color``, ``label_angle``,
-        ``label_position``, and ``label_fit`` to control label appearance and layout.
+        Quantitative ``colors`` may be a named continuous colormap, a list of gradient
+        colors, or normalized stops such as ``[(0, "blue"), (0.5, "white"), (1, "red")]``.
 
     legend: bool, default False
-        Whether the legend should appear in the plot.
+        Show a color legend.
 
     panel_title: {None, str}, default None
-        Subplot title template. Available placeholders: ``{chrom}``, ``{start}``, ``{end}``,
-        ``{orientation}`` (``"fwd"``/``"rev"``), and ``{rev_flag}`` (``""``/``" (rev)"``).
-        If None, pyrangeyes chooses ``"Chromosome {chrom}{rev_flag}"`` normally
-        (identical to the old default unless reversed), ``"{chrom}:{start}-{end}"``
-        for explicit ``regions``, and ``"{chrom}"`` when ``regions`` is a column name.
+        Panel title template. Available fields include ``{chrom}``, ``{start}``,
+        ``{end}``, ``{orientation}``, and ``{rev_flag}``. Defaults looks like:
+        ``Chromosome: chr1``.
 
     tooltip: str, default None
-        Dataframe information to show in a tooltip when placing the mouse over a gene, the given
-        information will be added to the default: strand, start-end coordinates and id. This must be
-        provided as a string containing the column names of the values to be shown within curly brackets.
-        For example if you want to show the value of the pointed gene for the column "col1" a valid tooltip
-        string could be: "Value of col1: {col1}". Note that the values in the curly brackets are not
-        strings. If you want to introduce a newline you can use a newline character "\" + "n".
-
-    to_file: {str, tuple}, default None
-        Name of the file to export specifying the desired extension. The supported extensions are '.png' and '.pdf'.
-        When no explicit size is provided, pyrangeyes infers the figure height from the vertical layout. The global
-        ``auto_height_px_per_unit`` option controls the pixel length assigned to one vertical layout unit.
-        Optionally, a tuple can be provided where the file name is specified as a str in the first position and in the
-        second position there is a tuple specifying the width and height of the figure in px.
+        Tooltip shown when hovering over an interval/group. Use row-value fields,
+        e.g. ``"{Feature}: {transcript_id}"``.
 
     theme: str, default "light"
-        General color appearance of the plot. Available modes: "light", "dark", "pastel", "swimming_pool".
+        Built-in theme: ``"light"``, ``"dark"``, ``"pastel"``, or ``"swimming_pool"``.
 
-    sort_ranges: bool, default False
-        Whether to sort interval groups by genomic coordinates before plotting.
-        If False, the default, unpack plots preserve the first-seen order of rows/groups in the input.
-        If True, interval groups are ordered by the internal genomic sorting behavior.
+    to_file: {str, tuple}, default None
+        Export path, e.g. ``"plot.png"`` or ``"plot.pdf"``. Use
+        ``("plot.png", (width, height))`` to set an explicit pixel size.
+
+    return_plot: {None, "fig", "app"}, default None
+        Return the backend figure/app instead of displaying or saving it.
+
+    max_shown: int, default 25
+        Maximum number of intervals/groups shown before subsetting.
+
+    warnings: bool, default None
+        Show pyrangeyes warnings. If None, use the global warning setting.
 
     height_col: str, default None
-        Numeric column defining interval heights. Values must range from 0 to 1,
-        where 1 uses the full ``interval_height`` and smaller values are rendered
-        proportionally shorter. If provided, this parameter overrides the default
-        uniform interval height. Usually this is set by adapters rather than
-        provided directly.
+        Numeric column controlling interval heights, with values from 0 to 1.
 
     depth_col: str, default None
-        Numeric column defining interval draw order for overlapping intervals. Lower values are drawn first;
-        higher values are drawn later, on top of lower-depth intervals. No range constraint is applied.
-        Usually this is set by adapters rather than provided directly.
+        Numeric column controlling draw order for overlapping intervals.
 
     shape_col: str, default None
-        Column defining interval shapes. Supported values are ``"rectangle"``,
-        ``"diamond"``, ``"triangle-up"``, ``"triangle-down"``, and ``"circle"``.
-        Usually this is set by adapters rather than provided directly.
+        Column defining interval shapes: ``"rectangle"``, ``"diamond"``,
+        ``"triangle-up"``, ``"triangle-down"``, or ``"circle"``.
 
-    kwargs
-        Customizable plot features can be defined using keyword arguments. Use print_options() function to check the variables'
-        nomenclature, description and default values. Adapter-specific options are passed via
-        ``Track(data, adapter, **options)``; inspect them with, for example, ``print_options(adapter="mRNA")``.
+    add_aligned_plots: list, default None
+        Extra backend plots aligned below the genomic panels.
+
+    **kargs
+        Additional pyrangeyes options. See ``print_options()`` and adapter-specific
+        options such as ``print_options(adapter="mRNA")``.
 
 
 
@@ -909,7 +870,7 @@ def plot(
     set_theme(theme)
 
     feat_dict = {
-        "colormap": getvalue("colormap"),
+        "colormap": colormap if colormap is not None else getvalue("colormap"),
         "intron_color": getvalue("intron_color"),
         "tag_bkg": getvalue("tag_bkg"),
         "figure_bg": getvalue("figure_bg"),

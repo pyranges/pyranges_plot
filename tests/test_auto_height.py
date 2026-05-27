@@ -3,6 +3,7 @@ import pyranges1 as pr
 import pyrangeyes as pe
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 
@@ -65,7 +66,12 @@ def test_auto_size_is_height_only_even_with_legend():
 
 def test_explicit_file_size_overrides_auto_height(tmp_path):
     output = tmp_path / "plot.pdf"
-    fig = pe.plot(DATA, id_col="transcript_id", to_file=(str(output), (640, 480)), return_plot="fig")
+    fig = pe.plot(
+        DATA,
+        id_col="transcript_id",
+        to_file=(str(output), (640, 480)),
+        return_plot="fig",
+    )
 
     assert fig.layout.width == 640
     assert fig.layout.height == 480
@@ -136,4 +142,6 @@ def test_disabled_track_labels_do_not_reserve_above_label_band():
 
 def test_auto_height_px_per_unit_must_be_positive():
     with pytest.raises(ValueError, match="auto_height_px_per_unit"):
-        pe.plot(DATA, id_col="transcript_id", auto_height_px_per_unit=0, return_plot="fig")
+        pe.plot(
+            DATA, id_col="transcript_id", auto_height_px_per_unit=0, return_plot="fig"
+        )
