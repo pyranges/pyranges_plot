@@ -195,7 +195,7 @@ def create_fig(
     bottom_px = 28
     title_px = max(34, int(title_dict_plt.get("size", 18) * 1.9))
     xaxis_px = 46
-    panel_gap_px = 24
+    panel_gap_px = 16
     # Figure-level legends live in a reserved bottom strip. Keeping this out of
     # the axes placement means legends do not shrink or overlap plot panels.
     if legend:
