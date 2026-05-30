@@ -29,7 +29,7 @@ def ax_display(ax, title, t_dict, plot_back, plot_border):
     """
 
     if title:
-        ax.set_title(title, fontdict=t_dict, pad=10)
+        ax.set_title(title, fontdict=t_dict, pad=8)
 
     ax.set_facecolor(plot_back)
     plt.setp(ax.spines.values(), color=plot_border)
@@ -194,12 +194,12 @@ def create_fig(
     top_px = 18
     bottom_px = 28
     title_px = max(34, int(title_dict_plt.get("size", 18) * 1.9))
-    xaxis_px = 56
-    panel_gap_px = 40
+    xaxis_px = 46
+    panel_gap_px = 24
     # Figure-level legends live in a reserved bottom strip. Keeping this out of
     # the axes placement means legends do not shrink or overlap plot panels.
     if legend:
-        bottom_px += 140
+        bottom_px += 80
 
     non_data_px = (
         top_px

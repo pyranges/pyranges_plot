@@ -179,8 +179,8 @@ def _auto_file_size(
 
     total_rows = len(render_spans)
     title_band = max(34, int(float(title_size) * 1.9))
-    xaxis_band = 56
-    inter_panel_gap = 40
+    xaxis_band = 46
+    inter_panel_gap = 24
     top_margin = 18
     bottom_margin = 28
     legend_band = 0
@@ -188,7 +188,7 @@ def _auto_file_size(
         # Match the bottom legend helpers closely enough to reserve space before
         # axes are placed. Width is fixed at 1120 px, so eight compact legend
         # columns is a reasonable static estimate for categorical rows.
-        legend_band = 140
+        legend_band = 80
 
     height = int(
         max(
