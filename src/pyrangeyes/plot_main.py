@@ -179,8 +179,8 @@ def _auto_file_size(
 
     total_rows = len(render_spans)
     title_band = max(34, int(float(title_size) * 1.9))
-    xaxis_band = 46
-    inter_panel_gap = 24
+    xaxis_band = 56
+    inter_panel_gap = 40
     top_margin = 18
     bottom_margin = 28
     legend_band = 0
@@ -658,33 +658,37 @@ def plot(
 
     label: {None, bool, str}, default None
         Display text label next to each interval or group. If True, uses the ``id_col``
-        value. If False, disables labels. None enables labels for packed tracks and
-        disables them for unpacked tracks. A string is formatted with row values,
-        e.g. ``"tx: {transcript_id}"``.
+        value. If False, disables labels. None means labels are enabled for packed
+        tracks and disabled for unpacked tracks. A string is formatted with row
+        values, e.g. ``"tx: {transcript_id}"``. Use ``print_options()`` for additional
+        options affecting label appearance and layout.
 
     fill_col: str, default None
         Column used for interval fill colors. Defaults to ``id_col`` when possible.
 
     outline_col: {False, str}, default False
         Column used for interval outline colors. False uses the resolved fill colors.
+        For one fixed outline color, use ``outline_color="black"``.
 
     label_color_col: {False, str}, default False
         Column used for label colors. False uses the fixed ``label_color`` option.
 
-    colormap: str, list, dict, or "direct", default "popart"
+    colormap: str, list, dict, or "direct", default None
         Colors used for interval fills and, optionally, mapped outlines and labels.
+        None falls back to the global ``colormap`` option.
 
         If ``"direct"``, values in ``fill_col`` and ``outline_col`` are interpreted as
         literal colors. If a string, use the named Matplotlib/Plotly colormap or color
         sequence. If a list, assign colors from the list to distinct values.
 
-        If a dict, use a channel mapping with required ``"fill"`` and optional
-        ``"outline"`` and ``"label"`` entries. ``"outline": "fill"`` reuses the fill
-        mapping. ``"label": None`` or an omitted ``"label"`` entry uses fixed
-        ``label_color`` unless ``label_color_col`` is provided; ``"label": "fill"`` and
-        ``"label": "outline"`` reuse those channels. Other label colormap specs require
-        ``label_color_col``::
+        If a dict, use a direct value-to-color mapping for fills, or a channel mapping
+        with required ``"fill"`` and optional ``"outline"`` and ``"label"`` entries.
+        ``"outline": "fill"`` reuses the fill mapping. ``"label": None`` or an
+        omitted ``"label"`` entry uses fixed ``label_color`` unless ``label_color_col``
+        is provided; ``"label": "fill"`` and ``"label": "outline"`` reuse those
+        channels. Other label colormap specs require ``label_color_col``::
 
+            colormap={"+": "green", "-": "red"}
             colormap={
                 "fill": {"exon": "skyblue", "CDS": "orange"},
                 "outline": "fill",
@@ -709,8 +713,9 @@ def plot(
         ``Chromosome: chr1``.
 
     tooltip: str, default None
-        Tooltip shown when hovering over an interval/group. Use row-value fields,
-        e.g. ``"{Feature}: {transcript_id}"``.
+        Tooltip displayed upon mouse hover over an interval/group. It is added to the
+        default strand, coordinate, and ID tooltip. Use row-value fields, e.g.
+        ``"{Feature}: {transcript_id}"``.
 
     theme: str, default "light"
         Built-in theme: ``"light"``, ``"dark"``, ``"pastel"``, or ``"swimming_pool"``.
