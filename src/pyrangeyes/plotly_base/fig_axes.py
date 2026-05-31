@@ -113,7 +113,7 @@ def create_fig(
             raise ValueError("add_aligned_plots must be a list.")
 
     # Defining vertical spacing between plots
-    def_vertical_spacing = 0.25
+    def_vertical_spacing = 0.12
     if custom_dict_list:
         for custom_dict in custom_dict_list:
             vertical_spacing = custom_dict.get("y_space", def_vertical_spacing)
@@ -144,6 +144,7 @@ def create_fig(
             row_heights=chrmd_df_grouped["y_height"].to_list() + row_heights_additional,
             subplot_titles=titles,
             shared_xaxes=shared_axes,
+            vertical_spacing=0.12 if total_rows > 1 else 0.0,
         )
 
     # one subplot per chromosome

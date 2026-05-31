@@ -180,7 +180,7 @@ def _auto_file_size(
     total_rows = len(render_spans)
     title_band = max(34, int(float(title_size) * 1.9))
     xaxis_band = 46
-    inter_panel_gap = 16
+    inter_panel_gap = 6
     top_margin = 18
     bottom_margin = 28
     legend_band = 0

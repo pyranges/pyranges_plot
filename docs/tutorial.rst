@@ -50,7 +50,6 @@ an address is printed in the console. The plot can be accessed by opening this a
 
     >>> pe.plot(x)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_01_mpl.png
 
@@ -84,7 +83,6 @@ indicating the column name that defines the groups of intervals.
 
     >>> pe.plot(x, id_col="transcript_id")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_02_mpl.png
 
@@ -117,7 +115,6 @@ The ``limits`` parameter accepts different input types:
 
     >>> pe.plot(x, limits={1: (None, 100), 2: (60, 200)})
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_04_mpl.png
 
@@ -126,7 +123,6 @@ To plot with specified limits, use the following code:
 
     >>> pe.plot(x, limits=(0,300))
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_05_mpl.png
 
@@ -139,7 +135,6 @@ For example, this makes one panel per transcript by using a column name:
 
     >>> pe.plot(x, regions="transcript_id", fill_col="transcript_id", label=False)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_29_mpl.png
 
@@ -148,7 +143,6 @@ Explicit regions are also supported with ``(chromosome, start, end)`` tuples or 
 
     >>> pe.plot(x, regions=[(2, 60, 120), (2, 140, 190), (1, None, None)])
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_43_mpl.png
 
@@ -162,7 +156,6 @@ Note the decreasing X axis.
 
     >>> pe.plot(x, reverse="auto")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_38_mpl.png
 
@@ -180,7 +173,6 @@ For example, let's color by the Strand column:
 
     >>> pe.plot(x, fill_col="Strand")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_06_mpl.png
 
@@ -196,7 +188,6 @@ Using a dictionary allows to exert full control over the coloring, explicitly se
     >>> pe.plot(x, fill_col="Strand",
     ...          colormap={"+": "green", "-": "red"})
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_07_mpl.png
 
@@ -209,7 +200,6 @@ or an actual Matplotlib or Plotly colormap object. Below, we invoke the "Dark2" 
 
     >>> pe.plot(x, colormap="Dark2")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_08_mpl.png
 
@@ -220,7 +210,6 @@ to use those values directly instead of mapping them as categories:
     >>> x["fill"] = ["#8ecae6", "#8ecae6", "#ffb703", "#ffb703", "#219ebc", "#219ebc", "#219ebc", "#fb8500"]
     >>> pe.plot(x, fill_col="fill", colormap="direct")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_30_mpl.png
 
@@ -231,7 +220,6 @@ color, use the ``outline_color`` option:
 
     >>> pe.plot(x, fill_col="Strand", outline_color="black", legend=True)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_31_mpl.png
 
@@ -250,7 +238,6 @@ different value domains, provide a channel mapping with separate ``"fill"`` and
     ...     },
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_32_mpl.png
 
@@ -261,7 +248,6 @@ Values are normalized to the observed minimum and maximum by default:
     >>> x["Score"] = [0.1, 0.2, 0.4, 0.5, 0.55, 0.7, 0.9, 1.0]
     >>> pe.plot(x, fill_col="Score", colormap={"type": "quantitative", "colors": "viridis"}, legend=True)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_33_mpl.png
 
@@ -276,7 +262,6 @@ can be a named continuous colormap, a list of colors, or normalized color stops:
     ...     legend=True,
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_34_mpl.png
 
@@ -295,7 +280,6 @@ and distance from intervals with ``label_pad``.
     ...     label_pad=2,
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_39_mpl.png
 
@@ -312,7 +296,6 @@ Labels can also be styled independently from interval fill colors. Use a channel
     ...     colormap={"fill": "Dark2", "label": {"+": "black", "-": "crimson"}},
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_40_mpl.png
 
@@ -400,7 +383,6 @@ Any listed option can be provided directly to :func:`plot <pyrangeyes.plot>` for
 
     >>> pe.plot(x, track_bg="rgb(173, 216, 230)", plot_border="#808080", title_color="magenta")
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_15_mpl.png
 
@@ -445,7 +427,6 @@ documentation. For example, here's the "dark" theme:
     >>> pe.set_theme('dark')
     >>> pe.plot(x)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_16_mpl.png
 
@@ -465,7 +446,6 @@ To instead display one transcript per row, set the ``pack`` parameter as ``False
 
     >>> pe.plot(x, pack=False)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_09_mpl.png
 
@@ -487,7 +467,6 @@ Then compare the unshrunk and shrunk views::
     >>> ppp = pe.example_data.p3
     >>> pe.plot(ppp, label=False)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_13_mpl.png
 
@@ -496,7 +475,6 @@ Then compare the unshrunk and shrunk views::
 
     >>> pe.plot(ppp, shrink=True, label=False)
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_14_mpl.png
 
@@ -527,7 +505,6 @@ when tracks use different ID columns.
     ...     legend=True,
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_17_mpl.png
 
@@ -558,7 +535,6 @@ per-track coloring, compact squished tracks, and labels based on each track's ID
     ...     legend=True,
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_18_mpl.png
 
@@ -587,7 +563,6 @@ are combined as tracks:
     ...     legend=True,
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_35_mpl.png
 
@@ -607,7 +582,6 @@ Add columns with ``tooltip`` templates, and customize panel titles with ``panel_
     ...     panel_title="Chr: {chrom}",
     ... )
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_10_mpl.png
 
@@ -633,7 +607,6 @@ See :func:`make_scatter() <pyrangeyes.make_scatter>` for scatter helper options.
     >>> aligned = pe.make_scatter(snps1, y="score", title="SNP score", engine="ply")
     >>> pe.plot([pe.Track(mrna, "mRNA"), pe.Track(snps1, "SNP")], add_aligned_plots=[aligned])
 
-*Matplotlib engine*
 
 .. image:: images/prp_rtd_21_mpl.png
 
@@ -651,7 +624,6 @@ and compose it with other Dash components.
     >>> pie = go.Figure(go.Pie(labels=["A", "T", "G"], values=[1, 1, 1]))
     >>> app.layout = html.Div([app.layout, dcc.Graph(figure=pie)])
 
-*Plotly engine*
 
 .. image:: images/prp_rtd_27.png
 

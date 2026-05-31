@@ -1124,7 +1124,7 @@ def assign_label_rows(
             text_extra_y = (
                 0.0
                 if not (effective_text_avoid and text_position in {"above", "below"})
-                else float(label_size or 12) / 40.0
+                else float(label_size or 12) / 26.0
             )
             track_height = interval_height * track_scale
             track_gap = v_spacer * track_scale
