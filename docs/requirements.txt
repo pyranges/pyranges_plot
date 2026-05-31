@@ -1,5 +1,5 @@
 pyrangeyes>=0.1.8
 plotly>=5.9.0
 Sphinx==7.3.7
-sphinx-rtd-theme==2.0.0
+pydata-sphinx-theme>=0.16.0
 sphinxcontrib-napoleon==0.7
