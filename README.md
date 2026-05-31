@@ -55,6 +55,14 @@ Note that the minimal installation by `pip install pyrangeyes` is not able to pr
 since the graphical dependencies are not installed.
 
 
+## Shared assets
+
+The PyRanges cheat sheet image is kept in this repository for downstream use by the PyRanges 1.x documentation:
+
+- [PyRanges cheat sheet](images/pyranges_cheatsheet.png)
+
+Do not remove this image as an unreferenced local asset; it is intentionally shared across repositories.
+
 ## Documentation
 Pyrangeyes documentation and tutorial can be found at https://pyrangeyes.readthedocs.io/.
 
