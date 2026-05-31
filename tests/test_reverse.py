@@ -49,34 +49,16 @@ def test_reverse_selects_display_chromosome_for_region_panels():
     assert fig.layout.xaxis2.range[0] < 0
 
 
-def test_reverse_selects_explicit_region_tuple():
+def test_reverse_rejects_explicit_region_tuple():
     pre.set_engine("ply")
-    fig = pre.plot(
-        _strand_data(),
-        id_col="tx",
-        regions=[("chr1", 0, 60), ("chr2", 90, 160)],
-        reverse=[("chr1", 0, 60)],
-        return_plot="fig",
-    )
-    assert fig.layout.xaxis.range[0] < fig.layout.xaxis.range[1]
-    assert fig.layout.xaxis.range[0] < 0
-    assert fig.layout.xaxis2.range[0] < fig.layout.xaxis2.range[1]
-    assert fig.layout.xaxis2.range[1] > 0
-
-
-def test_reverse_accepts_single_explicit_region_tuple():
-    pre.set_engine("ply")
-    fig = pre.plot(
-        _strand_data(),
-        id_col="tx",
-        regions=[("chr1", 0, 60), ("chr2", 90, 160)],
-        reverse=("chr2", 90, 160),
-        return_plot="fig",
-    )
-    assert fig.layout.xaxis.range[0] < fig.layout.xaxis.range[1]
-    assert fig.layout.xaxis.range[1] > 0
-    assert fig.layout.xaxis2.range[0] < fig.layout.xaxis2.range[1]
-    assert fig.layout.xaxis2.range[0] < 0
+    with pytest.raises(ValueError, match="coordinate tuples"):
+        pre.plot(
+            _strand_data(),
+            id_col="tx",
+            regions=[("chr1", 0, 60), ("chr2", 90, 160)],
+            reverse=("chr2", 90, 160),
+            return_plot="fig",
+        )
 
 
 def test_reverse_rejects_unknown_selector():

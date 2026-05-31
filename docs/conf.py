@@ -12,7 +12,6 @@
 #
 from docutils import nodes
 import doctest
-import sphinx_rtd_theme
 import os
 import sys
 
@@ -36,7 +35,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.napoleon",
-    "sphinx_rtd_theme",
 ]
 autosummary_generate = True  # Enable summary table generation
 
@@ -98,7 +96,11 @@ master_doc = "index"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+html_theme_options = {
+    "show_toc_level": 2,
+    "navigation_with_keys": False,
+}
 
 
 def monospaced_link(name, rawtext, text, lineno, inliner, options={}, content=[]):

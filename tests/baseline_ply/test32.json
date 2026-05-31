@@ -1161,6 +1161,8 @@
     },
     "plot_bgcolor": "white",
     "showlegend": false,
-    "paper_bgcolor": "white"
+    "paper_bgcolor": "white",
+    "width": 1120,
+    "height": 260
   }
 }

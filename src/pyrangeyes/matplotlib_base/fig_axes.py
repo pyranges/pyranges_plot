@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import matplotlib.gridspec as gridspec
 from matplotlib.ticker import ScalarFormatter
 from matplotlib.ticker import MaxNLocator
 from matplotlib.patches import Rectangle
@@ -30,7 +29,7 @@ def ax_display(ax, title, t_dict, plot_back, plot_border):
     """
 
     if title:
-        ax.set_title(title, fontdict=t_dict)
+        ax.set_title(title, fontdict=t_dict, pad=8)
 
     ax.set_facecolor(plot_back)
     plt.setp(ax.spines.values(), color=plot_border)
@@ -184,22 +183,53 @@ def create_fig(
     num_additional_rows = len(additional_plots) if add_aligned_plots else 0
     total_rows = num_main_rows + num_additional_rows
     row_heights_additional = [height] * num_additional_rows
+    row_heights = chrmd_df_grouped["y_height"].to_list() + row_heights_additional
 
     # Start figure
     fig = plt.figure(figsize=(x, y), facecolor=figure_bg)
+    fig_w_px = fig.get_figwidth() * fig.dpi
+    fig_h_px = fig.get_figheight() * fig.dpi
+    left_px = 96
+    right_px = 24
+    top_px = 18
+    bottom_px = 28
+    title_px = max(34, int(title_dict_plt.get("size", 18) * 1.9))
+    xaxis_px = 46
+    panel_gap_px = 6
+    # Figure-level legends live in a reserved bottom strip. Keeping this out of
+    # the axes placement means legends do not shrink or overlap plot panels.
+    if legend:
+        bottom_px += 80
 
-    gs = gridspec.GridSpec(
-        total_rows,
-        1,
-        height_ratios=chrmd_df_grouped["y_height"].to_list() + row_heights_additional,
-    )  # size of chromosome subplot according to number of gene rows
+    non_data_px = (
+        top_px
+        + bottom_px
+        + total_rows * (title_px + xaxis_px)
+        + max(0, total_rows - 1) * panel_gap_px
+    )
+    available_data_px = max(1, fig_h_px - non_data_px)
+    row_sum = sum(row_heights) or 1
+    row_data_px = [available_data_px * h / row_sum for h in row_heights]
+
+    left = left_px / fig_w_px
+    width = max(0.1, (fig_w_px - left_px - right_px) / fig_w_px)
+    y_cursor = fig_h_px - top_px
+
+    def _add_layout_axis(row_index):
+        nonlocal y_cursor
+        y_cursor -= title_px
+        axis_h = row_data_px[row_index]
+        bottom = y_cursor - axis_h
+        ax = fig.add_axes([left, bottom / fig_h_px, width, axis_h / fig_h_px])
+        y_cursor = bottom - xaxis_px - panel_gap_px
+        return ax
 
     # one plot per chromosome
     axes = []
     for i in range(total_rows):
         if i < num_main_rows:
             chrom = chrmd_df_grouped.index[i]
-            axes.append(plt.subplot(gs[i]))
+            axes.append(_add_layout_axis(i))
             ax = axes[i]
             # Adjust plot display
             ax_display(ax, titles[i], title_dict_plt, plot_background, plot_border)
@@ -418,7 +448,7 @@ def create_fig(
             ax.set_yticklabels(list(y_ticks_name))
         else:
             # Adding the added plot
-            axes.append(plt.subplot(gs[i]))
+            axes.append(_add_layout_axis(i))
             ax = axes[i]
             aligned_idx = i - num_main_rows
             original_ax = additional_plots[aligned_idx]
@@ -445,7 +475,4 @@ def create_fig(
                     fontsize=custom_dict.get("title_size", 14),  # Setting the size
                     color=custom_dict.get("title_color", "black"),  # Setting the color
                 )
-
-    plt.subplots_adjust(hspace=vertical_spacing)
-
     return fig, axes

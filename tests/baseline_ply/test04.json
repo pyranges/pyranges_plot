@@ -963,7 +963,7 @@
       ],
       "range": [
         5.551115123125783e-17,
-        1.4000000000000001
+        1.5615384615384618
       ],
       "fixedrange": true,
       "tickvals": [],
@@ -1013,6 +1013,8 @@
     },
     "plot_bgcolor": "white",
     "showlegend": false,
-    "paper_bgcolor": "white"
+    "paper_bgcolor": "white",
+    "width": 1120,
+    "height": 260
   }
 }

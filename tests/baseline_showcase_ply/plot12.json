@@ -1395,7 +1395,7 @@
         1.0
       ],
       "range": [
-        -0.22499999999999995,
+        -0.3461538461538461,
         1.1
       ],
       "fixedrange": true,
@@ -1537,13 +1537,13 @@
     "plot_bgcolor": "white",
     "showlegend": false,
     "paper_bgcolor": "white",
+    "width": 1700,
+    "height": 700,
     "margin": {
       "l": 25,
       "r": 25,
       "t": 45,
       "b": 35
-    },
-    "width": 1700,
-    "height": 700
+    }
   }
 }
